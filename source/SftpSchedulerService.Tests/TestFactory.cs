@@ -49,7 +49,9 @@ namespace SftpSchedulerService.Tests
                     // ... Configure test services
                 });
                 factory.ClientOptions.AllowAutoRedirect = allowAutoRedirect;
-            return factory.CreateClient();
+            var client = factory.CreateClient();
+            client.DefaultRequestHeaders.Add("SftpScheduler-Test", "1");
+            return client;
         }
 
         public static HttpClient CreateAuthenticatedHttpClient(string[] roles, bool allowAutoRedirect = false)

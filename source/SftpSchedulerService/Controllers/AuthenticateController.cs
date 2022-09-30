@@ -46,6 +46,7 @@ namespace SftpSchedulerService.Controllers
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -58,11 +59,7 @@ namespace SftpSchedulerService.Controllers
                 string token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             //Response.Cookies.Append("token", token);
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.UserName));
-            identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-            // TODO: fix claims!
-            identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.Admin));
-            identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.User));
+            identity.AddClaims(authClaims);
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(

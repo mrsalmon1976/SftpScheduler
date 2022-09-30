@@ -122,6 +122,6 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="SftpSchedulerService.Tests"/>
+		<InternalsVisibleTo Include="SftpSchedulerService.Tests" />
 	</ItemGroup>
 </Project>

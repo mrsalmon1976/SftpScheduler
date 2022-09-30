@@ -34,7 +34,7 @@ namespace Test.SftpSchedulerService.Views.Shared
             string[] roles = { UserRoles.User };
             var client = TestFactory.CreateAuthenticatedHttpClient(roles);
 
-            var response = await client.GetAsync("/dashboard");
+            var response = await client.GetAsync("/test");
             string body = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
 
