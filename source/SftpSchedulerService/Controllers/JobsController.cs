@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SftpSchedulerService.Controllers
 {
     [Authorize]
-    public class DashboardController : CustomBaseController
+    public class JobsController : CustomBaseController
     {
 
         [HttpGet]

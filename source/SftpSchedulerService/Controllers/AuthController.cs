@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : CustomBaseController
     {
         [HttpGet]
         public ViewResult Login()

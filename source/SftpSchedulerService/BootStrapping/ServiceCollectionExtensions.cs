@@ -5,18 +5,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using SftpSchedulerService.BLL.Identity;
+using SftpSchedulerService.Config;
 using System.Text;
 
 namespace SftpSchedulerService.BootStrapping
 {
-    public static class IdentityConfiguration
+    public static class ServiceCollectionExtensions
     {
         private const string CustomAuthenticationScheme = "JWT_OR_COOKIE";
 
-        public static void AddIdentity(this IServiceCollection services, ConfigurationManager configuration)
+        public static void AddIdentity(this IServiceCollection services, AppSettings appSettings)
         {
 
-            services.AddDbContext<SftpSchedulerIdentityDbContext>(options => options.UseSqlite(configuration.GetConnectionString("Default")));
+            services.AddDbContext<SftpSchedulerIdentityDbContext>(options => options.UseSqlite(appSettings.DbConnectionString));
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<SftpSchedulerIdentityDbContext>()
                 .AddDefaultTokenProviders();
@@ -37,14 +38,14 @@ namespace SftpSchedulerService.BootStrapping
                 {
                     options.SaveToken = true;
                     options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidAudience = configuration["JWT:ValidAudience"],
-                        ValidIssuer = configuration["JWT:ValidIssuer"],
+                        ValidAudience = appSettings.JwtValidAudience,
+                        ValidIssuer = appSettings.JwtValidIssuer,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JwtSecret))
                     };
                 })
                 .AddPolicyScheme(CustomAuthenticationScheme, CustomAuthenticationScheme, options =>

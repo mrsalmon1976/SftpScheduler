@@ -1,33 +1,36 @@
-using Microsoft.Extensions.Configuration;
 using SftpScheduler.BLL.Data;
 using SftpSchedulerService;
 using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Utilities;
-using System.Net;
 
-var webApplicationOptions = new WebApplicationOptions() { 
-    ContentRootPath = AppContext.BaseDirectory, 
-    Args = args, 
-    ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
-};
-var builder = WebApplication.CreateBuilder(webApplicationOptions);
+//var webApplicationOptions = new WebApplicationOptions() { 
+//    ContentRootPath = AppContext.BaseDirectory, 
+//    Args = args, 
+//    ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
+//};
+var builder = WebApplication.CreateBuilder(args);       // NOTE! Without args, integration tests don't work!?
+//builder.Environment.ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
+//builder.Environment.ContentRootPath = AppContext.BaseDirectory;
+//builder.Configuration.con
+
+// initialise app settings
+AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory);
 
 // add services
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
-builder.Services.AddIdentity(builder.Configuration);
+builder.Services.AddIdentity(appSettings);
 
-// initialise app settings
-AppSettings appSettings = new AppSettings(builder.Configuration, webApplicationOptions.ContentRootPath);
 builder.Services.AddSingleton<AppSettings>(appSettings);
 builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
 builder.Services.AddSingleton<ResourceUtils>();
 
 // set up 
 var app = builder.Build();
-var config = builder.Configuration;
+//app.Environment.ApplicationName = 
+//var config = builder.Configuration;
 var serviceProvider = app.Services;
 
 
@@ -43,6 +46,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+#pragma warning disable CS8604 // Possible null reference argument.
 app.InitialiseDatabase(serviceProvider.GetService<IDbContextFactory>(), serviceProvider.GetService<ResourceUtils>());
+#pragma warning restore CS8604 // Possible null reference argument.
 app.Run();
 
+
+public partial class Program { }

@@ -16,7 +16,7 @@ namespace SftpScheduler.BLL.Data
         /// <summary>
         /// Gets the transaction created with BeginTransaction.
         /// </summary>
-        IDbTransaction Transaction { get; }
+        IDbTransaction? Transaction { get; }
 
         /// <summary>
         /// Begins a new transaction (if supported by the DbContext)
@@ -40,14 +40,14 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
-        void ExecuteNonQuery(string sql, object param = null);
+        void ExecuteNonQuery(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query against the database
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        T ExecuteScalar<T>(string sql, object param = null);
+        T ExecuteScalar<T>(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query and maps the result to a strongly typed list.
@@ -56,7 +56,7 @@ namespace SftpScheduler.BLL.Data
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> Query<T>(string sql, object param = null);
+        IEnumerable<T> Query<T>(string sql, object? param = null);
 
         /// <summary>
         /// Rolls back the current transaction (if supported by the DbContext)
@@ -71,7 +71,7 @@ namespace SftpScheduler.BLL.Data
         /// <summary>
         /// Gets the transaction created with BeginTransaction.
         /// </summary>
-        public IDbTransaction Transaction { get; protected set; }
+        public IDbTransaction? Transaction { get; protected set; }
 
         /// <summary>
         /// Begins a new transaction (if supported by the DbContext)
@@ -100,14 +100,14 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
-        public abstract void ExecuteNonQuery(string sql, object param = null);
+        public abstract void ExecuteNonQuery(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query against the database
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        public abstract T ExecuteScalar<T>(string sql, object param = null);
+        public abstract T ExecuteScalar<T>(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query and maps the result to a strongly typed list.
@@ -116,7 +116,7 @@ namespace SftpScheduler.BLL.Data
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public abstract IEnumerable<T> Query<T>(string sql, object param = null);
+        public abstract IEnumerable<T> Query<T>(string sql, object? param = null);
 
         /// <summary>
         /// Rolls back the current transaction (if supported by the DbContext)

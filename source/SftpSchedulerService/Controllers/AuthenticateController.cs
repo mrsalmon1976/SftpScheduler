@@ -15,7 +15,7 @@ namespace SftpSchedulerService.Controllers
 {
     //[Route("api/[controller]")]
     //[ApiController]
-    public class AuthenticateController : Controller//Base
+    public class AuthenticateController : CustomBaseController//Base
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -58,8 +58,11 @@ namespace SftpSchedulerService.Controllers
                 string token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             //Response.Cookies.Append("token", token);
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-            //identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Username));
-            //identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.UserName));
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+            // TODO: fix claims!
+            identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.Admin));
+            identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.User));
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(

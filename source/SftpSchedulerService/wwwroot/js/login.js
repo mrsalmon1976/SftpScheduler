@@ -25,8 +25,6 @@ createApp({
         }
     },
     mounted: function () {
-        alert('mounted');
         this.isLoading = false;
-        alert(this.isLoading);
     }
 }).mount('#app-login')

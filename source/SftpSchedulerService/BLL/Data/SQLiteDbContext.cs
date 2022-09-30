@@ -67,7 +67,7 @@ namespace SftpScheduler.BLL.Data
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public override IEnumerable<T> Query<T>(string sql, object param = null)
+        public override IEnumerable<T> Query<T>(string sql, object? param = null)
         {
             return _conn.Query<T>(sql, param, this.Transaction);
         }
@@ -91,7 +91,7 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        public override T ExecuteScalar<T>(string sql, object param = null)
+        public override T ExecuteScalar<T>(string sql, object? param = null)
         {
             return _conn.ExecuteScalar<T>(sql, param, this.Transaction);
         }
@@ -101,7 +101,7 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
-        public override void ExecuteNonQuery(string sql, object param)
+        public override void ExecuteNonQuery(string sql, object? param = null)
         {
             _conn.Execute(sql, param, this.Transaction);
         }

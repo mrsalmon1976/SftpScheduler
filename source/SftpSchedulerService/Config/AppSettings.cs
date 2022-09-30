@@ -1,13 +1,15 @@
-﻿namespace SftpSchedulerService.Config
+﻿using Microsoft.Extensions.Configuration;
+
+namespace SftpSchedulerService.Config
 {
     public class AppSettings
     {
-        private readonly ConfigurationManager _configurationManager;
+        private readonly IConfiguration _configuration;
         private readonly string _baseDirectory;
 
-        public AppSettings(ConfigurationManager configurationManager, string baseDirectory)
+        public AppSettings(IConfiguration configurationManager, string baseDirectory)
         {
-            this._configurationManager = configurationManager;
+            this._configuration = configurationManager;
             this._baseDirectory = baseDirectory;
         }
 
@@ -15,13 +17,45 @@
         {
             get
             {
-                string dbPath = _configurationManager["AppSettings:DbPath"];
+                string dbPath = _configuration["AppSettings:DbPath"];
                 if (dbPath.StartsWith(".\\") || dbPath.StartsWith("./"))
                 {
                     dbPath = dbPath.Substring(2);
                     dbPath = Path.Combine(_baseDirectory, dbPath);
                 }
                 return dbPath;
+            }
+        }
+
+        public virtual string DbConnectionString
+        {
+            get
+            {
+                return _configuration.GetConnectionString("Default");
+            }
+        }
+
+        public virtual string JwtSecret
+        {
+            get
+            {
+                return _configuration["JWT:Secret"];
+            }
+        }
+
+        public virtual string JwtValidAudience
+        {
+            get
+            {
+                return _configuration["JWT:ValidAudience"];
+            }
+        }
+
+        public virtual string JwtValidIssuer
+        {
+            get
+            {
+                return _configuration["JWT:ValidIssuer"];
             }
         }
 
