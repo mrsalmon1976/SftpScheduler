@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
     [TestFixture]
-    public class CreateJobCommandTests : DbIntegrationTestBase
+    public class CreateJobCommandTests
     {
         [Test]
         public void Execute_ValidJob_ExecutesQuery()
@@ -29,20 +29,23 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         [Test]
         public void Execute_Integration_ExecutesQueryWithoutError()
         {
-            this.CreateDatabase();
-
-            CreateJobCommand createJobCommand = new CreateJobCommand();
-            using (IDbContext dbContext = this.DbContextFactory.GetDbContext())
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
-                string jobName = Guid.NewGuid().ToString();
-                DateTime dtBefore = DateTime.UtcNow;
+                dbIntegrationTestHelper.CreateDatabase();
 
-                JobEntity jobEntity = createJobCommand.Execute(dbContext, jobName);
+                CreateJobCommand createJobCommand = new CreateJobCommand();
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    string jobName = Guid.NewGuid().ToString();
+                    DateTime dtBefore = DateTime.UtcNow;
 
-                Assert.IsNotNull(jobEntity);
-                Assert.AreEqual(jobName, jobEntity.Name);
-                Assert.That(jobEntity.Created, Is.GreaterThanOrEqualTo(dtBefore));
+                    JobEntity jobEntity = createJobCommand.Execute(dbContext, jobName);
 
+                    Assert.IsNotNull(jobEntity);
+                    Assert.AreEqual(jobName, jobEntity.Name);
+                    Assert.That(jobEntity.Created, Is.GreaterThanOrEqualTo(dtBefore));
+
+                }
             }
         }
 

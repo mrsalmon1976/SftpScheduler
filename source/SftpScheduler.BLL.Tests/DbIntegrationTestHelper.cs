@@ -11,10 +11,9 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests
 {
-    public class DbIntegrationTestBase
+    internal class DbIntegrationTestHelper : IDisposable
     {
-        [SetUp]
-        public void DbIntegrationTestBase_SetUp()
+        public DbIntegrationTestHelper()
         {
             this.DbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DbIntegrationTest.db");
             this.DbContextFactory = new DbContextFactory(this.DbPath);
@@ -24,8 +23,7 @@ namespace SftpScheduler.BLL.Tests
             }
         }
 
-        [TearDown]
-        public void SQLiteDbMigratorTests_TearDown()
+        public void Dispose()
         {
             if (File.Exists(this.DbPath))
             {
@@ -33,11 +31,11 @@ namespace SftpScheduler.BLL.Tests
             }
         }
 
-        protected IDbContextFactory DbContextFactory { get; set; }
+        internal IDbContextFactory DbContextFactory { get; set; }
 
-        protected string? DbPath { get; set; }
+        internal string? DbPath { get; set; }
 
-        public virtual void CreateDatabase()
+        internal virtual void CreateDatabase()
         {
             if (String.IsNullOrWhiteSpace(DbPath))
             {
@@ -48,7 +46,7 @@ namespace SftpScheduler.BLL.Tests
             dbMigrator.MigrateDbChanges();
         }
 
-        protected JobEntity CreateJobEntity(IDbContext dbContext)
+        internal JobEntity CreateJobEntity(IDbContext dbContext)
         {
             JobEntity jobEntity = new JobEntity();
             jobEntity.Name = Guid.NewGuid().ToString();
