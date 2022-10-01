@@ -1,4 +1,4 @@
-﻿namespace SftpSchedulerService.BLL.Identity
+﻿namespace SftpScheduler.BLL.Identity
 {
     public static class UserRoles
     {

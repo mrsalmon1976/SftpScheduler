@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace SftpSchedulerService.BLL.Identity
+namespace SftpScheduler.BLL.Identity
 {
     public class SftpSchedulerIdentityDbContext : IdentityDbContext<IdentityUser>
     {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
-using SftpSchedulerService.BLL.Identity;
+using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Tests;
 using System;

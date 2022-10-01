@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 
-namespace SftpSchedulerService.Utilities
+namespace SftpScheduler.BLL.Utility
 {
     public class ResourceUtils
     {
         public virtual string ReadResource(string qualifiedName)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetAssembly(typeof(ResourceUtils));
             string? result = null;
 
             Stream? resourceStream = assembly.GetManifestResourceStream(qualifiedName);

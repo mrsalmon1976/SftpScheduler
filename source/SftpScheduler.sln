@@ -5,7 +5,11 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService", "SftpSchedulerService\SftpSchedulerService.csproj", "{5CF173D5-F40A-46D1-8139-74B33D49DE11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpSchedulerService.Tests", "SftpSchedulerService.Tests\SftpSchedulerService.Tests.csproj", "{7D41A6E1-EE16-459D-BB2C-24D0212E505D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.Tests", "SftpSchedulerService.Tests\SftpSchedulerService.Tests.csproj", "{7D41A6E1-EE16-459D-BB2C-24D0212E505D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpScheduler.BLL", "SftpScheduler.BLL\SftpScheduler.BLL.csproj", "{A60593D4-D343-463D-A75C-0CAB09216AC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpScheduler.BLL.Tests", "SftpScheduler.BLL.Tests\SftpScheduler.BLL.Tests.csproj", "{5760A174-2978-405C-B3BD-D9A689C9A60E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{7D41A6E1-EE16-459D-BB2C-24D0212E505D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D41A6E1-EE16-459D-BB2C-24D0212E505D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D41A6E1-EE16-459D-BB2C-24D0212E505D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A60593D4-D343-463D-A75C-0CAB09216AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60593D4-D343-463D-A75C-0CAB09216AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60593D4-D343-463D-A75C-0CAB09216AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60593D4-D343-463D-A75C-0CAB09216AC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5760A174-2978-405C-B3BD-D9A689C9A60E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5760A174-2978-405C-B3BD-D9A689C9A60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5760A174-2978-405C-B3BD-D9A689C9A60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5760A174-2978-405C-B3BD-D9A689C9A60E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

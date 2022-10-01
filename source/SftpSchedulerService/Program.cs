@@ -1,5 +1,6 @@
 using SftpScheduler.BLL.Data;
 using SftpSchedulerService;
+using SftpScheduler.BLL.Utility;
 using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Utilities;
@@ -27,6 +28,8 @@ builder.Services.AddSingleton<AppSettings>(appSettings);
 builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
 builder.Services.AddSingleton<ResourceUtils>();
 
+builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
+
 // set up 
 var app = builder.Build();
 //app.Environment.ApplicationName = 
@@ -47,7 +50,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 #pragma warning disable CS8604 // Possible null reference argument.
-app.InitialiseDatabase(serviceProvider.GetService<IDbContextFactory>(), serviceProvider.GetService<ResourceUtils>());
+app.InitialiseDatabase(serviceProvider.GetService<IDbMigrator>());
 #pragma warning restore CS8604 // Possible null reference argument.
 app.Run();
 

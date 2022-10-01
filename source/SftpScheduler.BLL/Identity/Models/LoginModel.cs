@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SftpSchedulerService.BLL.Identity.Models
+namespace SftpScheduler.BLL.Identity.Models
 {
     public class LoginModel
     {

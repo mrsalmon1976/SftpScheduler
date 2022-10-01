@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
-using SftpSchedulerService.BLL.Identity;
+using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Config;
 using System.Text;
 

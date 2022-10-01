@@ -1,4 +1,4 @@
-﻿namespace SftpSchedulerService.BLL
+﻿namespace SftpSchedulerService.Models
 {
     public class Response
     {

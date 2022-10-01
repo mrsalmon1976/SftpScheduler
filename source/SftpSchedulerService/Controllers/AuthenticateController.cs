@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SftpSchedulerService.BLL.Identity.Models;
-using SftpSchedulerService.BLL.Identity;
+using SftpScheduler.BLL.Identity.Models;
+using SftpScheduler.BLL.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using SftpSchedulerService.BLL;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using static Dapper.SqlMapper;
+using SftpSchedulerService.Models;
 
 namespace SftpSchedulerService.Controllers
 {
