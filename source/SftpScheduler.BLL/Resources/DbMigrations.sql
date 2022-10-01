@@ -1,4 +1,5 @@
 ﻿CREATE TABLE IF NOT EXISTS Jobs (
 	Id UNIQUEIDENTIFIER PRIMARY KEY,
-	JobName text NOT NULL
+	Name text NOT NULL,
+	Created text NOT NULL
 );
