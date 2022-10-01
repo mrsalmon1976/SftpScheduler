@@ -41,5 +41,20 @@ namespace SftpScheduler.BLL.Tests.Data
             dbMigrator.MigrateDbChanges();
             Assert.IsTrue(File.Exists(_dbPath));
         }
+
+        [TestCase("Jobs")]
+        public void MigrateDbChanges_Integration_TableCreated(string tableName)
+        {
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
+            dbMigrator.MigrateDbChanges();
+
+            using (IDbContext dbContext = dbContextFactory.GetDbContext())
+            {
+                string sql = String.Format("SELECT * from {0} LIMIT 5", tableName);
+                dbContext.ExecuteNonQuery(sql);
+            }
+
+        }
     }
 }
