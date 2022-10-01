@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
+using SftpScheduler.BLL.Command.Job;
 using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility;
 using System;
 using System.Collections.Generic;
@@ -44,6 +46,18 @@ namespace SftpScheduler.BLL.Tests
 
             IDbMigrator dbMigrator = new SQLiteDbMigrator(this.DbContextFactory, new ResourceUtils());
             dbMigrator.MigrateDbChanges();
+        }
+
+        protected JobEntity CreateJobEntity(IDbContext dbContext)
+        {
+            JobEntity jobEntity = new JobEntity();
+            jobEntity.Name = Guid.NewGuid().ToString();
+
+            string sql = @"INSERT INTO Jobs (Id, Name, Created) VALUES (@Id, @Name, @Created)";
+            dbContext.ExecuteNonQuery(sql, jobEntity);
+
+            return jobEntity;
+
         }
     }
 }

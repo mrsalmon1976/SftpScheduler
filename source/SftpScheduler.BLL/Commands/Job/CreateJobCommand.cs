@@ -11,6 +11,7 @@ namespace SftpScheduler.BLL.Command.Job
 {
     public class CreateJobCommand
     {
+
         public CreateJobCommand()
         {
         }
