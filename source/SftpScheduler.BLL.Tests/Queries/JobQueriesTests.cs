@@ -40,17 +40,19 @@ namespace SftpScheduler.BLL.Tests.Queries
 
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
-                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext);
-                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext);
-                    JobEntity jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext);
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
                     JobQueries jobQueries = new JobQueries();
                     JobEntity[] result = jobQueries.GetAll(dbContext).ToArray();
 
-                    Assert.AreEqual(3, result.Length);
-                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id) != null);
-                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity2.Id) != null);
-                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity3.Id) != null);
+                    Assert.That(3, Is.EqualTo(result.Length));
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity2.Id), Is.Not.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity3.Id), Is.Not.Null);
                 }
             }
         }
@@ -82,7 +84,8 @@ namespace SftpScheduler.BLL.Tests.Queries
 
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
-                    JobEntity jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext);
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+                    JobEntity jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
                     JobQueries jobQueries = new JobQueries();
                     JobEntity result = jobQueries.GetById(dbContext, jobEntity.Id);

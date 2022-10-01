@@ -126,6 +126,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             @{
                 RenderMenuItem("menu-dashboard", "Dashboard", "/dashboard", "fa-tachometer-alt");
+                RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fa-server");
                 RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt");
                 RenderMenuItem("menu-users", "Users", "/users", "fa-users", new string[] { UserRoles.Admin });
             }

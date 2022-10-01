@@ -12,13 +12,13 @@ namespace SftpScheduler.BLL.Queries
     {
         public virtual IEnumerable<JobEntity> GetAll(IDbContext dbContext)
         {
-            string sql = @"SELECT * FROM Jobs";
+            string sql = @"SELECT * FROM Job";
             return dbContext.Query<JobEntity>(sql).ToArray();
         }
 
-        public virtual JobEntity GetById(IDbContext dbContext, Guid id)
+        public virtual JobEntity GetById(IDbContext dbContext, int id)
         {
-            string sql = @"SELECT * FROM Jobs WHERE Id = @Id";
+            string sql = @"SELECT * FROM Job WHERE Id = @Id";
             return dbContext.Query<JobEntity>(sql, new { Id = id }).Single();
         }
 

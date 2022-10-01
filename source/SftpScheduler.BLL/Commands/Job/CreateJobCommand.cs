@@ -16,12 +16,13 @@ namespace SftpScheduler.BLL.Command.Job
         {
         }
 
-        public JobEntity Execute(IDbContext dbContext, string name)
+        public JobEntity Execute(IDbContext dbContext, string name, int hostId)
         {
             JobEntity job = new JobEntity();
             job.Name = name;
+            job.HostId = hostId;
 
-            string sql = @"INSERT INTO Jobs (Id, Name, Created) VALUES (@Id, @Name, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Created) VALUES (@Name, @HostId, @Created)";
             dbContext.ExecuteNonQuery(sql, job);
 
             return job;

@@ -42,7 +42,8 @@ namespace SftpScheduler.BLL.Tests.Data
             Assert.IsTrue(File.Exists(_dbPath));
         }
 
-        [TestCase("Jobs")]
+        [TestCase("Job")]
+        [TestCase("Host")]
         public void MigrateDbChanges_Integration_TableCreated(string tableName)
         {
             IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);

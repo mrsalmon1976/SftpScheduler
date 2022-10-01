@@ -12,7 +12,7 @@ createApp({
             this.isLoading = true;
             let payload = { userName: 'test', password: 'test' };
 
-            let res = await axios.post('/authenticate/login', payload);
+            let res = await axios.post('/api/login', payload);
 
             let data = res.data;
             console.log(data);

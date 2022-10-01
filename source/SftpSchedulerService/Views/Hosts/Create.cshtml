@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Hosts - Create New Host";
+
+}
+@section PageActionMenu {
+}
+
+<form class="form-horizontal">
+    <div class="card card-info">
+    <!-- form start -->
+        <div class="card-header">
+            <h3 class="card-title">Host Details</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-group row">
+                <label for="host-name" class="col-sm-2 col-form-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="host-name" placeholder="Name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="host-host" class="col-sm-2 col-form-label">Host</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="host-host" placeholder="sftp.yourhost.com or 192.168.0.1">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="host-port" class="col-sm-2 col-form-label">Port</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="host-port" value="22" placeholder="22">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="host-user" class="col-sm-2 col-form-label">User name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="host-user" placeholder="User name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="host-password" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="host-password" placeholder="">
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-info">Create Host</button>
+                <button type="reset" class="btn btn-default float-right">Cancel</button>
+            </div>
+            <!-- /.card-footer -->
+        </div>
+        <!-- /.card-body -->
+    </div>
+</form>

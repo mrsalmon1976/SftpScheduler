@@ -8,12 +8,21 @@ using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Controllers
 {
-    public class AuthController : CustomBaseController
+    [Authorize]
+    public class HostsController : CustomBaseController
     {
+
         [HttpGet]
-        public ViewResult Login()
+        public ViewResult Index()
         {
-            return this.View("Login");
+            return this.View();
         }
+
+        [HttpGet]
+        public ViewResult Create()
+        {
+            return this.View("Create");
+        }
+
     }
 }

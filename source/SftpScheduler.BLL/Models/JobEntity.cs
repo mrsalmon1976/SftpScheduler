@@ -10,13 +10,15 @@ namespace SftpScheduler.BLL.Models
     {
         public JobEntity()
         {
-            this.Id = Guid.NewGuid();
+            this.Id = 0;
             this.Created = DateTime.UtcNow;
         }
 
-        public virtual Guid Id { get; internal set; }
+        public virtual int Id { get; internal set; }
 
         public virtual string? Name { get; set; }
+
+        public virtual int? HostId { get; set; }
 
         public virtual DateTime Created { get; internal set; }
     }

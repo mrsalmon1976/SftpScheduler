@@ -18,10 +18,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         public void Execute_ValidJob_ExecutesQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            string jobName = Guid.NewGuid().ToString();
+            string jobName = Faker.Lorem.GetFirstWord();
+            int hostId = Faker.RandomNumber.Next();
+
 
             CreateJobCommand createJobCommand = new CreateJobCommand();
-            createJobCommand.Execute(dbContext, jobName);
+            createJobCommand.Execute(dbContext, jobName, hostId);
 
             dbContext.Received(1).ExecuteNonQuery(Arg.Any<string>(), Arg.Any<JobEntity>());
         }
@@ -36,10 +38,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                 CreateJobCommand createJobCommand = new CreateJobCommand();
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
+                    HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
                     string jobName = Guid.NewGuid().ToString();
                     DateTime dtBefore = DateTime.UtcNow;
 
-                    JobEntity jobEntity = createJobCommand.Execute(dbContext, jobName);
+                    JobEntity jobEntity = createJobCommand.Execute(dbContext, jobName, host.Id);
 
                     Assert.IsNotNull(jobEntity);
                     Assert.AreEqual(jobName, jobEntity.Name);

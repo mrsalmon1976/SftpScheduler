@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using SftpScheduler.BLL.Command.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
@@ -46,16 +47,33 @@ namespace SftpScheduler.BLL.Tests
             dbMigrator.MigrateDbChanges();
         }
 
-        internal JobEntity CreateJobEntity(IDbContext dbContext)
+        internal HostEntity CreateHostEntity(IDbContext dbContext)
         {
-            JobEntity jobEntity = new JobEntity();
-            jobEntity.Name = Guid.NewGuid().ToString();
+            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
 
-            string sql = @"INSERT INTO Jobs (Id, Name, Created) VALUES (@Id, @Name, @Created)";
+            string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @Created)";
+            dbContext.ExecuteNonQuery(sql, hostEntity);
+
+            sql = @"select last_insert_rowid()";
+            hostEntity.Id = dbContext.ExecuteScalar<int>(sql);
+
+            return hostEntity;
+
+        }
+
+        internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId)
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(hostId);
+
+            string sql = @"INSERT INTO Job (Name, HostId, Created) VALUES (@Name, @HostId, @Created)";
             dbContext.ExecuteNonQuery(sql, jobEntity);
+
+            sql = @"select last_insert_rowid()";
+            jobEntity.Id = dbContext.ExecuteScalar<int>(sql);
 
             return jobEntity;
 
         }
+
     }
 }
