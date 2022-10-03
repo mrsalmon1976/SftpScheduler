@@ -12,10 +12,6 @@ namespace SftpScheduler.BLL.Command.Job
     public class CreateJobCommand
     {
 
-        public CreateJobCommand()
-        {
-        }
-
         public JobEntity Execute(IDbContext dbContext, string name, int hostId)
         {
             JobEntity job = new JobEntity();

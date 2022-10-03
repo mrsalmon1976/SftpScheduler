@@ -4,6 +4,9 @@ using SftpScheduler.BLL.Utility;
 using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Utilities;
+using SftpSchedulerService.ViewProviders.Hosts;
+using SftpScheduler.BLL.Commands.Host;
+using SftpScheduler.BLL.Validators;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -22,6 +25,9 @@ AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.Base
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
+builder.Services.AddAutoMapper(AutoMapperBootstrapper.Configure);
+
+// custom
 builder.Services.AddIdentity(appSettings);
 
 builder.Services.AddSingleton<AppSettings>(appSettings);
@@ -29,6 +35,10 @@ builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSetting
 builder.Services.AddSingleton<ResourceUtils>();
 
 builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
+
+builder.Services.AddTransient<HostValidator>();
+builder.Services.AddTransient<CreateHostCommand>();
+builder.Services.AddTransient<PostHostCreateProvider>();
 
 // set up 
 var app = builder.Build();
