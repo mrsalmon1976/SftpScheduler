@@ -18,21 +18,21 @@ namespace SftpScheduler.BLL.Tests.Queries
         #region GetAll Tests
 
         [Test]
-        public void GetAll_OnExecute_PerformsQuery()
+        public void GetAllAsync_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContext.Query<JobEntity>(Arg.Any<string>()).Returns(new[] { new JobEntity(), new JobEntity() });
+            dbContext.QueryAsync<JobViewModel>(Arg.Any<string>()).Returns(new[] { new JobViewModel(), new JobViewModel() });
 
             JobQueries jobQueries = new JobQueries();
-            IEnumerable<JobEntity> result = jobQueries.GetAll(dbContext);
+            IEnumerable<JobViewModel> result = jobQueries.GetAllAsync(dbContext).Result;
 
-            dbContext.Received(1).Query<JobEntity>(Arg.Any<string>());
+            dbContext.Received(1).QueryAsync<JobViewModel>(Arg.Any<string>());
             Assert.AreEqual(2, result.Count());
 
         }
 
         [Test]
-        public void GetAll_Integration_ReturnsDbRecords()
+        public void GetAllAsync_Integration_ReturnsDbRecords()
         {
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
@@ -42,12 +42,12 @@ namespace SftpScheduler.BLL.Tests.Queries
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
-                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
-                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
-                    JobEntity jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobViewModel jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobViewModel jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobViewModel jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
                     JobQueries jobQueries = new JobQueries();
-                    JobEntity[] result = jobQueries.GetAll(dbContext).ToArray();
+                    JobViewModel[] result = jobQueries.GetAllAsync(dbContext).Result.ToArray();
 
                     Assert.That(3, Is.EqualTo(result.Length));
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
@@ -62,21 +62,21 @@ namespace SftpScheduler.BLL.Tests.Queries
         #region GetById Tests
 
         [Test]
-        public void GetById_OnExecute_PerformsQuery()
+        public void GetByIdAsync_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            JobEntity jobEntity = new JobEntity();   
-            dbContext.Query<JobEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
+            JobViewModel jobEntity = new JobViewModel();   
+            dbContext.QueryAsync<JobViewModel>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
             
             JobQueries jobQueries = new JobQueries();
-            JobEntity result = jobQueries.GetById(dbContext, jobEntity.Id);
+            JobViewModel result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
-            dbContext.Received(1).Query<JobEntity>(Arg.Any<string>(), Arg.Any<object>());
+            dbContext.Received(1).QuerySingleAsync<JobViewModel>(Arg.Any<string>(), Arg.Any<object>());
 
         }
 
         [Test]
-        public void GetById_Integration_ReturnsDbRecord()
+        public void GetByIdAsync_Integration_ReturnsDbRecord()
         {
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
@@ -85,10 +85,10 @@ namespace SftpScheduler.BLL.Tests.Queries
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
-                    JobEntity jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobViewModel jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
                     JobQueries jobQueries = new JobQueries();
-                    JobEntity result = jobQueries.GetById(dbContext, jobEntity.Id);
+                    JobViewModel result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
                     Assert.AreEqual(result.Id, jobEntity.Id);
                     Assert.AreEqual(result.Name, jobEntity.Name);

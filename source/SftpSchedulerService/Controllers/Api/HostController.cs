@@ -9,7 +9,7 @@ using System.Text;
 using SftpSchedulerService.Config;
 using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.Models;
-using SftpSchedulerService.ViewProviders.Hosts;
+using SftpSchedulerService.ViewProviders.Host;
 
 namespace SftpSchedulerService.Controllers.Api
 {

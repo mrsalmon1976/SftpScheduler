@@ -33,21 +33,21 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        void ExecuteNonQuery(string sql, params IDbDataParameter[] dbParameters);
+        Task<int> ExecuteNonQueryAsync(string sql, params IDbDataParameter[] dbParameters);
 
         /// <summary>
         /// Executes a query against the database using Dapper to substitute model values.
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
-        void ExecuteNonQuery(string sql, object? param = null);
+        Task<int> ExecuteNonQueryAsync(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query against the database
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        T ExecuteScalar<T>(string sql, object? param = null);
+        Task<T> ExecuteScalarAsync<T>(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query and maps the result to a strongly typed list.
@@ -56,7 +56,17 @@ namespace SftpScheduler.BLL.Data
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> Query<T>(string sql, object? param = null);
+        Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null);
+
+        /// <summary>
+        /// Executes a query and maps the result to a strongly typed single object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Task<T> QuerySingleAsync<T>(string sql, object? param = null);
+
 
         /// <summary>
         /// Rolls back the current transaction (if supported by the DbContext)
@@ -93,21 +103,21 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        public abstract void ExecuteNonQuery(string sql, params IDbDataParameter[] dbParameters);
+        public abstract Task<int> ExecuteNonQueryAsync(string sql, params IDbDataParameter[] dbParameters);
 
         /// <summary>
         /// Executes a query against the database using Dapper to substitute model values.
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
-        public abstract void ExecuteNonQuery(string sql, object? param = null);
+        public abstract Task<int> ExecuteNonQueryAsync(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query against the database
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        public abstract T ExecuteScalar<T>(string sql, object? param = null);
+        public abstract Task<T> ExecuteScalarAsync<T>(string sql, object? param = null);
 
         /// <summary>
         /// Executes a query and maps the result to a strongly typed list.
@@ -116,7 +126,17 @@ namespace SftpScheduler.BLL.Data
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public abstract IEnumerable<T> Query<T>(string sql, object? param = null);
+        public abstract Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null);
+
+        /// <summary>
+        /// Executes a query and maps the result to a strongly typed single object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public abstract Task<T> QuerySingleAsync<T>(string sql, object? param = null);
+
 
         /// <summary>
         /// Rolls back the current transaction (if supported by the DbContext)

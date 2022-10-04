@@ -33,7 +33,7 @@ namespace SftpScheduler.BLL.Data
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 string sql = _resourceUtils.ReadResource("SftpScheduler.BLL.Resources.DbMigrations.sql");
-                dbContext.ExecuteNonQuery(sql);
+                dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
             }
         }
     }

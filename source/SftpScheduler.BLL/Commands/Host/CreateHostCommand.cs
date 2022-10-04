@@ -11,7 +11,12 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.Host
 {
-    public class CreateHostCommand
+    public interface ICreateHostCommand
+    {
+        Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity);
+    }
+
+    public class CreateHostCommand : ICreateHostCommand
     {
         private readonly HostValidator _hostValidator;
 
@@ -20,7 +25,7 @@ namespace SftpScheduler.BLL.Commands.Host
             _hostValidator = hostValidator;
         }
 
-        public HostEntity Execute(IDbContext dbContext, HostEntity hostEntity)
+        public virtual async Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity)
         {
             ValidationResult validationResult = _hostValidator.Validate(hostEntity);
             if (!validationResult.IsValid)
@@ -29,10 +34,10 @@ namespace SftpScheduler.BLL.Commands.Host
             }
 
             string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @Created)";
-            dbContext.ExecuteNonQuery(sql, hostEntity);
+            await dbContext.ExecuteNonQueryAsync(sql, hostEntity);
 
             sql = @"select last_insert_rowid()";
-            hostEntity.Id = dbContext.ExecuteScalar<int>(sql);
+            hostEntity.Id = await dbContext.ExecuteScalarAsync<int>(sql);
 
             return hostEntity;
         }

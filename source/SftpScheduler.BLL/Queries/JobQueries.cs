@@ -3,23 +3,21 @@ using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Queries
 {
     public class JobQueries
     {
-        public virtual IEnumerable<JobEntity> GetAll(IDbContext dbContext)
+        public virtual async Task<IEnumerable<JobViewModel>> GetAllAsync(IDbContext dbContext)
         {
             string sql = @"SELECT * FROM Job";
-            return dbContext.Query<JobEntity>(sql).ToArray();
+            return await dbContext.QueryAsync<JobViewModel>(sql);
         }
 
-        public virtual JobEntity GetById(IDbContext dbContext, int id)
+        public virtual async Task<JobViewModel> GetByIdAsync(IDbContext dbContext, int id)
         {
             string sql = @"SELECT * FROM Job WHERE Id = @Id";
-            return dbContext.Query<JobEntity>(sql, new { Id = id }).Single();
+            return await dbContext.QuerySingleAsync<JobViewModel>(sql, new { Id = id });
         }
 
 

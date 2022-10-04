@@ -53,7 +53,7 @@ namespace SftpScheduler.BLL.Tests.Data
             using (IDbContext dbContext = dbContextFactory.GetDbContext())
             {
                 string sql = String.Format("SELECT * from {0} LIMIT 5", tableName);
-                dbContext.ExecuteNonQuery(sql);
+                dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
             }
 
         }

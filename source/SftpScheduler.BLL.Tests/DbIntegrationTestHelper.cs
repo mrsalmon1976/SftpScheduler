@@ -52,24 +52,24 @@ namespace SftpScheduler.BLL.Tests
             HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
 
             string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @Created)";
-            dbContext.ExecuteNonQuery(sql, hostEntity);
+            dbContext.ExecuteNonQueryAsync(sql, hostEntity).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";
-            hostEntity.Id = dbContext.ExecuteScalar<int>(sql);
+            hostEntity.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
 
             return hostEntity;
 
         }
 
-        internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId)
+        internal JobViewModel CreateJobEntity(IDbContext dbContext, int hostId)
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(hostId);
+            JobViewModel jobEntity = EntityTestHelper.CreateJobEntity(hostId);
 
             string sql = @"INSERT INTO Job (Name, HostId, Created) VALUES (@Name, @HostId, @Created)";
-            dbContext.ExecuteNonQuery(sql, jobEntity);
+            dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";
-            jobEntity.Id = dbContext.ExecuteScalar<int>(sql);
+            jobEntity.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
 
             return jobEntity;
 

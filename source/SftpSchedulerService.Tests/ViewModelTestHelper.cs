@@ -4,35 +4,36 @@ using SftpScheduler.BLL.Command.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility;
+using SftpSchedulerService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Tests
+namespace SftpSchedulerService.Tests
 {
-    internal class EntityTestHelper
+    internal class ViewModelTestHelper
     {
 
-        internal static HostEntity CreateHostEntity()
+        internal static HostViewModel CreateHostViewModel()
         {
-            HostEntity hostEntity = new HostEntity();
+            HostViewModel hostEntity = new HostViewModel();
             hostEntity.Name = Faker.Lorem.GetFirstWord();
             hostEntity.Host = Faker.Internet.DomainName();
             hostEntity.Port = Faker.RandomNumber.Next(1, 9999);
-            hostEntity.Username = Faker.Name.First();
+            hostEntity.UserName = Faker.Name.First();
             hostEntity.Password = Guid.NewGuid().ToString();
             return hostEntity;
 
         }
 
-        internal static JobViewModel CreateJobEntity(int hostId)
+        internal static JobViewModel CreateJobViewModel(int hostId)
         {
-            JobViewModel jobEntity = new JobViewModel();
-            jobEntity.Name = Faker.Lorem.GetFirstWord();
-            jobEntity.HostId = hostId;
-            return jobEntity;
+            JobViewModel jobViewModel = new JobViewModel();
+            jobViewModel.Name = Faker.Lorem.GetFirstWord();
+            jobViewModel.HostId = hostId;
+            return jobViewModel;
 
         }
 

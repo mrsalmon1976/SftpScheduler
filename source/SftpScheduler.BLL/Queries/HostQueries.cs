@@ -10,16 +10,16 @@ namespace SftpScheduler.BLL.Queries
 {
     public class HostQueries
     {
-        public virtual IEnumerable<HostEntity> GetAll(IDbContext dbContext)
+        public virtual async Task<IEnumerable<HostEntity>> GetAllAsync(IDbContext dbContext)
         {
             string sql = @"SELECT * FROM Host";
-            return dbContext.Query<HostEntity>(sql).ToArray();
+            return await dbContext.QueryAsync<HostEntity>(sql);
         }
 
-        public virtual HostEntity GetById(IDbContext dbContext, int id)
+        public virtual async Task<HostEntity> GetByIdAsync(IDbContext dbContext, int id)
         {
             string sql = @"SELECT * FROM Host WHERE Id = @Id";
-            return dbContext.Query<HostEntity>(sql, new { Id = id }).Single();
+            return await dbContext.QuerySingleAsync<HostEntity>(sql, new { Id = id });
         }
 
 

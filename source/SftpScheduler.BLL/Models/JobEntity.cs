@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Models
 {
-    public class JobEntity
+    public class JobViewModel
     {
-        public JobEntity()
+        public JobViewModel()
         {
             this.Id = 0;
             this.Created = DateTime.UtcNow;

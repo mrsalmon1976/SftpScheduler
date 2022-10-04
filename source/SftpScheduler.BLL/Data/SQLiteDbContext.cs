@@ -67,9 +67,21 @@ namespace SftpScheduler.BLL.Data
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public override IEnumerable<T> Query<T>(string sql, object? param = null)
+        public override Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null)
         {
-            return _conn.Query<T>(sql, param, this.Transaction);
+            return _conn.QueryAsync<T>(sql, param, this.Transaction);
+        }
+
+        /// <summary>
+        /// Executes a query and maps the result to a strongly typed single object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public override Task<T> QuerySingleAsync<T>(string sql, object? param = null)
+        {
+            return _conn.QuerySingleAsync<T>(sql, param, this.Transaction);
         }
 
         /// <summary>
@@ -77,12 +89,12 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        public override void ExecuteNonQuery(string sql, params IDbDataParameter[] dbParameters)
+        public override Task<int> ExecuteNonQueryAsync(string sql, params IDbDataParameter[] dbParameters)
         {
             using (SQLiteCommand cmd = new SQLiteCommand(sql, _conn))
             {
                 cmd.Parameters.AddRange(dbParameters);
-                cmd.ExecuteNonQuery();
+                return cmd.ExecuteNonQueryAsync();
             }
         }
 
@@ -91,9 +103,9 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        public override T ExecuteScalar<T>(string sql, object? param = null)
+        public override Task<T> ExecuteScalarAsync<T>(string sql, object? param = null)
         {
-            return _conn.ExecuteScalar<T>(sql, param, this.Transaction);
+            return _conn.ExecuteScalarAsync<T>(sql, param, this.Transaction);
         }
 
         /// <summary>
@@ -101,9 +113,9 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
-        public override void ExecuteNonQuery(string sql, object? param = null)
+        public override Task<int> ExecuteNonQueryAsync(string sql, object? param = null)
         {
-            _conn.Execute(sql, param, this.Transaction);
+            return _conn.ExecuteAsync(sql, param, this.Transaction);
         }
 
         /// <summary>

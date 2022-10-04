@@ -1,16 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
-using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Tests
+namespace SftpSchedulerService.Tests
 {
     internal class EntityTestHelper
     {

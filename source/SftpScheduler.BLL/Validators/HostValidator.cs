@@ -10,7 +10,7 @@ namespace SftpScheduler.BLL.Validators
 {
     public class HostValidator
     {
-        public ValidationResult Validate(HostEntity hostEntity)
+        public virtual ValidationResult Validate(HostEntity hostEntity)
         {
             if (hostEntity == null) 
             { 

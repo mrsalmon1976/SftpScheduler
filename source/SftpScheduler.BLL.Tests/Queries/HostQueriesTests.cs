@@ -21,12 +21,12 @@ namespace SftpScheduler.BLL.Tests.Queries
         public void GetAll_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContext.Query<HostEntity>(Arg.Any<string>()).Returns(new[] { new HostEntity(), new HostEntity() });
+            dbContext.QueryAsync<HostEntity>(Arg.Any<string>()).Returns(new[] { new HostEntity(), new HostEntity() });
 
             HostQueries hostQueries = new HostQueries();
-            IEnumerable<HostEntity> result = hostQueries.GetAll(dbContext);
+            IEnumerable<HostEntity> result = hostQueries.GetAllAsync(dbContext).Result;
 
-            dbContext.Received(1).Query<HostEntity>(Arg.Any<string>());
+            dbContext.Received(1).QueryAsync<HostEntity>(Arg.Any<string>());
             Assert.AreEqual(2, result.Count());
 
         }
@@ -45,7 +45,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     HostEntity HostEntity3 = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
                     HostQueries hostQueries = new HostQueries();
-                    HostEntity[] result = hostQueries.GetAll(dbContext).ToArray();
+                    HostEntity[] result = hostQueries.GetAllAsync(dbContext).Result.ToArray();
 
                     Assert.That(3, Is.EqualTo(result.Length));
                     Assert.That(result.SingleOrDefault(x => x.Id == HostEntity1.Id), Is.Not.Null);
@@ -64,12 +64,12 @@ namespace SftpScheduler.BLL.Tests.Queries
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             HostEntity hostEntity = new HostEntity();   
-            dbContext.Query<HostEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { hostEntity });
+            dbContext.QueryAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { hostEntity });
             
             HostQueries hostQueries = new HostQueries();
-            HostEntity result = hostQueries.GetById(dbContext, hostEntity.Id);
+            HostEntity result = hostQueries.GetByIdAsync(dbContext, hostEntity.Id).Result;
 
-            dbContext.Received(1).Query<HostEntity>(Arg.Any<string>(), Arg.Any<object>());
+            dbContext.Received(1).QuerySingleAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>());
 
         }
 
@@ -85,7 +85,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
                     HostQueries hostQueries = new HostQueries();
-                    HostEntity result = hostQueries.GetById(dbContext, hostEntity.Id);
+                    HostEntity result = hostQueries.GetByIdAsync(dbContext, hostEntity.Id).Result;
 
                     Assert.AreEqual(result.Id, hostEntity.Id);
                     Assert.AreEqual(result.Name, hostEntity.Name);

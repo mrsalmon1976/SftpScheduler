@@ -4,7 +4,7 @@ using SftpScheduler.BLL.Utility;
 using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Utilities;
-using SftpSchedulerService.ViewProviders.Hosts;
+using SftpSchedulerService.ViewProviders.Host;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Validators;
 
@@ -37,7 +37,7 @@ builder.Services.AddSingleton<ResourceUtils>();
 builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
 
 builder.Services.AddTransient<HostValidator>();
-builder.Services.AddTransient<CreateHostCommand>();
+builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
 builder.Services.AddTransient<PostHostCreateProvider>();
 
 // set up 
