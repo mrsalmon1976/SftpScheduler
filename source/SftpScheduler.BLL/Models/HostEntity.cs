@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SftpScheduler.BLL.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace SftpScheduler.BLL.Models
         public virtual string? Name { get; set; }
 
         [Required]
+        [Host]
         public virtual string? Host { get; set; }
 
         [Required]
