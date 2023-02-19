@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SftpScheduler.BLL.Queries
 {
-    public class JobQueries
+    public class JobRepository
     {
         public virtual async Task<IEnumerable<JobViewModel>> GetAllAsync(IDbContext dbContext)
         {

@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace SftpSchedulerService.Tests.ViewProviders.Host
 {
     [TestFixture]
-    public class PostHostCreateProviderTests
+    public class HostCreateProviderTests
     {
         [Test]
         public void Execute_OnDataValidationException_ReturnsBadRequest()
@@ -30,8 +30,8 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
-            PostHostCreateProvider postHostCreateProvider = new PostHostCreateProvider(dbContextFactory, mapper, createHostCommand);
-            var result = postHostCreateProvider.Execute(hostViewModel).Result as BadRequestObjectResult;
+            HostCreateProvider hostCreateProvider = new HostCreateProvider(dbContextFactory, mapper, createHostCommand);
+            var result = hostCreateProvider.Execute(hostViewModel).Result as BadRequestObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<ValidationResult>());
@@ -53,8 +53,8 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Returns(hostEntity);
 
-            PostHostCreateProvider postHostCreateProvider = new PostHostCreateProvider(dbContextFactory, mapper, createHostCommand);
-            var result = postHostCreateProvider.Execute(hostViewModel).Result as OkObjectResult;
+            HostCreateProvider hostCreateProvider = new HostCreateProvider(dbContextFactory, mapper, createHostCommand);
+            var result = hostCreateProvider.Execute(hostViewModel).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<HostViewModel>());
@@ -77,8 +77,8 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Returns(hostEntity);
 
-            PostHostCreateProvider postHostCreateProvider = new PostHostCreateProvider(dbContextFactory, mapper, createHostCommand);
-            var result = (OkObjectResult)postHostCreateProvider.Execute(hostViewModel).Result;
+            HostCreateProvider hostCreateProvider = new HostCreateProvider(dbContextFactory, mapper, createHostCommand);
+            var result = (OkObjectResult)hostCreateProvider.Execute(hostViewModel).Result;
             HostViewModel hostViewModelResult = (HostViewModel)result.Value;
 
             Assert.That(hostViewModelResult.Id, Is.EqualTo(hostViewModelExpected.Id));

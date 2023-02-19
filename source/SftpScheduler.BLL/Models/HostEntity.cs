@@ -26,14 +26,11 @@ namespace SftpScheduler.BLL.Models
         public virtual string? Host { get; set; }
 
         [Required]
-        [Range(0, 65353)]
+        [Range(1, 65535)]
         public virtual int? Port { get; set; }
 
-        [Required]
         public virtual string? Username { get; set; }
 
-        [Required]
-        [MinLength(6)]
         public virtual string? Password { get; set; }
 
         public virtual DateTime Created { get; internal set; }

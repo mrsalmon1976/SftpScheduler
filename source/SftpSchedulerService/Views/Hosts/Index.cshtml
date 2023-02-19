@@ -2,14 +2,33 @@
     Layout = "_Layout";
     ViewBag.PageTitle = "Hosts";
 }
+@section Scripts {
+    <script src="~/js/models/host.js"></script>
+    <script src="~/js/pages/host-index.js"></script>
+}
 @section PageActionMenu {
     <ol class="breadcrumb float-sm-right">
         <li class="breadcrumb-item active"><a href="/hosts/create" class="btn btn-primary bg-gradient-primary">Add Host</a></li>
     </ol>
 }
-@section Scripts {
-    <script src="~/js/pages/host-index.js"></script>
-}
 <div id="app-host">
-    <p>This page will show a list of hosts.</p>
+    <div v-if="hosts.length == 0">
+        No hosts have been created.
+    </div>
+    <table v-if="hosts.length > 0" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Host</th>
+                <th style="width: 40px">Jobs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="host in hosts">
+                <td><a :href="'/host/' + host.hashId">{{ host.name }}</a></td>
+                <td>{{ host.host }}</td>
+                <td><span class="badge bg-secondary">0</span></td>
+            </tr>
+         </tbody>
+    </table>
 </div>

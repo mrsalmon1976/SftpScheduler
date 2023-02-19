@@ -10,26 +10,30 @@ using SftpSchedulerService.Config;
 using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.Models;
 using SftpSchedulerService.ViewProviders.Host;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SftpSchedulerService.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HostController : ControllerBase
     {
-        private readonly PostHostCreateProvider _postHostCreateProvider;
+        private readonly HostCreateProvider _hostCreateProvider;
+        private readonly HostFetchAllProvider _hostFetchAllProvider;
 
-        public HostController(PostHostCreateProvider postHostCreateProvider)
+        public HostController(HostCreateProvider hostCreateProvider, HostFetchAllProvider hostFetchAllProvider)
         {
-            _postHostCreateProvider = postHostCreateProvider;
+            _hostCreateProvider = hostCreateProvider;
+            _hostFetchAllProvider = hostFetchAllProvider;
         }
 
         //// GET: api/<ApiAuthController>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return await _hostFetchAllProvider.Execute();
+        }
 
         //// GET api/<ApiAuthController>/5
         //[HttpGet("{id}")]
@@ -42,7 +46,7 @@ namespace SftpSchedulerService.Controllers.Api
         //[Route("api/auth/login")]
         public async Task<IActionResult> Post([FromBody] HostViewModel model)
         {
-            return await _postHostCreateProvider.Execute(model);
+            return await _hostCreateProvider.Execute(model);
         }
 
         //// PUT api/<ApiAuthController>/5

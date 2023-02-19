@@ -8,13 +8,13 @@ using SftpSchedulerService.Models;
 
 namespace SftpSchedulerService.ViewProviders.Host
 {
-    public class PostHostCreateProvider
+    public class HostCreateProvider
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
         private readonly ICreateHostCommand _createHostCommand;
 
-        public PostHostCreateProvider(IDbContextFactory dbContextFactory, IMapper mapper, ICreateHostCommand createHostCommand)
+        public HostCreateProvider(IDbContextFactory dbContextFactory, IMapper mapper, ICreateHostCommand createHostCommand)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;

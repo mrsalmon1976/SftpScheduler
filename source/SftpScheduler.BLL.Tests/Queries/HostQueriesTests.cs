@@ -23,7 +23,7 @@ namespace SftpScheduler.BLL.Tests.Queries
             IDbContext dbContext = Substitute.For<IDbContext>();
             dbContext.QueryAsync<HostEntity>(Arg.Any<string>()).Returns(new[] { new HostEntity(), new HostEntity() });
 
-            HostQueries hostQueries = new HostQueries();
+            HostRepository hostQueries = new HostRepository();
             IEnumerable<HostEntity> result = hostQueries.GetAllAsync(dbContext).Result;
 
             dbContext.Received(1).QueryAsync<HostEntity>(Arg.Any<string>());
@@ -44,7 +44,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     HostEntity HostEntity2 = dbIntegrationTestHelper.CreateHostEntity(dbContext);
                     HostEntity HostEntity3 = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
-                    HostQueries hostQueries = new HostQueries();
+                    HostRepository hostQueries = new HostRepository();
                     HostEntity[] result = hostQueries.GetAllAsync(dbContext).Result.ToArray();
 
                     Assert.That(3, Is.EqualTo(result.Length));
@@ -66,7 +66,7 @@ namespace SftpScheduler.BLL.Tests.Queries
             HostEntity hostEntity = new HostEntity();   
             dbContext.QueryAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { hostEntity });
             
-            HostQueries hostQueries = new HostQueries();
+            HostRepository hostQueries = new HostRepository();
             HostEntity result = hostQueries.GetByIdAsync(dbContext, hostEntity.Id).Result;
 
             dbContext.Received(1).QuerySingleAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>());
@@ -84,7 +84,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
-                    HostQueries hostQueries = new HostQueries();
+                    HostRepository hostQueries = new HostRepository();
                     HostEntity result = hostQueries.GetByIdAsync(dbContext, hostEntity.Id).Result;
 
                     Assert.AreEqual(result.Id, hostEntity.Id);

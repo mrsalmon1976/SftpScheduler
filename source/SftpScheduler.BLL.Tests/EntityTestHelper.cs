@@ -20,7 +20,7 @@ namespace SftpScheduler.BLL.Tests
             HostEntity hostEntity = new HostEntity();
             hostEntity.Name = Faker.Lorem.GetFirstWord();
             hostEntity.Host = Faker.Internet.DomainName();
-            hostEntity.Port = Faker.RandomNumber.Next(1, 9999);
+            hostEntity.Port = Faker.RandomNumber.Next(1, 65535);
             hostEntity.Username = Faker.Name.First();
             hostEntity.Password = Guid.NewGuid().ToString();
             return hostEntity;

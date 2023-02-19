@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Queries
 {
-    public class HostQueries
+    public class HostRepository
     {
-        public virtual async Task<IEnumerable<HostEntity>> GetAllAsync(IDbContext dbContext)
+        public virtual Task<IEnumerable<HostEntity>> GetAllAsync(IDbContext dbContext)
         {
             string sql = @"SELECT * FROM Host";
-            return await dbContext.QueryAsync<HostEntity>(sql);
+            return dbContext.QueryAsync<HostEntity>(sql);
         }
 
         public virtual async Task<HostEntity> GetByIdAsync(IDbContext dbContext, int id)

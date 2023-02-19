@@ -48,39 +48,13 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [TestCase(-1)]
-        [TestCase(65354)]
+        [TestCase(0)]
+        [TestCase(65536)]
         [TestCase(101010)]
         public void Validate_InValidObjectWithInvalidPort_ExceptionThrown(int port)
         {
             HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
             hostEntity.Port = port;
-            HostValidator hostValidator = new HostValidator();
-            var validationResult = hostValidator.Validate(hostEntity);
-            Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
-        }
-
-        [TestCase(null)]
-        [TestCase("")]
-        [TestCase("    ")]
-        public void Validate_InValidObjectWithNoUsername_ExceptionThrown(string userName)
-        {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Username = userName;
-            HostValidator hostValidator = new HostValidator();
-            var validationResult = hostValidator.Validate(hostEntity);
-            Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
-        }
-
-        [TestCase(null)]
-        [TestCase("")]
-        [TestCase("   ")]
-        [TestCase("12345")]
-        public void Validate_InValidObjectWithInvalidPassword_ExceptionThrown(string password)
-        {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Password = password;
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -96,7 +70,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(5));
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(3));
         }
 
     }

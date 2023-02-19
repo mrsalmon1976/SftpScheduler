@@ -7,6 +7,7 @@ using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewProviders.Host;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.BLL.Queries;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -38,7 +39,9 @@ builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
 
 builder.Services.AddTransient<HostValidator>();
 builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
-builder.Services.AddTransient<PostHostCreateProvider>();
+builder.Services.AddTransient<HostRepository>();
+builder.Services.AddTransient<HostCreateProvider>();
+builder.Services.AddTransient<HostFetchAllProvider>();
 
 // set up 
 var app = builder.Build();

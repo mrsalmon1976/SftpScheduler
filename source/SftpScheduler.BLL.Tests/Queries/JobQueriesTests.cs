@@ -23,7 +23,7 @@ namespace SftpScheduler.BLL.Tests.Queries
             IDbContext dbContext = Substitute.For<IDbContext>();
             dbContext.QueryAsync<JobViewModel>(Arg.Any<string>()).Returns(new[] { new JobViewModel(), new JobViewModel() });
 
-            JobQueries jobQueries = new JobQueries();
+            JobRepository jobQueries = new JobRepository();
             IEnumerable<JobViewModel> result = jobQueries.GetAllAsync(dbContext).Result;
 
             dbContext.Received(1).QueryAsync<JobViewModel>(Arg.Any<string>());
@@ -46,7 +46,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     JobViewModel jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
                     JobViewModel jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
-                    JobQueries jobQueries = new JobQueries();
+                    JobRepository jobQueries = new JobRepository();
                     JobViewModel[] result = jobQueries.GetAllAsync(dbContext).Result.ToArray();
 
                     Assert.That(3, Is.EqualTo(result.Length));
@@ -68,7 +68,7 @@ namespace SftpScheduler.BLL.Tests.Queries
             JobViewModel jobEntity = new JobViewModel();   
             dbContext.QueryAsync<JobViewModel>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
             
-            JobQueries jobQueries = new JobQueries();
+            JobRepository jobQueries = new JobRepository();
             JobViewModel result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
             dbContext.Received(1).QuerySingleAsync<JobViewModel>(Arg.Any<string>(), Arg.Any<object>());
@@ -87,7 +87,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
                     JobViewModel jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
-                    JobQueries jobQueries = new JobQueries();
+                    JobRepository jobQueries = new JobRepository();
                     JobViewModel result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
                     Assert.AreEqual(result.Id, jobEntity.Id);
