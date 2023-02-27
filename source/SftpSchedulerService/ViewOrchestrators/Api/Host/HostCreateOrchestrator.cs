@@ -6,15 +6,15 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Models;
 
-namespace SftpSchedulerService.ViewProviders.Host
+namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
-    public class HostCreateProvider
+    public class HostCreateOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
         private readonly ICreateHostCommand _createHostCommand;
 
-        public HostCreateProvider(IDbContextFactory dbContextFactory, IMapper mapper, ICreateHostCommand createHostCommand)
+        public HostCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, ICreateHostCommand createHostCommand)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;

@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,11 +14,16 @@ namespace SftpSchedulerService.Controllers
     public class CustomBaseController : Controller
     {
 
-        public string Version
+        public string? Version
         {
             get
             {
-                return "0.0.1";
+                if (Debugger.IsAttached)
+                {
+                    return DateTime.Now.ToString("yyyyMMddHHmmssttt");
+                }
+
+                return Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString(3);
             }
         }
 

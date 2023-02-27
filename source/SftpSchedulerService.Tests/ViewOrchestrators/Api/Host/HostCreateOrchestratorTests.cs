@@ -8,17 +8,17 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models;
-using SftpSchedulerService.ViewProviders.Host;
+using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Tests.ViewProviders.Host
+namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 {
     [TestFixture]
-    public class HostCreateProviderTests
+    public class HostCreateOrchestratorTests
     {
         [Test]
         public void Execute_OnDataValidationException_ReturnsBadRequest()
@@ -30,8 +30,8 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
-            HostCreateProvider hostCreateProvider = new HostCreateProvider(dbContextFactory, mapper, createHostCommand);
-            var result = hostCreateProvider.Execute(hostViewModel).Result as BadRequestObjectResult;
+            HostCreateOrchestrator hostCreateOrchestrator = new HostCreateOrchestrator(dbContextFactory, mapper, createHostCommand);
+            var result = hostCreateOrchestrator.Execute(hostViewModel).Result as BadRequestObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<ValidationResult>());
@@ -53,8 +53,8 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Returns(hostEntity);
 
-            HostCreateProvider hostCreateProvider = new HostCreateProvider(dbContextFactory, mapper, createHostCommand);
-            var result = hostCreateProvider.Execute(hostViewModel).Result as OkObjectResult;
+            HostCreateOrchestrator hostCreateOrchestrator = new HostCreateOrchestrator(dbContextFactory, mapper, createHostCommand);
+            var result = hostCreateOrchestrator.Execute(hostViewModel).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<HostViewModel>());
@@ -77,8 +77,8 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Returns(hostEntity);
 
-            HostCreateProvider hostCreateProvider = new HostCreateProvider(dbContextFactory, mapper, createHostCommand);
-            var result = (OkObjectResult)hostCreateProvider.Execute(hostViewModel).Result;
+            HostCreateOrchestrator hostCreateOrchestrator = new HostCreateOrchestrator(dbContextFactory, mapper, createHostCommand);
+            var result = (OkObjectResult)hostCreateOrchestrator.Execute(hostViewModel).Result;
             HostViewModel hostViewModelResult = (HostViewModel)result.Value;
 
             Assert.That(hostViewModelResult.Id, Is.EqualTo(hostViewModelExpected.Id));

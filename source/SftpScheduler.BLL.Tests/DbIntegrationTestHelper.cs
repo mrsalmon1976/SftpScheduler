@@ -61,9 +61,9 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal JobViewModel CreateJobEntity(IDbContext dbContext, int hostId)
+        internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId)
         {
-            JobViewModel jobEntity = EntityTestHelper.CreateJobEntity(hostId);
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(hostId);
 
             string sql = @"INSERT INTO Job (Name, HostId, Created) VALUES (@Name, @HostId, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();

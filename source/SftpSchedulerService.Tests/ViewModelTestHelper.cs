@@ -28,9 +28,9 @@ namespace SftpSchedulerService.Tests
 
         }
 
-        internal static JobViewModel CreateJobViewModel(int hostId)
+        internal static JobEntity CreateJobViewModel(int hostId)
         {
-            JobViewModel jobViewModel = new JobViewModel();
+            JobEntity jobViewModel = new JobEntity();
             jobViewModel.Name = Faker.Lorem.GetFirstWord();
             jobViewModel.HostId = hostId;
             return jobViewModel;

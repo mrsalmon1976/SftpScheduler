@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Tests.Commands.Job
+namespace SftpScheduler.BLL.Tests.Commands.Host
 {
     [TestFixture]
     public class CreateHostCommandTests

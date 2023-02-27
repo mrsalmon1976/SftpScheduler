@@ -26,7 +26,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             CreateJobCommand createJobCommand = new CreateJobCommand();
             createJobCommand.ExecuteAsync(dbContext, jobName, hostId).GetAwaiter().GetResult();
 
-            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<JobViewModel>());
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<JobEntity>());
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                     string jobName = Guid.NewGuid().ToString();
                     DateTime dtBefore = DateTime.UtcNow;
 
-                    JobViewModel jobEntity = createJobCommand.ExecuteAsync(dbContext, jobName, host.Id).GetAwaiter().GetResult();
+                    JobEntity jobEntity = createJobCommand.ExecuteAsync(dbContext, jobName, host.Id).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(jobEntity);
                     Assert.AreEqual(jobName, jobEntity.Name);

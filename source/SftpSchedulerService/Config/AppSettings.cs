@@ -23,7 +23,7 @@ namespace SftpSchedulerService.Config
                     dbPath = dbPath.Substring(2);
                     dbPath = Path.Combine(_baseDirectory, dbPath);
                 }
-                return dbPath;
+                return dbPath.Replace("{AppDir}", _baseDirectory); ;
             }
         }
 
@@ -31,7 +31,8 @@ namespace SftpSchedulerService.Config
         {
             get
             {
-                return _configuration.GetConnectionString("Default");
+                string connString = _configuration.GetConnectionString("Default");
+                return connString.Replace("{AppDir}", _baseDirectory);
             }
         }
 

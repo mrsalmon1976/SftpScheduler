@@ -6,7 +6,7 @@ namespace SftpSchedulerService.Utilities
 {
     public class AuthUtils
     {
-        public bool UserHasRole(HttpContext httpContext, string role)
+        public virtual bool UserHasRole(HttpContext httpContext, string role)
         {
             var user = httpContext.User;
             if (user == null)
@@ -17,7 +17,7 @@ namespace SftpSchedulerService.Utilities
             return user.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == role);
         }
 
-        public bool UserHasAtLeastOneRole(HttpContext httpContext, string[] roles)
+        public virtual bool UserHasAtLeastOneRole(HttpContext httpContext, string[] roles)
         {
             var user = httpContext.User;
             if (user == null)

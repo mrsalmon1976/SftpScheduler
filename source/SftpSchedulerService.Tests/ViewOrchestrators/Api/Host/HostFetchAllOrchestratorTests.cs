@@ -9,17 +9,17 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Queries;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models;
-using SftpSchedulerService.ViewProviders.Host;
+using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Tests.ViewProviders.Host
+namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 {
     [TestFixture]
-    public class HostFetchAllProviderTests
+    public class HostFetchAllOrchestratorTests
     {
         [Test]
         public void Execute_OnSave_ReturnsOk()
@@ -35,7 +35,7 @@ namespace SftpSchedulerService.Tests.ViewProviders.Host
             mapper.Map<HostEntity[], HostViewModel[]>(Arg.Any<HostEntity[]>()).Returns(hostViewModels);
 
 
-            HostFetchAllProvider hostFetchAllProvider = new HostFetchAllProvider(dbContextFactory, mapper, hostRepo);
+            HostFetchAllOrchestrator hostFetchAllProvider = new HostFetchAllOrchestrator(dbContextFactory, mapper, hostRepo);
             var result = hostFetchAllProvider.Execute().Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);

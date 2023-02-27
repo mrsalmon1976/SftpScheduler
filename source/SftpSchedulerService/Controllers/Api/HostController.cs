@@ -9,8 +9,8 @@ using System.Text;
 using SftpSchedulerService.Config;
 using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.Models;
-using SftpSchedulerService.ViewProviders.Host;
 using Microsoft.AspNetCore.Authorization;
+using SftpSchedulerService.ViewOrchestrators.Api.Host;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -19,10 +19,10 @@ namespace SftpSchedulerService.Controllers.Api
     [Authorize]
     public class HostController : ControllerBase
     {
-        private readonly HostCreateProvider _hostCreateProvider;
-        private readonly HostFetchAllProvider _hostFetchAllProvider;
+        private readonly HostCreateOrchestrator _hostCreateProvider;
+        private readonly HostFetchAllOrchestrator _hostFetchAllProvider;
 
-        public HostController(HostCreateProvider hostCreateProvider, HostFetchAllProvider hostFetchAllProvider)
+        public HostController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider)
         {
             _hostCreateProvider = hostCreateProvider;
             _hostFetchAllProvider = hostFetchAllProvider;

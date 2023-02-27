@@ -7,15 +7,15 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Queries;
 using SftpSchedulerService.Models;
 
-namespace SftpSchedulerService.ViewProviders.Host
+namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
-    public class HostFetchAllProvider
+    public class HostFetchAllOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
         private readonly HostRepository _hostRepository;
 
-        public HostFetchAllProvider(IDbContextFactory dbContextFactory, IMapper mapper, HostRepository hostRepository)
+        public HostFetchAllOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, HostRepository hostRepository)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;

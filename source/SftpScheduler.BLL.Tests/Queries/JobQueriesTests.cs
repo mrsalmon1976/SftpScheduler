@@ -21,12 +21,12 @@ namespace SftpScheduler.BLL.Tests.Queries
         public void GetAllAsync_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContext.QueryAsync<JobViewModel>(Arg.Any<string>()).Returns(new[] { new JobViewModel(), new JobViewModel() });
+            dbContext.QueryAsync<JobEntity>(Arg.Any<string>()).Returns(new[] { new JobEntity(), new JobEntity() });
 
             JobRepository jobQueries = new JobRepository();
-            IEnumerable<JobViewModel> result = jobQueries.GetAllAsync(dbContext).Result;
+            IEnumerable<JobEntity> result = jobQueries.GetAllAsync(dbContext).Result;
 
-            dbContext.Received(1).QueryAsync<JobViewModel>(Arg.Any<string>());
+            dbContext.Received(1).QueryAsync<JobEntity>(Arg.Any<string>());
             Assert.AreEqual(2, result.Count());
 
         }
@@ -42,12 +42,12 @@ namespace SftpScheduler.BLL.Tests.Queries
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
-                    JobViewModel jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
-                    JobViewModel jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
-                    JobViewModel jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
                     JobRepository jobQueries = new JobRepository();
-                    JobViewModel[] result = jobQueries.GetAllAsync(dbContext).Result.ToArray();
+                    JobEntity[] result = jobQueries.GetAllAsync(dbContext).Result.ToArray();
 
                     Assert.That(3, Is.EqualTo(result.Length));
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
@@ -65,13 +65,13 @@ namespace SftpScheduler.BLL.Tests.Queries
         public void GetByIdAsync_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            JobViewModel jobEntity = new JobViewModel();   
-            dbContext.QueryAsync<JobViewModel>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
+            JobEntity jobEntity = new JobEntity();   
+            dbContext.QueryAsync<JobEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
             
             JobRepository jobQueries = new JobRepository();
-            JobViewModel result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
+            JobEntity result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
-            dbContext.Received(1).QuerySingleAsync<JobViewModel>(Arg.Any<string>(), Arg.Any<object>());
+            dbContext.Received(1).QuerySingleAsync<JobEntity>(Arg.Any<string>(), Arg.Any<object>());
 
         }
 
@@ -85,10 +85,10 @@ namespace SftpScheduler.BLL.Tests.Queries
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
-                    JobViewModel jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
 
                     JobRepository jobQueries = new JobRepository();
-                    JobViewModel result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
+                    JobEntity result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
                     Assert.AreEqual(result.Id, jobEntity.Id);
                     Assert.AreEqual(result.Name, jobEntity.Name);

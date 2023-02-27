@@ -44,6 +44,13 @@ namespace SftpScheduler.BLL.Tests.Data
 
         [TestCase("Job")]
         [TestCase("Host")]
+        [TestCase("AspNetRoleClaims")]
+        [TestCase("AspNetRoles")]
+        [TestCase("AspNetUsers")]
+        [TestCase("AspNetUserClaims")]
+        [TestCase("AspNetUserLogins")]
+        [TestCase("AspNetUserRoles")]
+        [TestCase("AspNetUserTokens")]
         public void MigrateDbChanges_Integration_TableCreated(string tableName)
         {
             IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
@@ -57,5 +64,6 @@ namespace SftpScheduler.BLL.Tests.Data
             }
 
         }
+
     }
 }

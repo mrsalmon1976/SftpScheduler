@@ -12,9 +12,9 @@ namespace SftpScheduler.BLL.Command.Job
     public class CreateJobCommand
     {
 
-        public async Task<JobViewModel> ExecuteAsync(IDbContext dbContext, string name, int hostId)
+        public async Task<JobEntity> ExecuteAsync(IDbContext dbContext, string name, int hostId)
         {
-            JobViewModel job = new JobViewModel();
+            JobEntity job = new JobEntity();
             job.Name = name;
             job.HostId = hostId;
 

@@ -22,6 +22,16 @@ namespace SftpSchedulerService.BootStrapping
                 .AddEntityFrameworkStores<SftpSchedulerIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 5;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
             // Adding Authentication
             services.AddAuthentication(options =>
             {
@@ -47,7 +57,7 @@ namespace SftpSchedulerService.BootStrapping
                 {
                     options.SaveToken = true;
                     options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,

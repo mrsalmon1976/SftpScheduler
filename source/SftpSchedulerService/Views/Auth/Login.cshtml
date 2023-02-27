@@ -26,7 +26,7 @@
 
       <form method="post" action="/auth/login">
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email">
+          <input v-model="userName" type="text" class="form-control" placeholder="User name">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password">
+          <input v-model="password" type="password" class="form-control" placeholder="Password">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -76,7 +76,7 @@
 <script src="~/plugins/axios/axios.min.js"></script>
 <!-- AdminLTE App -->
 <script src="~/js/adminlte/adminlte.min.js"></script>
-<script src="~/js/pages/login.js"></script>
-
+<script src="~/js/common.js?@ViewBag.Version"></script>
+<script src="~/js/pages/login.js?@ViewBag.Version"></script>
 </body>
 </html>

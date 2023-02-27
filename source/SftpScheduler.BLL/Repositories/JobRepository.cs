@@ -8,16 +8,16 @@ namespace SftpScheduler.BLL.Queries
 {
     public class JobRepository
     {
-        public virtual async Task<IEnumerable<JobViewModel>> GetAllAsync(IDbContext dbContext)
+        public virtual async Task<IEnumerable<JobEntity>> GetAllAsync(IDbContext dbContext)
         {
             string sql = @"SELECT * FROM Job";
-            return await dbContext.QueryAsync<JobViewModel>(sql);
+            return await dbContext.QueryAsync<JobEntity>(sql);
         }
 
-        public virtual async Task<JobViewModel> GetByIdAsync(IDbContext dbContext, int id)
+        public virtual async Task<JobEntity> GetByIdAsync(IDbContext dbContext, int id)
         {
             string sql = @"SELECT * FROM Job WHERE Id = @Id";
-            return await dbContext.QuerySingleAsync<JobViewModel>(sql, new { Id = id });
+            return await dbContext.QuerySingleAsync<JobEntity>(sql, new { Id = id });
         }
 
 
