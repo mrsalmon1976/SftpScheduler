@@ -11,7 +11,7 @@ createApp({
         async loadHosts() {
             this.isLoading = true;
 
-            let result = await axios.get('/api/host')
+            let result = await axios.get('/api/hosts')
                 .catch(err => {
                     UiHelpers.showErrorToast('Error', '', err.message);
                     this.isLoading = false;

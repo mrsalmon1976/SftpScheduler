@@ -18,7 +18,7 @@ createApp({
                 return;
             }
 
-            axios.post('/api/host', this.host)
+            axios.post('/api/hosts', this.host)
 
                 .then(response => {
                     window.location.href = '/hosts';

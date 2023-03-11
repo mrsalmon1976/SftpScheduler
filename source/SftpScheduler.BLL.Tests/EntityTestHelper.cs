@@ -27,11 +27,12 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal static JobEntity CreateJobEntity(int hostId)
+        internal static JobEntity CreateJobEntity()
         {
             JobEntity jobEntity = new JobEntity();
             jobEntity.Name = Faker.Lorem.GetFirstWord();
-            jobEntity.HostId = hostId;
+            jobEntity.HostId = Faker.RandomNumber.Next(1, 100);
+            jobEntity.Schedule = "* * * * *";
             return jobEntity;
 
         }

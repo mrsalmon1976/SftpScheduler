@@ -5,65 +5,47 @@
 }
 @section PageActionMenu {
 }
-
-<form class="form-horizontal">
-    <div class="card card-info">
-    <!-- form start -->
-    <div class="card-header">
-        <h3 class="card-title">Server Details</h3>
-    </div>
-        <div class="card-body">
-            <div class="form-group row">
-                <label for="job-name" class="col-sm-2 col-form-label">Name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="job-name" placeholder="Name">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="job-host" class="col-sm-2 col-form-label">Host</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="job-host" placeholder="sftp.yourhost.com or 192.168.0.1">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="job-port" class="col-sm-2 col-form-label">Port</label>
-                <div class="col-sm-10">
-                    <input type="number" class="form-control" id="job-port" value="22" placeholder="22">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="job-user" class="col-sm-2 col-form-label">User name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="job-user" placeholder="User name">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="job-password" class="col-sm-2 col-form-label">Password</label>
-                <div class="col-sm-10">
-                    <input type="password" class="form-control" id="job-password" placeholder="">
-                </div>
-            </div>
-        </div>
-        <!-- /.card-body -->
-    </div>
+@section Scripts {
+    <script src="~/js/models/host.js"></script>
+    <script src="~/js/pages/job/form.js"></script>
+}
+<div id="app-job">
+    <form class="form-horizontal">
         <div class="card card-info">
-            <!-- form start -->
             <div class="card-header">
-                <h3 class="card-title">Schedule</h3>
+                <h3 class="card-title">Job Details</h3>
             </div>
             <div class="card-body">
                 <div class="form-group row">
-                    <label for="job-schedule-type" class="col-sm-2 col-form-label">Schedule Type</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="job-schedule-type" placeholder="Name">
+                    <label for="job-name" class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="job-name" placeholder="Name">
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label for="job-host" class="col-sm-2 col-form-label">Host</label>
+                    <div class="col-sm-4">
+                        <select v-model="host" class="form-control" id="job-host">
+                            <option id="{{ h.id }}" v-for="h in allHosts">{{ h.name }}</option>
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="job-schedule" class="col-sm-2 col-form-label">Schedule</label>
+                    <div class="col-sm-4">
+                        <input v-model="schedule" type="text" class="form-control" id="job-schedule" placeholder="? ? ? ? ? ?" autocomplete="false">
+                    </div>
+                    <div class="col-sm-6">
+                        <div v-if="schedule != ''" class="alert inform-alert" :class="{ 'alert-success': isScheduleValid, 'alert-danger': !isScheduleValid }">{{scheduleInWords}}</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">Create Job</button>
+                    <button type="reset" class="btn btn-default float-right">Cancel</button>
+                </div>
+
             </div>
-            <!-- /.card-body -->
-            <div class="card-footer">
-                <button type="submit" class="btn btn-info">Create Job</button>
-                <button type="submit" class="btn btn-default float-right">Cancel</button>
-            </div>
-            <!-- /.card-footer -->
         </div>
     </form>
+</div>

@@ -1,0 +1,8 @@
+.inform-alert {
+    padding: 0.3rem 0.75rem;
+}
+@media screen and (max-width: 576px) {
+    .inform-alert {
+        margin-top: 10px;
+    }
+}

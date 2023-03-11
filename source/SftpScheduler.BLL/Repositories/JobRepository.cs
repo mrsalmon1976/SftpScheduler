@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SftpScheduler.BLL.Queries
+namespace SftpScheduler.BLL.Repositories
 {
     public class JobRepository
     {

@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="CronExpressionDescriptor" Version="2.19.0" />
     <PackageReference Include="Hashids.net" Version="1.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
@@ -25,10 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Job\" />
     <Folder Include="Pages\" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\css\custom.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\css\adminlte\adminlte.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

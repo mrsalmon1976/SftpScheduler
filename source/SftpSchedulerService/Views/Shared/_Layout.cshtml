@@ -6,7 +6,7 @@
     {
         var httpContext = ViewContext.HttpContext;
         AuthUtils authUtils = new AuthUtils();
-        if (!authUtils.UserHasAtLeastOneRole(httpContext, (roles ?? new string[] { UserRoles.User })))
+        if (roles == null || !authUtils.UserHasAtLeastOneRole(httpContext, roles))
         {
             return;
         }
@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
   -->
   <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
+    <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
   <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!--
     <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
@@ -126,8 +127,8 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             @{
                 RenderMenuItem("menu-dashboard", "Dashboard", "/dashboard", "fa-tachometer-alt");
-                RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fa-server");
-                RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt");
+                RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fa-server", new string[] { UserRoles.Admin });
+                        RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt", new string[] { UserRoles.Admin });
                 RenderMenuItem("menu-users", "Users", "/users", "fa-users", new string[] { UserRoles.Admin });
             }
         </ul>
@@ -199,11 +200,7 @@
 <script src="~/plugins/vue/vue.global.js"></script>
 <script src="~/plugins/axios/axios.min.js"></script>
 <script src="~/js/adminlte/adminlte.js"></script>
-<script src="~/js/common.js"></script>
-    <!--
-<script src="dist/js/demo.js"></script>
-<script src="dist/js/pages/dashboard.js"></script>
--->
+<script src="~/js/common.js?v=@ViewBag.Version"></script>
 @RenderSection("Scripts", false);
 </body>
 </html>

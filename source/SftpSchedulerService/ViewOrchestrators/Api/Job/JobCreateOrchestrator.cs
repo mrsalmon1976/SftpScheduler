@@ -7,15 +7,15 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpSchedulerService.Models;
 
-namespace SftpSchedulerService.ViewOrchestrators.Api.Host
+namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
-    public class HostFetchAllOrchestrator
+    public class JobCreateOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
         private readonly HostRepository _hostRepository;
 
-        public HostFetchAllOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, HostRepository hostRepository)
+        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, HostRepository hostRepository)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
@@ -30,6 +30,9 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
                 var result = _mapper.Map<HostEntity[], HostViewModel[]>(hostEntities.ToArray());
                 return new OkObjectResult(result);
             }
+
+            //var result = _mapper.Map<HostViewModel>(hostEntity);
+            //return new OkObjectResult(result);
         }
     }
 }

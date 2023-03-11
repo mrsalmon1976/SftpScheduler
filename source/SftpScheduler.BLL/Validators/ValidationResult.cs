@@ -15,6 +15,11 @@ namespace SftpScheduler.BLL.Validators
 
         }
 
+        public ValidationResult(string errorMessage) : this(new string[] { errorMessage })
+        {
+
+        }
+
         public ValidationResult(IEnumerable<string> errorMessages)
         {
             _errorMessages = errorMessages.ToList();

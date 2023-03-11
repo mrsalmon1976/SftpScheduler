@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Queries;
+using SftpScheduler.BLL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

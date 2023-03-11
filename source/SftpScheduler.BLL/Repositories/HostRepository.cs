@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Queries
+namespace SftpScheduler.BLL.Repositories
 {
     public class HostRepository
     {
-        public virtual Task<IEnumerable<HostEntity>> GetAllAsync(IDbContext dbContext)
+        public virtual async Task<IEnumerable<HostEntity>> GetAllAsync(IDbContext dbContext)
         {
             string sql = @"SELECT * FROM Host";
-            return dbContext.QueryAsync<HostEntity>(sql);
+            return await dbContext.QueryAsync<HostEntity>(sql);
         }
 
         public virtual async Task<HostEntity> GetByIdAsync(IDbContext dbContext, int id)

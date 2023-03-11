@@ -17,12 +17,12 @@ namespace SftpSchedulerService.Controllers.Api
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class HostController : ControllerBase
+    public class HostsController : ControllerBase
     {
         private readonly HostCreateOrchestrator _hostCreateProvider;
         private readonly HostFetchAllOrchestrator _hostFetchAllProvider;
 
-        public HostController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider)
+        public HostsController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider)
         {
             _hostCreateProvider = hostCreateProvider;
             _hostFetchAllProvider = hostFetchAllProvider;

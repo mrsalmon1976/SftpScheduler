@@ -6,13 +6,15 @@ using SftpSchedulerService.Config;
 using SftpSchedulerService.Utilities;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Validators;
-using SftpScheduler.BLL.Queries;
+using SftpScheduler.BLL.Repositories;
 using NLog.Web;
 using NLog;
 using Microsoft.AspNetCore.Identity;
 using SftpScheduler.BLL.Command.User;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
+using SftpSchedulerService.ViewOrchestrators.Api.Login;
+using SftpSchedulerService.ViewOrchestrators.Api.Cron;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -58,8 +60,11 @@ try
     builder.Services.AddTransient<CreateUserCommand>();
 
     builder.Services.AddTransient<HostRepository>();
+
+    builder.Services.AddTransient<CronGetScheduleOrchestrator>();
     builder.Services.AddTransient<HostCreateOrchestrator>();
     builder.Services.AddTransient<HostFetchAllOrchestrator>();
+    builder.Services.AddTransient<LoginPostOrchestrator>();
 
     // set up 
     var app = builder.Build();
@@ -92,4 +97,6 @@ finally
     logger.Info("SftpScheduler shutting down");
     NLog.LogManager.Shutdown();
 }
-public partial class Program { }
+public partial class Program 
+{
+}
