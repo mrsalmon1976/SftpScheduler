@@ -28,8 +28,8 @@ namespace SftpScheduler.BLL.Tests.Validators
             hostRepository.GetByIdAsync(dbContext, jobEntity.HostId.Value).Returns(Task.FromResult(hostEntity));
 
 
-            JobValidator jobValidator = CreateJobValidator(dbContext, hostRepository);
-            var validationResult = jobValidator.Validate(jobEntity);
+            JobValidator jobValidator = CreateJobValidator(hostRepository);
+            var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid);
         }
 
@@ -41,7 +41,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.Name = name;
             JobValidator jobValidator = CreateJobValidator();
-            var validationResult = jobValidator.Validate(jobEntity);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
@@ -52,7 +52,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.HostId = null;
             JobValidator jobValidator = CreateJobValidator();
-            var validationResult = jobValidator.Validate(jobEntity);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
@@ -69,8 +69,8 @@ namespace SftpScheduler.BLL.Tests.Validators
             HostRepository hostRepository = Substitute.For<HostRepository>();
             hostRepository.GetByIdAsync(dbContext, hostId).Returns(Task.FromResult(hostEntity));
 
-            JobValidator jobValidator = CreateJobValidator(dbContext, hostRepository);
-            var validationResult = jobValidator.Validate(jobEntity);
+            JobValidator jobValidator = CreateJobValidator(hostRepository);
+            var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
@@ -82,7 +82,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.Schedule = "invalid";
             JobValidator jobValidator = CreateJobValidator();
-            var validationResult = jobValidator.Validate(jobEntity);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
@@ -94,7 +94,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = new JobEntity();
 
             JobValidator jobValidator = CreateJobValidator();
-            var validationResult = jobValidator.Validate(jobEntity);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(3));
         }
@@ -103,15 +103,14 @@ namespace SftpScheduler.BLL.Tests.Validators
 
         private JobValidator CreateJobValidator()
         {
-            IDbContext dbContext = Substitute.For<IDbContext>();
             HostRepository hostRepository = Substitute.For<HostRepository>();
-            return CreateJobValidator(dbContext, hostRepository);
+            return CreateJobValidator(hostRepository);
 
         }
 
-        private JobValidator CreateJobValidator(IDbContext dbContext, HostRepository hostRepository)
+        private JobValidator CreateJobValidator(HostRepository hostRepository)
         {
-            return new JobValidator(dbContext, hostRepository);
+            return new JobValidator(hostRepository);
 
         }
         #endregion

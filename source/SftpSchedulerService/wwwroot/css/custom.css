@@ -6,3 +6,6 @@
         margin-top: 10px;
     }
 }
+.invalid-feedback {
+    display: inline;
+}

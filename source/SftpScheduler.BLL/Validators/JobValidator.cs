@@ -12,16 +12,14 @@ namespace SftpScheduler.BLL.Validators
 {
     public class JobValidator
     {
-        private readonly IDbContext _dbContext;
         private readonly HostRepository _hostRepository;
 
-        public JobValidator(IDbContext dbContext, HostRepository hostRepository) 
+        public JobValidator(HostRepository hostRepository) 
         {
-            _dbContext = dbContext;
             _hostRepository = hostRepository;
         }
 
-        public virtual ValidationResult Validate(JobEntity jobEntity)
+        public virtual ValidationResult Validate(IDbContext dbContext, JobEntity jobEntity)
         {
             if (jobEntity == null)
             {
@@ -38,7 +36,7 @@ namespace SftpScheduler.BLL.Validators
             }
 
             // check that the host actually exists
-            var hostEntity = _hostRepository.GetByIdAsync(_dbContext, jobEntity.HostId.Value).GetAwaiter().GetResult();
+            var hostEntity = _hostRepository.GetByIdAsync(dbContext, jobEntity.HostId.Value).GetAwaiter().GetResult();
             if (hostEntity == null)
             {
                 return new ValidationResult("Host does not exist");

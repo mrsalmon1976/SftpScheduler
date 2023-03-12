@@ -13,6 +13,8 @@ using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Login;
 using SftpSchedulerService.ViewOrchestrators.Api.Cron;
+using SftpSchedulerService.ViewOrchestrators.Api.Job;
+using SftpScheduler.BLL.Commands.Job;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -53,15 +55,20 @@ try
     builder.Services.AddTransient<IdentityInitialiser>();
 
     builder.Services.AddTransient<HostValidator>();
+    builder.Services.AddTransient<JobValidator>();
 
     builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
+    builder.Services.AddTransient<CreateJobCommand>();
     builder.Services.AddTransient<CreateUserCommand>();
 
     builder.Services.AddTransient<HostRepository>();
+    builder.Services.AddTransient<JobRepository>();
 
     builder.Services.AddTransient<CronGetScheduleOrchestrator>();
     builder.Services.AddTransient<HostCreateOrchestrator>();
     builder.Services.AddTransient<HostFetchAllOrchestrator>();
+    builder.Services.AddTransient<JobCreateOrchestrator>();
+    builder.Services.AddTransient<JobFetchAllOrchestrator>();
     builder.Services.AddTransient<LoginPostOrchestrator>();
 
     // set up 

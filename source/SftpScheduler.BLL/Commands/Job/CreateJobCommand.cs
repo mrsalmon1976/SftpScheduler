@@ -22,7 +22,7 @@ namespace SftpScheduler.BLL.Commands.Job
 
         public virtual async Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity)
         {
-            ValidationResult validationResult = _jobValidator.Validate(jobEntity);
+            ValidationResult validationResult = _jobValidator.Validate(dbContext, jobEntity);
             if (!validationResult.IsValid)
             {
                 throw new DataValidationException("Job details supplied are invalid", validationResult);
