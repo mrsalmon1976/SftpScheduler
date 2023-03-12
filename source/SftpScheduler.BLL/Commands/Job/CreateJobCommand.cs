@@ -28,7 +28,7 @@ namespace SftpScheduler.BLL.Commands.Job
                 throw new DataValidationException("Job details supplied are invalid", validationResult);
             }
 
-            string sql = @"INSERT INTO Job (Name, HostId, Schedule, Created) VALUES (@Name, @HostId, @Schedule, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, LocalPath, RemotePath, Created) VALUES (@Name, @HostId, @Type, @Schedule, @LocalPath, @RemotePath, @Created)";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 
             sql = @"select last_insert_rowid()";

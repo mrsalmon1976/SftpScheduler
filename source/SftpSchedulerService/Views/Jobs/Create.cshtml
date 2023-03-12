@@ -1,4 +1,5 @@
-﻿@{
+﻿@using SftpScheduler.BLL.Data;
+@{
     Layout = "_Layout";
     ViewBag.PageTitle = "Jobs - Create New Job";
 
@@ -34,10 +35,35 @@
                     </div>
                 </div>
                 <div class="form-group row">
+                    <label for="job-type" class="col-sm-2 col-form-label">Type</label>
+                    <div class="col-sm-4">
+                        <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()">
+                            <option value="0"></option>
+                            <option value="1">@JobType.Download</option>
+                            <option value="2">@JobType.Upload</option>
+                        </select>
+                        <span v-if="!job.isTypeValid" class="invalid-feedback">Please select a job type</span>
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="job-schedule" class="col-sm-2 col-form-label">Schedule</label>
                     <div class="col-sm-4">
                         <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="? ? ? ? ? ?" autocomplete="false">
                         <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="job-local-path" class="col-sm-2 col-form-label">Local Path</label>
+                    <div class="col-sm-4">
+                        <input type="text" v-model="job.localPath" @@blur="job.validateLocalPath()" class="form-control" id="job-local-path" placeholder="\\server\share">
+                        <span v-if="!job.isLocalPathValid" class="invalid-feedback">Please provide a valid local path</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="job-remote-path" class="col-sm-2 col-form-label">Remote Path</label>
+                    <div class="col-sm-4">
+                        <input type="text" v-model="job.remotePath" @@blur="job.validateRemotePath()" class="form-control" id="job-remote-path" placeholder="\\server\share">
+                        <span v-if="!job.isRemotePathValid" class="invalid-feedback">Please provide a valid remote path</span>
                     </div>
                 </div>
                 <div class="card-footer">

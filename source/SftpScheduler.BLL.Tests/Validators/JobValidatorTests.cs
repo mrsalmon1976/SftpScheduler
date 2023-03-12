@@ -36,7 +36,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase(null)]
         [TestCase("")]
         [TestCase("    ")]
-        public void Validate_InValidObjectWithNoName_ExceptionThrown(string name)
+        public void Validate_InvalidNoName_ExceptionThrown(string name)
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.Name = name;
@@ -47,7 +47,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
-        public void Validate_InValidObjectWithNoHost_ExceptionThrown()
+        public void Validate_InValidNoHost_ExceptionThrown()
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.HostId = null;
@@ -58,7 +58,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
-        public void Validate_InValidObjectWithHostThatDoesNotExist_ExceptionThrown()
+        public void Validate_InValidHostDoesNotExist_ExceptionThrown()
         {
             int hostId = Faker.RandomNumber.Next(1, 100);
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
@@ -75,9 +75,22 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
 
+        [TestCase(0)]
+        [TestCase(3)]
+        public void Validate_InValidType_ExceptionThrown(int jobType)
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.Type = (JobType)jobType;
+            JobValidator jobValidator = CreateJobValidator();
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("job type must be 1", StringComparison.InvariantCultureIgnoreCase));
+        }
+
 
         [Test]
-        public void Validate_InValidObjectWithInvalidSchedule_ExceptionThrown()
+        public void Validate_InValidSchedule_ExceptionThrown()
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.Schedule = "invalid";
@@ -87,16 +100,40 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
 
+        [Test]
+        public void Validate_InValidLocalPath_ExceptionThrown()
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.LocalPath = "";
+            JobValidator jobValidator = CreateJobValidator();
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("local path is required", StringComparison.InvariantCultureIgnoreCase));
+        }
 
         [Test]
-        public void Validate_InValidObject_ExceptionThrown()
+        public void Validate_InValidRemotePath_ExceptionThrown()
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.RemotePath = "";
+            JobValidator jobValidator = CreateJobValidator();
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("remote path is required", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+
+        [Test]
+        public void Validate_InValidAllFields_ExceptionThrown()
         {
             JobEntity jobEntity = new JobEntity();
 
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(3));
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(6));
         }
 
         #region Private Methods
