@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
-using SftpScheduler.BLL.Data;
+﻿using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility;
 using System;
@@ -66,7 +63,7 @@ namespace SftpScheduler.BLL.Tests
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.HostId = hostId;
 
-            string sql = @"INSERT INTO Job (Name, HostId, Created) VALUES (@Name, @HostId, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Schedule, Created) VALUES (@Name, @HostId, @Schedule, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";

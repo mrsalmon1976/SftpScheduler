@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using SftpScheduler.BLL.Command.User;
-using SftpScheduler.BLL.Data;
+﻿using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Identity;
-using SftpSchedulerService.Utilities;
-using System.Data.SQLite;
-using System.Runtime.CompilerServices;
 
 namespace SftpSchedulerService.BootStrapping
 {

@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using SftpScheduler.BLL.Command.User;
-using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.ViewOrchestrators.Api.Login;

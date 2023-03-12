@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using SftpScheduler.BLL.Command.User;
+using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Validators;
 using System;

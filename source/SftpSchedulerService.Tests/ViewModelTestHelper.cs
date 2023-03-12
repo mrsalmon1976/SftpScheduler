@@ -1,10 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
-using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility;
-using SftpSchedulerService.Models;
+﻿using SftpSchedulerService.Models;
+using SftpSchedulerService.Models.Job;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +23,11 @@ namespace SftpSchedulerService.Tests
 
         }
 
-        internal static JobEntity CreateJobViewModel(int hostId)
+        internal static JobViewModel CreateJobViewModel()
         {
-            JobEntity jobViewModel = new JobEntity();
+            JobViewModel jobViewModel = new JobViewModel();
             jobViewModel.Name = Faker.Lorem.GetFirstWord();
-            jobViewModel.HostId = hostId;
+            jobViewModel.HostId = Faker.RandomNumber.Next(1, 1000);
             return jobViewModel;
 
         }

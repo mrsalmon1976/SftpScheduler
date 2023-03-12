@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
-using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -10,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Command.User
+namespace SftpScheduler.BLL.Commands.User
 {
     public class CreateUserCommand
     {

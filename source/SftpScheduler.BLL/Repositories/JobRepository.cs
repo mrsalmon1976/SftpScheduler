@@ -10,7 +10,7 @@ namespace SftpScheduler.BLL.Repositories
     {
         public virtual async Task<IEnumerable<JobEntity>> GetAllAsync(IDbContext dbContext)
         {
-            string sql = @"SELECT * FROM Job";
+            string sql = @"SELECT * FROM Job ORDER BY Name";
             return await dbContext.QueryAsync<JobEntity>(sql);
         }
 

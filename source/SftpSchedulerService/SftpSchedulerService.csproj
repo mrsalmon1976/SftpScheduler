@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Job\" />
     <Folder Include="Pages\" />
   </ItemGroup>
 

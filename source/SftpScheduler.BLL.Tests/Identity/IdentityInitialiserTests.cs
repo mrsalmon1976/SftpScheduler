@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
-using SftpScheduler.BLL.Command.User;
+using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Identity;
 using System;

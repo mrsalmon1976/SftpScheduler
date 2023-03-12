@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
-using SftpScheduler.BLL.Command.User;
-using SftpScheduler.BLL.Commands.Host;
-using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
-using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;

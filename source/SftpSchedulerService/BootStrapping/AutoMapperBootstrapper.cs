@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Models;
+using SftpSchedulerService.Models.Job;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -10,6 +11,8 @@ namespace SftpSchedulerService.BootStrapping
         {
             cfg.CreateMap<HostEntity, HostViewModel>();
             cfg.CreateMap<HostViewModel, HostEntity>();
+            cfg.CreateMap<JobEntity, JobViewModel>();
+            cfg.CreateMap<JobViewModel, JobEntity>();
         }
     }
 }

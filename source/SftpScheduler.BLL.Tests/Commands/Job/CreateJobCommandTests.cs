@@ -1,9 +1,11 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
-using SftpScheduler.BLL.Commands.Host;
+using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +17,57 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
     [TestFixture]
     public class CreateJobCommandTests
     {
+
         [Test]
-        public void ExecuteAsync_ValidJob_ExecutesQuery()
+        public void Execute_ValidJob_ExecutesQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            string jobName = Faker.Lorem.GetFirstWord();
-            int hostId = Faker.RandomNumber.Next();
+            HostRepository hostRepository = Substitute.For<HostRepository>();
+            JobValidator jobValidator = Substitute.For<JobValidator>(dbContext, hostRepository);
+            var jobEntity = EntityTestHelper.CreateJobEntity();
+
+            jobValidator.Validate(jobEntity).Returns(new ValidationResult());
+
+            CreateJobCommand createJobCommand = new CreateJobCommand(jobValidator);
+            createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), jobEntity);
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+
+        }
 
 
-            CreateJobCommand createJobCommand = new CreateJobCommand();
-            createJobCommand.ExecuteAsync(dbContext, jobName, hostId).GetAwaiter().GetResult();
+        [Test]
+        public void Execute_InvalidJob_ThrowsDataValidationException()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            JobValidator jobValidator = Substitute.For<JobValidator>(dbContext, Substitute.For<HostRepository>());
+            var jobEntity = EntityTestHelper.CreateJobEntity();
+            jobValidator.Validate(Arg.Any<JobEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
-            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<JobEntity>());
+            CreateJobCommand createJobCommand = new CreateJobCommand(jobValidator);
+
+            Assert.Throws<DataValidationException>(() => createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult());
+            jobValidator.Received(1).Validate(jobEntity);
+        }
+
+        [Test]
+        public void Execute_ValidJob_PopulatesJobIdOnReturnValue()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            JobValidator jobValidator = Substitute.For<JobValidator>(dbContext, Substitute.For<HostRepository>());
+
+            var jobEntity = EntityTestHelper.CreateJobEntity();
+            int newEntityId = Faker.RandomNumber.Next();
+
+            jobValidator.Validate(jobEntity).Returns(new ValidationResult());
+            dbContext.ExecuteScalarAsync<int>(Arg.Any<string>()).Returns(newEntityId);
+
+            CreateJobCommand createJobCommand = new CreateJobCommand(jobValidator);
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+            Assert.That(result.Id, Is.EqualTo(newEntityId));
         }
 
         [Test]
@@ -36,18 +77,19 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                CreateJobCommand createJobCommand = new CreateJobCommand();
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
+                    CreateJobCommand createJobCommand = new CreateJobCommand(new JobValidator(dbContext, new HostRepository()));
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
-                    string jobName = Guid.NewGuid().ToString();
                     DateTime dtBefore = DateTime.UtcNow;
+                    JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+                    jobEntity.HostId = host.Id;
 
-                    JobEntity jobEntity = createJobCommand.ExecuteAsync(dbContext, jobName, host.Id).GetAwaiter().GetResult();
+                    JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
 
-                    Assert.IsNotNull(jobEntity);
-                    Assert.AreEqual(jobName, jobEntity.Name);
+                    Assert.IsNotNull(result);
+                    Assert.AreEqual(result.Name, jobEntity.Name);
                     Assert.That(jobEntity.Created, Is.GreaterThanOrEqualTo(dtBefore));
 
                 }

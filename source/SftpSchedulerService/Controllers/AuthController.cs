@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SftpScheduler.BLL.Command.User;
-using SftpScheduler.BLL.Identity;
+using SftpScheduler.BLL.Commands.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;

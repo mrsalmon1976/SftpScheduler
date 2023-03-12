@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
-using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility;
+﻿using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

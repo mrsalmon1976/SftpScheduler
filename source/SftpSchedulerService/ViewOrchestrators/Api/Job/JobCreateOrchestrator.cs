@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SftpScheduler.BLL.Commands.Host;
+using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Repositories;
 using SftpSchedulerService.Models;
+using SftpSchedulerService.Models.Job;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
@@ -13,26 +13,32 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
-        private readonly HostRepository _hostRepository;
+        private readonly CreateJobCommand _createJobCommand;
 
-        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, HostRepository hostRepository)
+        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, CreateJobCommand createJobCommand)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
-            _hostRepository = hostRepository;
+            _createJobCommand = createJobCommand;
         }
 
-        public async Task<IActionResult> Execute()
+        public async Task<IActionResult> Execute(JobViewModel jobViewModel)
         {
+            JobEntity jobEntity = _mapper.Map<JobEntity>(jobViewModel);
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
-                var hostEntities = await _hostRepository.GetAllAsync(dbContext);
-                var result = _mapper.Map<HostEntity[], HostViewModel[]>(hostEntities.ToArray());
-                return new OkObjectResult(result);
+                try
+                {
+                    jobEntity = await _createJobCommand.ExecuteAsync(dbContext, jobEntity);
+                }
+                catch (DataValidationException dve)
+                {
+                    return new BadRequestObjectResult(dve.ValidationResult);
+                }
+                jobViewModel.Id = jobEntity.Id;
             }
-
-            //var result = _mapper.Map<HostViewModel>(hostEntity);
-            //return new OkObjectResult(result);
+            var result = _mapper.Map<JobViewModel>(jobEntity);
+            return new OkObjectResult(result);
         }
     }
 }

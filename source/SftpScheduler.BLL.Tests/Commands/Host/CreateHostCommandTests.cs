@@ -1,6 +1,5 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SftpScheduler.BLL.Command.Job;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
@@ -49,7 +48,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         }
 
         [Test]
-        public void Execute_ValidHost_PolulatesHostIdOnReturnValue()
+        public void Execute_ValidHost_PopulatesHostIdOnReturnValue()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             HostValidator hostValidator = Substitute.For<HostValidator>();
