@@ -9,3 +9,6 @@
 .invalid-feedback {
     display: inline;
 }
+.valid-feedback {
+    color: #28a745;
+}

@@ -14,30 +14,18 @@ createApp({
     watch: {
         schedule: UiHelpers.debounce(function (text) {
             var that = this;
-            this.isLoading = true;
-            this.scheduleInWords = 'Loading....';
             this.job.schedule = this.schedule;
             if (this.schedule.trim() == '') {
                 that.scheduleInWords = 'No schedule entered';
                 return;
             }
-            axios.get('/api/cron', { params: { schedule: text } })
-                .then(response => {
-                    that.job.isScheduleValid = response.data.isValid;
-                    if (that.job.isScheduleValid) {
-                        that.scheduleInWords = response.data.scheduleInWords;
-                    }
-                    else {
-                        that.scheduleInWords = response.data.errorMessage;
-                    }
-                })
-                .catch(err => {
-                    that.job.isScheduleValid = false;
-                    that.scheduleInWords = 'An error occurred retrieving the cron description - check application logs for details';
-                })
-                .then(() => {
-                    that.isLoading = false;
-                });
+            this.isLoading = true;
+            this.scheduleInWords = 'Loading....';
+            this.job.convertScheduleToWords(text, function (result) {
+                that.scheduleInWords = result;
+                that.isLoading = false;
+            });
+            
         }, 500)
     },
     methods: {

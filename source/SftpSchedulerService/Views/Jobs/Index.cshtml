@@ -1,12 +1,32 @@
 ﻿@{
     Layout = "_Layout";
     ViewBag.PageTitle = "Jobs";
-
+}
+@section Scripts {
+    <script src="~/js/models/job.js"></script>
+    <script src="~/js/pages/job/index.js"></script>
 }
 @section PageActionMenu {
     <ol class="breadcrumb float-sm-right">
         <li class="breadcrumb-item active"><a href="/jobs/create" class="btn btn-primary bg-gradient-primary">Add Job</a></li>
     </ol>
 }
-
-<p>This page will show a list of jobs stats</p>
+<div id="app-job">
+    <div v-if="jobs.length == 0">
+        No jobs have been created.  You will need to <a href="~/hosts/create">create at least one host</a> before you can add jobs.
+    </div>
+    <table v-if="jobs.length > 0" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Schedule</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="job in jobs">
+                <td><a :href="'/jobs/' + job.hashId">{{ job.name }}</a></td>
+                <td>{{ job.schedule }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

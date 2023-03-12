@@ -25,7 +25,7 @@
         </thead>
         <tbody>
             <tr v-for="host in hosts">
-                <td><a :href="'/host/' + host.hashId">{{ host.name }}</a></td>
+                <td><a :href="'/hosts/' + host.hashId">{{ host.name }}</a></td>
                 <td>{{ host.host }}</td>
                 <td><span class="badge bg-secondary">0</span></td>
             </tr>

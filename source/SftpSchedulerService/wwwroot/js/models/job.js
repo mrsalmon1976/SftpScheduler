@@ -10,12 +10,36 @@
         this.isScheduleValid = false;
     }
 
+    convertScheduleToWords = function (text, callback) {
+        var that = this;
+        var result = '';
+        axios.get('/api/cron', { params: { schedule: text } })
+            .then(response => {
+                that.isScheduleValid = response.data.isValid;
+                if (that.isScheduleValid) {
+                    result = response.data.scheduleInWords;
+                }
+                else {
+                    result = response.data.errorMessage;
+                }
+            })
+            .catch(err => {
+                that.isScheduleValid = false;
+                result = 'An error occurred retrieving the cron description - check application logs for details';
+            })
+            .then(() => {
+                callback(result);
+            });
+    }
+
     validate = function () {
+        this.validateName();
+        this.validateHost();
         return (
-            this.validateName()
-            && this.validateHost()
+            this.isNameValid
+            && this.isHostValid
             && this.isScheduleValid
-        );
+            );
     }
 
     validateHost = function () {

@@ -20,26 +20,24 @@
                     <label for="job-name" class="col-sm-2 col-form-label">Name</label>
                     <div class="col-sm-4">
                         <input type="text" v-model="job.name" @@blur="job.validateName()" class="form-control" id="job-name" placeholder="Name">
-                        <span v-if="!job.isNameValid" class="error invalid-feedback">Please provide a name at least 3 characters long</span>
+                        <span v-if="!job.isNameValid" class="invalid-feedback">Please provide a name at least 3 characters long</span>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="job-host" class="col-sm-2 col-form-label">Host</label>
                     <div class="col-sm-4">
-                        <select v-model="job.hostId" class="form-control" id="job-host">
+                        <select v-model="job.hostId" class="form-control" id="job-host" @@blur="job.validateHost()">
+                            <option value="0"></option>
                             <option v-for="h in allHosts" :value="h.id">{{ h.name }}</option>
-
                         </select>
+                        <span v-if="!job.isHostValid" class="invalid-feedback">Please select a host</span>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="job-schedule" class="col-sm-2 col-form-label">Schedule</label>
                     <div class="col-sm-4">
                         <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="? ? ? ? ? ?" autocomplete="false">
-                        <span v-if="!job.isScheduleValid" class="error invalid-feedback">Please provide a valid schedule</span>
-                    </div>
-                    <div class="col-sm-6">
-                        <div v-if="job.schedule != ''" class="alert inform-alert" :class="{ 'alert-success': job.isScheduleValid, 'alert-danger': !job.isScheduleValid }">{{scheduleInWords}}</div>
+                        <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
                     </div>
                 </div>
                 <div class="card-footer">
