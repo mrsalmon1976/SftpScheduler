@@ -15,6 +15,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Login;
 using SftpSchedulerService.ViewOrchestrators.Api.Cron;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpScheduler.BLL.Commands.Job;
+using SystemWrapper.IO;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -50,6 +51,8 @@ try
     builder.Services.AddSingleton<AppSettings>(appSettings);
     builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
     builder.Services.AddSingleton<ResourceUtils>();
+
+    builder.Services.AddTransient<IDirectoryWrap, DirectoryWrap>();
 
     builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
     builder.Services.AddTransient<IdentityInitialiser>();

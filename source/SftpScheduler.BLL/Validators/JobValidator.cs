@@ -7,16 +7,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SystemWrapper.IO;
 
 namespace SftpScheduler.BLL.Validators
 {
     public class JobValidator
     {
         private readonly HostRepository _hostRepository;
+        private readonly IDirectoryWrap _directoryWrap;
 
-        public JobValidator(HostRepository hostRepository) 
+        public JobValidator(HostRepository hostRepository, IDirectoryWrap directoryWrap) 
         {
             _hostRepository = hostRepository;
+            _directoryWrap = directoryWrap;
         }
 
         public virtual ValidationResult Validate(IDbContext dbContext, JobEntity jobEntity)
@@ -26,23 +29,31 @@ namespace SftpScheduler.BLL.Validators
                 throw new NullReferenceException("No job entity supplied for validation");
             }
 
-            var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+            ValidationResult validationResult = new ValidationResult();
+            var dataAnnotationValidationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
 
-            bool isValid = Validator.TryValidateObject(jobEntity, new ValidationContext(jobEntity), validationResults, true);
+            bool isValid = Validator.TryValidateObject(jobEntity, new ValidationContext(jobEntity), dataAnnotationValidationResults, true);
             if (!isValid)
             {
-                IEnumerable<string> errors = validationResults.Where(x => !String.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage ?? "");
-                return new ValidationResult(errors);
+                IEnumerable<string> errors = dataAnnotationValidationResults.Where(x => !String.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage ?? "");
+                validationResult.ErrorMessages.AddRange(errors);
+                return validationResult;
             }
 
             // check that the host actually exists
             var hostEntity = _hostRepository.GetByIdAsync(dbContext, jobEntity.HostId.Value).GetAwaiter().GetResult();
             if (hostEntity == null)
             {
-                return new ValidationResult("Host does not exist");
+                validationResult.ErrorMessages.Add("Host does not exist");
             }
 
-            return new ValidationResult();
+            // check the local path
+            if (!_directoryWrap.Exists(jobEntity.LocalPath))
+            {
+                validationResult.ErrorMessages.Add("Local path does not exist");
+            }
+
+            return validationResult;
         }
     }
 }

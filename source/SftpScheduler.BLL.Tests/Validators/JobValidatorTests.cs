@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SystemWrapper.IO;
 
 namespace SftpScheduler.BLL.Tests.Validators
 {
@@ -27,8 +28,10 @@ namespace SftpScheduler.BLL.Tests.Validators
             HostRepository hostRepository = Substitute.For<HostRepository>();
             hostRepository.GetByIdAsync(dbContext, jobEntity.HostId.Value).Returns(Task.FromResult(hostEntity));
 
+            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            directoryWrap.Exists(jobEntity.LocalPath).Returns(true);
 
-            JobValidator jobValidator = CreateJobValidator(hostRepository);
+            JobValidator jobValidator = CreateJobValidator(hostRepository, directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid);
         }
@@ -65,11 +68,15 @@ namespace SftpScheduler.BLL.Tests.Validators
             jobEntity.HostId = hostId;
             HostEntity hostEntity = null;
 
-            IDbContext dbContext= Substitute.For<IDbContext>();
+            var directoryWrap = Substitute.For<IDirectoryWrap>();
+            directoryWrap.Exists(Arg.Any<string>()).Returns(true);
+
+
+            IDbContext dbContext = Substitute.For<IDbContext>();
             HostRepository hostRepository = Substitute.For<HostRepository>();
             hostRepository.GetByIdAsync(dbContext, hostId).Returns(Task.FromResult(hostEntity));
 
-            JobValidator jobValidator = CreateJobValidator(hostRepository);
+            JobValidator jobValidator = CreateJobValidator(hostRepository, directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
@@ -113,6 +120,21 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
+        public void Validate_LocalPathDoesNotExist_ExceptionThrown()
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            directoryWrap.Exists(Arg.Any<string>()).Returns(false);
+            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), directoryWrap);
+            var validationResult = jobValidator.Validate(dbContext, jobEntity);
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("local path does not exist", StringComparison.InvariantCultureIgnoreCase));
+            directoryWrap.Received(1).Exists(jobEntity.LocalPath);
+        }
+
+        [Test]
         public void Validate_InValidRemotePath_ExceptionThrown()
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
@@ -140,14 +162,13 @@ namespace SftpScheduler.BLL.Tests.Validators
 
         private JobValidator CreateJobValidator()
         {
-            HostRepository hostRepository = Substitute.For<HostRepository>();
-            return CreateJobValidator(hostRepository);
+            return CreateJobValidator(Substitute.For<HostRepository>(), Substitute.For<IDirectoryWrap>());
 
         }
 
-        private JobValidator CreateJobValidator(HostRepository hostRepository)
+        private JobValidator CreateJobValidator(HostRepository hostRepository, IDirectoryWrap directoryWrap)
         {
-            return new JobValidator(hostRepository);
+            return new JobValidator(hostRepository, directoryWrap);
 
         }
         #endregion

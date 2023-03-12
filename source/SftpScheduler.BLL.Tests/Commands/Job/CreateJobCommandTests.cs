@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SystemWrapper.IO;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
@@ -22,8 +23,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         public void Execute_ValidJob_ExecutesQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostRepository hostRepository = Substitute.For<HostRepository>();
-            JobValidator jobValidator = Substitute.For<JobValidator>(hostRepository);
+            JobValidator jobValidator = CreateJobValidator();
             var jobEntity = EntityTestHelper.CreateJobEntity();
 
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
@@ -41,7 +41,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         public void Execute_InvalidJob_ThrowsDataValidationException()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            JobValidator jobValidator = Substitute.For<JobValidator>(Substitute.For<HostRepository>());
+            JobValidator jobValidator = CreateJobValidator();
             var jobEntity = EntityTestHelper.CreateJobEntity();
             jobValidator.Validate(dbContext, Arg.Any<JobEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
@@ -55,7 +55,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         public void Execute_ValidJob_PopulatesJobIdOnReturnValue()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            JobValidator jobValidator = Substitute.For<JobValidator>(Substitute.For<HostRepository>());
+            JobValidator jobValidator = CreateJobValidator();
 
             var jobEntity = EntityTestHelper.CreateJobEntity();
             int newEntityId = Faker.RandomNumber.Next();
@@ -79,11 +79,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
-                    CreateJobCommand createJobCommand = new CreateJobCommand(new JobValidator(new HostRepository()));
+                    CreateJobCommand createJobCommand = new CreateJobCommand(new JobValidator(new HostRepository(), new DirectoryWrap()));
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
                     DateTime dtBefore = DateTime.UtcNow;
                     JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+                    jobEntity.LocalPath = AppDomain.CurrentDomain.BaseDirectory;
                     jobEntity.HostId = host.Id;
 
                     JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
@@ -94,6 +95,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
                 }
             }
+        }
+
+        private JobValidator CreateJobValidator()
+        {
+            return Substitute.For<JobValidator>(Substitute.For<HostRepository>(), Substitute.For<IDirectoryWrap>());
+
         }
 
 
