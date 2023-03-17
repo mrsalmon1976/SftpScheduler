@@ -32,34 +32,38 @@ namespace Test.SftpSchedulerService.Views.Shared
         public async Task MenuItem_UserIsNotAdmin_UsersMenuItemNotRendered()
         {
             string[] roles = { UserRoles.User };
-            var client = TestFactory.CreateAuthenticatedHttpClient(roles);
+            using (var client = TestFactory.CreateAuthenticatedHttpClient(roles))
+            {
 
-            var response = await client.GetAsync("/test");
-            string body = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+                var response = await client.GetAsync("/test");
+                string body = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
 
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(body);
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(body);
 
-            var node = htmlDoc.GetElementbyId("menu-users");
-            Assert.IsNull(node);
+                var node = htmlDoc.GetElementbyId("menu-users");
+                Assert.IsNull(node);
+            }
         }
 
         [Test]
         public async Task MenuItem_UserIsAdmin_UsersMenuItemIsRendered()
         {
             string[] roles = { UserRoles.Admin };
-            var client = TestFactory.CreateAuthenticatedHttpClient(roles);
+            using (var client = TestFactory.CreateAuthenticatedHttpClient(roles))
+            {
 
-            var response = await client.GetAsync("/dashboard");
-            string body = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+                var response = await client.GetAsync("/dashboard");
+                string body = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
 
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(body);
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(body);
 
-            var node = htmlDoc.GetElementbyId("menu-users");
-            Assert.IsNotNull(node);
+                var node = htmlDoc.GetElementbyId("menu-users");
+                Assert.IsNotNull(node);
+            }
         }
 
 

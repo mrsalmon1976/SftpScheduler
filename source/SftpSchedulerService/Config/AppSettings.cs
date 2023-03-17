@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Data.Common;
 
 namespace SftpSchedulerService.Config
 {
@@ -6,6 +7,9 @@ namespace SftpSchedulerService.Config
     {
         private readonly IConfiguration _configuration;
         private readonly string _baseDirectory;
+
+        private string? _dbPath;
+        private string? _dbPathQuartz;
 
         public AppSettings(IConfiguration configurationManager, string baseDirectory)
         {
@@ -17,13 +21,27 @@ namespace SftpSchedulerService.Config
         {
             get
             {
-                string dbPath = _configuration["AppSettings:DbPath"];
-                if (dbPath.StartsWith(".\\") || dbPath.StartsWith("./"))
+                if (String.IsNullOrEmpty(_dbPath))
                 {
-                    dbPath = dbPath.Substring(2);
-                    dbPath = Path.Combine(_baseDirectory, dbPath);
+                    DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
+                    builder.ConnectionString = this.DbConnectionString;
+                    _dbPath = ((string)builder["Data Source"]).Trim();
                 }
-                return dbPath.Replace("{AppDir}", _baseDirectory); ;
+                return _dbPath;
+            }
+        }
+
+        public virtual string DbPathQuartz
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_dbPathQuartz))
+                {
+                    DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
+                    builder.ConnectionString = this.DbConnectionStringQuartz;
+                    _dbPathQuartz = ((string)builder["Data Source"]).Trim();
+                }
+                return _dbPathQuartz;
             }
         }
 
@@ -32,6 +50,15 @@ namespace SftpSchedulerService.Config
             get
             {
                 string connString = _configuration.GetConnectionString("Default");
+                return connString.Replace("{AppDir}", _baseDirectory);
+            }
+        }
+
+        public virtual string DbConnectionStringQuartz
+        {
+            get
+            {
+                string connString = _configuration.GetConnectionString("Quartz");
                 return connString.Replace("{AppDir}", _baseDirectory);
             }
         }
@@ -57,6 +84,14 @@ namespace SftpSchedulerService.Config
             get
             {
                 return _configuration["JWT:ValidIssuer"];
+            }
+        }
+
+        public virtual int MaxConcurrentJobs
+        {
+            get
+            {
+                return Convert.ToInt32(_configuration["AppSettings:MaxConcurrentJobs"]);
             }
         }
 

@@ -28,7 +28,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Cron
             var cronResult = result.Value as CronResult;
             Assert.IsNotNull(cronResult);
             Assert.IsFalse(cronResult.IsValid);
-            Assert.That(cronResult.ErrorMessage, Is.EqualTo("No cron schedule supplied"));
+            Assert.That(cronResult.ErrorMessage, Is.EqualTo("Cron schedule is invalid or not supported"));
         }
 
         [Test]
@@ -42,13 +42,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Cron
             var cronResult = result.Value as CronResult;
             Assert.IsNotNull(cronResult);
             Assert.IsFalse(cronResult.IsValid);
-            Assert.That(cronResult.ErrorMessage, Is.EqualTo("Invalid cron schedule"));
+            Assert.That(cronResult.ErrorMessage, Is.EqualTo("Cron schedule is invalid or not supported"));
         }
 
         // examples here: https://github.com/bradymholt/cron-expression-descriptor
-        [TestCase("* * * * *", "Every minute")]
-        [TestCase("30 11 * * 1-5", "At 11:30 AM, Monday through Friday")]
-        [TestCase("23 12 * JAN *", "At 12:23 PM, only in January")]
+        [TestCase("0 * * ? * * *", "Every minute")]
+        [TestCase("0 30 11 ? * MON,TUE,WED,THU,FRI *", "At 11:30 AM, only on Monday, Tuesday, Wednesday, Thursday, and Friday")]
+        [TestCase("0 23 12 ? JAN * *", "At 12:23 PM, only in January")]
         public void Execute_ValidSchedule_ReturnsSchedule(string schedule, string expectedResult)
         {
             ILogger<CronGetScheduleOrchestrator> logger = Substitute.For<ILogger<CronGetScheduleOrchestrator>>();

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Quartz.Xml;
+using SftpScheduler.BLL.DataAnnotations;
 using SftpSchedulerService.Controllers.Api;
 using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Cron;
@@ -18,23 +20,25 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Cron
         {
             CronResult result = new CronResult();
 
-            if (String.IsNullOrWhiteSpace(schedule))
+            // validate first
+            try
             {
-                result.ErrorMessage = "No cron schedule supplied";
+                CronScheduleAttribute scheduleAttribute = new CronScheduleAttribute();
+                scheduleAttribute.Validate(schedule, "Cron");
+
+                string scheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(schedule);
+                result.IsValid = true;
+                result.ScheduleInWords = scheduleInWords;
+
             }
-            else
+            catch (System.ComponentModel.DataAnnotations.ValidationException ex)
             {
-                try
-                {
-                    string scheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(schedule);
-                    result.IsValid = true;
-                    result.ScheduleInWords = scheduleInWords;
-                }
-                catch (FormatException ex)
-                {
-                    result.ErrorMessage = "Invalid cron schedule";
-                    _logger.LogWarning(ex.Message);
-                }
+                result.ErrorMessage = ex.Message;
+            }
+            catch (FormatException ex)
+            {
+                result.ErrorMessage = "Cron schedule is invalid or not supported";
+                _logger.LogWarning(ex.Message);
             }
 
             return await Task.FromResult(new OkObjectResult(result));

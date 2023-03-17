@@ -13,6 +13,7 @@ namespace SftpScheduler.BLL.Tests.Data
     public class SQLiteDbMigratorTests
     {
         private string _dbPath = "";
+        private string _quartzPath = "";
 
         [SetUp]
         public void SQLiteDbMigratorTests_SetUp()
@@ -22,6 +23,12 @@ namespace SftpScheduler.BLL.Tests.Data
             {
                 File.Delete(_dbPath);
             }
+
+            _quartzPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SQLiteQuartzTests.db");
+            if (File.Exists(_quartzPath))
+            {
+                File.Delete(_quartzPath);
+            }
         }
 
         [TearDown]
@@ -30,6 +37,10 @@ namespace SftpScheduler.BLL.Tests.Data
             if (File.Exists(_dbPath))
             {
                 File.Delete(_dbPath);
+            }
+            if (File.Exists(_quartzPath))
+            {
+                File.Delete(_quartzPath);
             }
         }
 
@@ -58,6 +69,31 @@ namespace SftpScheduler.BLL.Tests.Data
             dbMigrator.MigrateDbChanges();
 
             using (IDbContext dbContext = dbContextFactory.GetDbContext())
+            {
+                string sql = String.Format("SELECT * from {0} LIMIT 5", tableName);
+                dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
+            }
+
+        }
+
+        [Test]
+        public void InitialiseQuartzDb_Integration_DbCreated()
+        {
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
+            dbMigrator.InitialiseQuartzDb(_quartzPath);
+            Assert.IsTrue(File.Exists(_quartzPath));
+        }
+
+        [TestCase("QRTZ_JOB_DETAILS")]
+        [TestCase("QRTZ_TRIGGERS")]
+        public void InitialiseQuartzDb_Integration_TableCreated(string tableName)
+        {
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
+            dbMigrator.InitialiseQuartzDb(_quartzPath);
+
+            using (var dbContext = new SQLiteDbContext(_quartzPath))
             {
                 string sql = String.Format("SELECT * from {0} LIMIT 5", tableName);
                 dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();

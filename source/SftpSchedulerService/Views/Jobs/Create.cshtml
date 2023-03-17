@@ -51,6 +51,9 @@
                         <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="? ? ? ? ? ?" autocomplete="false">
                         <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
                     </div>
+                    <div class="col-sm-2">
+                        <a href="https://www.freeformatter.com/cron-expression-generator-quartz.html" target="_blank" class="text-sm">Help!!</a>
+                    </div>
                 </div>
                 <div class="form-group row">
                     <label for="job-local-path" class="col-sm-2 col-form-label">Local Path</label>

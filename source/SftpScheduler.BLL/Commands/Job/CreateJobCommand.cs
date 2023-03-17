@@ -1,5 +1,7 @@
-﻿using SftpScheduler.BLL.Data;
+﻿using Quartz;
+using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
+using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.BLL.Validators;
@@ -13,13 +15,15 @@ namespace SftpScheduler.BLL.Commands.Job
 {
     public class CreateJobCommand
     {
-        private readonly JobValidator _jobValidator;
+        private readonly IJobValidator _jobValidator;
+        private readonly ISchedulerFactory _schedulerFactory;
 
-        public CreateJobCommand(JobValidator jobValidator) 
+        public CreateJobCommand(IJobValidator jobValidator, ISchedulerFactory schedulerFactory) 
         {
             _jobValidator = jobValidator;
+            _schedulerFactory = schedulerFactory;
         }
-
+        
         public virtual async Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity)
         {
             ValidationResult validationResult = _jobValidator.Validate(dbContext, jobEntity);
@@ -33,6 +37,20 @@ namespace SftpScheduler.BLL.Commands.Job
 
             sql = @"select last_insert_rowid()";
             jobEntity.Id = await dbContext.ExecuteScalarAsync<int>(sql);
+
+            IScheduler scheduler = await _schedulerFactory.GetScheduler();
+
+            // define the job 
+            IJobDetail job = JobBuilder.Create<TransferJob>()
+                .WithIdentity($"Job.{jobEntity.Id}", TransferJob.DefaultGroup)
+                .Build();
+
+            // Trigger the job 
+            ITrigger trigger = TriggerBuilder.Create()
+              .WithIdentity($"Trigger.{jobEntity.Id}", TransferJob.DefaultGroup)
+              .WithCronSchedule(jobEntity.Schedule)
+              .Build();
+            await scheduler.ScheduleJob(job, trigger);
 
             return jobEntity;
 

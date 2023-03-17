@@ -20,6 +20,7 @@ namespace SftpScheduler.BLL.Data
         {
             this.DbPath = dbPath;
 
+
         }
 
         public string DbPath { get; private set; }

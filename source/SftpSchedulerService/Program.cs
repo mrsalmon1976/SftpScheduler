@@ -58,7 +58,7 @@ try
     builder.Services.AddTransient<IdentityInitialiser>();
 
     builder.Services.AddTransient<HostValidator>();
-    builder.Services.AddTransient<JobValidator>();
+    builder.Services.AddTransient<IJobValidator, JobValidator>();
 
     builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
     builder.Services.AddTransient<CreateJobCommand>();
@@ -67,12 +67,15 @@ try
     builder.Services.AddTransient<HostRepository>();
     builder.Services.AddTransient<JobRepository>();
 
+    builder.Services.AddQuartzScheduler(appSettings);
+
     builder.Services.AddTransient<CronGetScheduleOrchestrator>();
     builder.Services.AddTransient<HostCreateOrchestrator>();
     builder.Services.AddTransient<HostFetchAllOrchestrator>();
     builder.Services.AddTransient<JobCreateOrchestrator>();
     builder.Services.AddTransient<JobFetchAllOrchestrator>();
     builder.Services.AddTransient<LoginPostOrchestrator>();
+
 
     // set up 
     var app = builder.Build();
@@ -93,7 +96,7 @@ try
     app.UseAuthorization();
     app.UseStaticFiles();
     app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
-    app.InitialiseDatabase();
+    app.InitialiseDatabase(appSettings);
     app.Run();
 }
 catch (Exception ex)

@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Job;
+using System.Data;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
@@ -29,7 +30,9 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             {
                 try
                 {
+                    dbContext.BeginTransaction();
                     jobEntity = await _createJobCommand.ExecuteAsync(dbContext, jobEntity);
+                    dbContext.Commit();
                 }
                 catch (DataValidationException dve)
                 {

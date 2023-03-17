@@ -8,6 +8,8 @@ namespace SftpScheduler.BLL.Data
 {
     public interface IDbMigrator
     {
+        void InitialiseQuartzDb(string dbPath);
+
         void MigrateDbChanges();
     }
 }

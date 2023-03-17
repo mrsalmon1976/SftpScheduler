@@ -28,7 +28,7 @@ namespace SftpScheduler.BLL.Tests
             jobEntity.Name = Faker.Lorem.GetFirstWord();
             jobEntity.HostId = Faker.RandomNumber.Next(1, 100);
             jobEntity.Type = BLL.Data.JobType.Download;
-            jobEntity.Schedule = "* * * * *";
+            jobEntity.Schedule = "0 * * ? * * *";
             jobEntity.LocalPath = "\\\\localshare\\localfolder";
             jobEntity.RemotePath = "/remotefolder";
             return jobEntity;

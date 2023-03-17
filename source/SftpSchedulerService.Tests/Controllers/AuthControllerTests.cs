@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc.Testing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,24 @@ namespace SftpSchedulerService.Tests.Controllers
     public class AuthControllerTests
     {
         [Test]
-        public void Login_Integration_ReturnsOk()
+        public async Task Login_Integration_ReturnsOk()
         {
-            using (var app = new WebApplicationFactory<Program>())
+            //using (var app = new WebApplicationFactory<Program>())
+            //{
+            //    using (var client = app.CreateClient())
+            //    {
+            //        var response = client.GetAsync("/auth/login").GetAwaiter().GetResult();
+            //        var data = response.Content.ReadAsStringAsync().Result;
+            //        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            //    }
+            //}
+
+            using (var client = TestFactory.CreateHttpClient())
             {
-                using (var client = app.CreateClient())
-                {
-                    var response = client.GetAsync("/auth/login").GetAwaiter().GetResult();
-                    var data = response.Content.ReadAsStringAsync().Result;
-                    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                }
+
+                var response = await client.GetAsync("/auth/login");
+                string body = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
             }
         }
     }

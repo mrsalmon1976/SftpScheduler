@@ -23,8 +23,8 @@ namespace SftpScheduler.BLL.Tests.DataAnnotations
 
         }
 
-        [TestCase("* * * * *")]
-        [TestCase("0 23 ? * MON-FRI")]
+        [TestCase("0 * * ? * * *")]
+        [TestCase("0 * * 1,14,15 FEB,JUL ? *")]
         public void IsValid_ValidCronSchedule_ReturnsTrue(string schedule)
         {
             CronScheduleAttribute cronScheduleAttribute = new CronScheduleAttribute();

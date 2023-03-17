@@ -36,5 +36,23 @@ namespace SftpScheduler.BLL.Data
                 dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
             }
         }
+
+        public void InitialiseQuartzDb(string dbPath)
+        {
+            if (!System.IO.File.Exists(dbPath))
+            {
+                string dbFileName = Path.GetFileName(dbPath);
+                Directory.CreateDirectory(dbPath.Replace(dbFileName, ""));
+                SQLiteConnection.CreateFile(dbPath);
+            }
+
+            using (var dbContext = new SQLiteDbContext(dbPath))
+            {
+                string sql = _resourceUtils.ReadResource("SftpScheduler.BLL.Resources.Quartz.sql");
+                dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
+
+            }
+        }
+
     }
 }

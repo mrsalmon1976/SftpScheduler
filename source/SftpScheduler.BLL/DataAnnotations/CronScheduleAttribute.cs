@@ -1,4 +1,4 @@
-﻿using Dapper;
+﻿using Quartz;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,7 +11,9 @@ namespace SftpScheduler.BLL.DataAnnotations
 {
     public class CronScheduleAttribute : ValidationAttribute
     {
-        public CronScheduleAttribute() : base("Please provide a valid cron schedule")
+        public const string DefaultErrorMessage = "Cron schedule is invalid or not supported";
+
+        public CronScheduleAttribute() : base(DefaultErrorMessage)
         {
 
         }
@@ -31,26 +33,20 @@ namespace SftpScheduler.BLL.DataAnnotations
 
             try
             {
-                CronExpressionDescriptor.ExpressionDescriptor.GetDescription(schedule);
+                TriggerBuilder.Create()
+                  .WithIdentity($"{Guid.NewGuid()}", "Test-Validation-Group")
+                  .WithCronSchedule(schedule)
+                  .Build();
             }
             catch (Exception)
             {
+                this.ErrorMessage = DefaultErrorMessage;
                 return false;
             }
 
             return true;
         }
 
-        //protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
-        //{
-        //    bool result = this.IsValid(value);
-        //    if (result)
-        //    {
-        //        return ValidationResult.Success;
-        //    }
-        //    return new ValidationResult($"{value} is not a valid url");
-
-        //}
     }
 
 }

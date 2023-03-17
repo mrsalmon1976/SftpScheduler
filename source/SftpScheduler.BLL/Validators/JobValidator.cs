@@ -11,7 +11,12 @@ using SystemWrapper.IO;
 
 namespace SftpScheduler.BLL.Validators
 {
-    public class JobValidator
+    public interface IJobValidator
+    {
+        ValidationResult Validate(IDbContext dbContext, JobEntity jobEntity);
+    }
+
+    public class JobValidator : IJobValidator
     {
         private readonly HostRepository _hostRepository;
         private readonly IDirectoryWrap _directoryWrap;

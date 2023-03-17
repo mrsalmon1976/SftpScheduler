@@ -37,7 +37,7 @@ namespace SftpScheduler.BLL.Data
         /// </summary>
         public override void BeginTransaction()
         {
-            this.Transaction = _conn.BeginTransaction();
+            this.Transaction = _conn.BeginTransaction(IsolationLevel.Serializable);
         }
 
         /// <summary>

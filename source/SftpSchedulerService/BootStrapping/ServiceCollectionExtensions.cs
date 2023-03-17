@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using Quartz;
+using Quartz.Impl;
 using SftpScheduler.BLL.Identity;
+using SftpScheduler.BLL.Jobs;
 using SftpSchedulerService.Config;
+using System.Collections.Specialized;
 using System.Text;
 
 namespace SftpSchedulerService.BootStrapping
@@ -82,6 +86,54 @@ namespace SftpSchedulerService.BootStrapping
                     };
                 });
 
+        }
+
+        public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings)
+        {
+            services.AddQuartz(q =>
+            {
+                q.SchedulerId = "SftpScheduler";
+                q.SchedulerName = "SftpScheduler";
+                q.UseMicrosoftDependencyInjectionJobFactory();
+                q.UseDefaultThreadPool(x => x.MaxConcurrency = appSettings.MaxConcurrentJobs);
+                q.UsePersistentStore(x =>
+                {
+                    x.UseProperties = true;
+                    x.Properties.Add("quartz.jobStore.txIsolationLevelSerializable", "true");
+                    x.UseSQLite(appSettings.DbConnectionStringQuartz);
+                    x.UseJsonSerializer();
+                });
+            });
+
+            services.AddTransient<TransferJob>();
+
+            services.AddQuartzHostedService(options =>
+            {
+                // FTP jobs could take forever....we just need to cut our losses if we are shutting down
+                options.WaitForJobsToComplete = false;
+            });
+
+            //var properties = new NameValueCollection();
+
+            //StdSchedulerFactory schedulerFactory = SchedulerBuilder.Create(properties)
+            //    .UseDefaultThreadPool(x => x.MaxConcurrency = 5)
+            //    // this is the default 
+            //    // .WithMisfireThreshold(TimeSpan.FromSeconds(60))
+            //    .UsePersistentStore(x =>
+            //    {
+            //        // force job data map values to be considered as strings
+            //        // prevents nasty surprises if object is accidentally serialized and then 
+            //        // serialization format breaks, defaults to false
+            //        x.UseProperties = true;
+            //        x.UseClustering();
+            //        x.UseSQLite(appSettings.DbConnectionString)
+            //    })
+            //    .Build();
+
+            //IScheduler scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();
+            //scheduler.Start().GetAwaiter().GetResult();
+
+            //
         }
     }
 }
