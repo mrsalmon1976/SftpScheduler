@@ -24,5 +24,11 @@ namespace SftpSchedulerService.Controllers
             return this.View("Create");
         }
 
+        [HttpGet("jobs/{id}")]
+        public ViewResult Detail(string id)
+        {
+            return this.View("Create");
+        }
+
     }
 }

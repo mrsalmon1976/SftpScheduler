@@ -11,19 +11,28 @@ namespace SftpSchedulerService.Controllers.Api
     public class JobsController : ControllerBase
     {
         private readonly JobCreateOrchestrator _jobCreateProvider;
-        private readonly JobFetchAllOrchestrator _jobFetchAllProvider;
+        private readonly JobFetchAllOrchestrator _jobFetchAllOrchestrator;
+        private readonly JobFetchOneOrchestrator _jobFetchOneOrchestrator;
 
-        public JobsController(JobCreateOrchestrator jobCreateProvider, JobFetchAllOrchestrator jobFetchAllProvider)
+        public JobsController(JobCreateOrchestrator jobCreateProvider, JobFetchAllOrchestrator jobFetchAllOrchestrator, JobFetchOneOrchestrator jobFetchOneOrchestrator)
         {
             _jobCreateProvider = jobCreateProvider;
-            _jobFetchAllProvider = jobFetchAllProvider;
+            _jobFetchAllOrchestrator = jobFetchAllOrchestrator;
+            _jobFetchOneOrchestrator = jobFetchOneOrchestrator;
         }
 
-        //// GET: api/<ApiAuthController>
-        [HttpGet]
+        //// GET: api/jobs
+        [HttpGet()]
         public async Task<IActionResult> Get()
         {
-            return await _jobFetchAllProvider.Execute();
+            return await _jobFetchAllOrchestrator.Execute();
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] string id)
+        {
+            return await _jobFetchOneOrchestrator.Execute(id);
         }
 
         [HttpPost]

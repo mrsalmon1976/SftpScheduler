@@ -74,6 +74,7 @@ try
     builder.Services.AddTransient<HostFetchAllOrchestrator>();
     builder.Services.AddTransient<JobCreateOrchestrator>();
     builder.Services.AddTransient<JobFetchAllOrchestrator>();
+    builder.Services.AddTransient<JobFetchOneOrchestrator>();
     builder.Services.AddTransient<LoginPostOrchestrator>();
 
 

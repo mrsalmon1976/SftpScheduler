@@ -40,11 +40,6 @@ namespace SftpSchedulerService.Tests
             var factory = new WebApplicationFactory<Program>()
                 .WithWebHostBuilder(builder =>
                 {
-                    //builder.ConfigureServices(services =>
-                    //{
-                    //    services.AddTran
-                    //});
-
                     //builder.ConfigureTestServices(services =>
                     //{
                     //    services.AddAuthentication("JWT_OR_COOKIE")

@@ -15,16 +15,6 @@ namespace SftpSchedulerService.Tests.Controllers
         [Test]
         public async Task Login_Integration_ReturnsOk()
         {
-            //using (var app = new WebApplicationFactory<Program>())
-            //{
-            //    using (var client = app.CreateClient())
-            //    {
-            //        var response = client.GetAsync("/auth/login").GetAwaiter().GetResult();
-            //        var data = response.Content.ReadAsStringAsync().Result;
-            //        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            //    }
-            //}
-
             using (var client = TestFactory.CreateHttpClient())
             {
 
