@@ -42,7 +42,7 @@ namespace SftpScheduler.BLL.Commands.Job
 
             // define the job 
             IJobDetail job = JobBuilder.Create<TransferJob>()
-                .WithIdentity($"Job.{jobEntity.Id}", TransferJob.DefaultGroup)
+                .WithIdentity(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup)
                 .Build();
 
             // Trigger the job 

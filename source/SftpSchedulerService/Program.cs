@@ -16,6 +16,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Cron;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpScheduler.BLL.Commands.Job;
 using SystemWrapper.IO;
+using SftpScheduler.BLL.Commands.Transfer;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -62,7 +63,11 @@ try
 
     builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
     builder.Services.AddTransient<CreateJobCommand>();
+    builder.Services.AddTransient<ICreateJobResultCommand, CreateJobResultCommand>();
     builder.Services.AddTransient<CreateUserCommand>();
+    builder.Services.AddTransient<IUpdateJobResultCompleteCommand, UpdateJobResultCompleteCommand>();
+
+    builder.Services.AddTransient<ITransferCommandFactory, TransferCommandFactory>();
 
     builder.Services.AddTransient<HostRepository>();
     builder.Services.AddTransient<JobRepository>();

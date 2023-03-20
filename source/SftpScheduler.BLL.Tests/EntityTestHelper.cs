@@ -35,5 +35,14 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
+        internal static JobResultEntity CreateJobResultEntity()
+        {
+            JobResultEntity jobResultEntity = new JobResultEntity();
+            jobResultEntity.JobId = Faker.RandomNumber.Next(1, 100);
+            jobResultEntity.StartDate = DateTime.Now.AddSeconds(-5);
+            return jobResultEntity;
+
+        }
+
     }
 }
