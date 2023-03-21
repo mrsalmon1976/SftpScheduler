@@ -85,6 +85,19 @@ namespace SftpScheduler.BLL.Data
         }
 
         /// <summary>
+        /// Executes a query and maps the result to a strongly typed single object, returning the default value if the object 
+        /// is not found.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public override Task<T> QuerySingleOrDefaultAsync<T>(string sql, object? param = null)
+        {
+            return _conn.QuerySingleOrDefaultAsync<T>(sql, param, this.Transaction);
+        }
+
+        /// <summary>
         /// Executes a query against the database
         /// </summary>
         /// <param name="sql"></param>

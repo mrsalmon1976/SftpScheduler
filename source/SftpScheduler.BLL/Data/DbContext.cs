@@ -67,6 +67,15 @@ namespace SftpScheduler.BLL.Data
         /// <returns></returns>
         Task<T> QuerySingleAsync<T>(string sql, object? param = null);
 
+        /// <summary>
+        /// Executes a query and maps the result to a strongly typed single object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Task<T> QuerySingleOrDefaultAsync<T>(string sql, object? param = null);
+
 
         /// <summary>
         /// Rolls back the current transaction (if supported by the DbContext)
@@ -137,6 +146,14 @@ namespace SftpScheduler.BLL.Data
         /// <returns></returns>
         public abstract Task<T> QuerySingleAsync<T>(string sql, object? param = null);
 
+        /// <summary>
+        /// Executes a query and maps the result to a strongly typed single object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public abstract Task<T> QuerySingleOrDefaultAsync<T>(string sql, object? param = null);
 
         /// <summary>
         /// Rolls back the current transaction (if supported by the DbContext)

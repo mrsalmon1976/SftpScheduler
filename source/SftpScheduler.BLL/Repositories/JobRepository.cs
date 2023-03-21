@@ -20,6 +20,11 @@ namespace SftpScheduler.BLL.Repositories
             return await dbContext.QuerySingleAsync<JobEntity>(sql, new { Id = id });
         }
 
+        public virtual async Task<JobEntity> GetByIdOrDefaultAsync(IDbContext dbContext, int id)
+        {
+            string sql = @"SELECT * FROM Job WHERE Id = @Id";
+            return await dbContext.QuerySingleOrDefaultAsync<JobEntity>(sql, new { Id = id });
+        }
 
     }
 }

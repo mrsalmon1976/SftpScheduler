@@ -47,7 +47,7 @@ namespace SftpScheduler.BLL.Commands.Job
 
             // Trigger the job 
             ITrigger trigger = TriggerBuilder.Create()
-              .WithIdentity($"Trigger.{jobEntity.Id}", TransferJob.DefaultGroup)
+              .WithIdentity(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup)
               .WithCronSchedule(jobEntity.Schedule)
               .Build();
             await scheduler.ScheduleJob(job, trigger);

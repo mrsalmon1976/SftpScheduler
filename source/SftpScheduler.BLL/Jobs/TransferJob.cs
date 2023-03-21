@@ -45,6 +45,11 @@ namespace SftpScheduler.BLL.Jobs
             return Convert.ToInt32(keyName.Replace("Job.", ""));
         }
 
+        public static string GetTriggerKeyName(int jobId)
+        {
+            return $"Trigger.{jobId}";
+        }
+
         public async Task Execute(IJobExecutionContext context)
         {
             int jobId = GetJobIdFromKeyName(context.JobDetail.Key.Name);

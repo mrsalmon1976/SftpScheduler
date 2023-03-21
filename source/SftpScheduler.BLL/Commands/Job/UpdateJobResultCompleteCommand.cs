@@ -26,7 +26,8 @@ namespace SftpScheduler.BLL.Commands.Job
             jobResultEntity.Progress = 100;
             jobResultEntity.Status = status;
             jobResultEntity.ErrorMessage = errorMessage;
-            string sql = @"UPDATE JobResult SET EndDate = DATETIME(), Progress = @Progress, Status = @Status, ErrorMessage = @ErrrorMessage WHERE Id = @Id)";
+            string sql = @"UPDATE JobResult SET EndDate = DATETIME(), Progress = @Progress, Status = @Status, ErrorMessage = @ErrorMessage WHERE Id = @Id";
+            // , Progress = @Progress, Status = @Status, ErrorMessage = @ErrrorMessage 
             await dbContext.ExecuteNonQueryAsync(sql, jobResultEntity);
 
             return jobResultEntity;
