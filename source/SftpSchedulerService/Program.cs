@@ -65,6 +65,7 @@ try
     builder.Services.AddTransient<CreateJobCommand>();
     builder.Services.AddTransient<ICreateJobResultCommand, CreateJobResultCommand>();
     builder.Services.AddTransient<CreateUserCommand>();
+    builder.Services.AddTransient<IDeleteJobCommand, DeleteJobCommand>();
     builder.Services.AddTransient<IUpdateJobResultCompleteCommand, UpdateJobResultCompleteCommand>();
 
     builder.Services.AddTransient<ITransferCommandFactory, TransferCommandFactory>();
@@ -78,6 +79,7 @@ try
     builder.Services.AddTransient<HostCreateOrchestrator>();
     builder.Services.AddTransient<HostFetchAllOrchestrator>();
     builder.Services.AddTransient<JobCreateOrchestrator>();
+    builder.Services.AddTransient<JobDeleteOneOrchestrator>();
     builder.Services.AddTransient<JobFetchAllOrchestrator>();
     builder.Services.AddTransient<JobFetchOneOrchestrator>();
     builder.Services.AddTransient<LoginPostOrchestrator>();

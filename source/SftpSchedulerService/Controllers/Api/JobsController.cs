@@ -2,21 +2,23 @@
 using Microsoft.AspNetCore.Authorization;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
+using SftpScheduler.BLL.Identity;
 
 namespace SftpSchedulerService.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class JobsController : ControllerBase
     {
-        private readonly JobCreateOrchestrator _jobCreateProvider;
+        private readonly JobCreateOrchestrator _jobCreateOrchestrator;
+        private readonly JobDeleteOneOrchestrator _jobDeleteOneOrchestrator;
         private readonly JobFetchAllOrchestrator _jobFetchAllOrchestrator;
         private readonly JobFetchOneOrchestrator _jobFetchOneOrchestrator;
 
-        public JobsController(JobCreateOrchestrator jobCreateProvider, JobFetchAllOrchestrator jobFetchAllOrchestrator, JobFetchOneOrchestrator jobFetchOneOrchestrator)
+        public JobsController(JobCreateOrchestrator jobCreateOrchestrator, JobDeleteOneOrchestrator jobDeleteOneOrchestrator, JobFetchAllOrchestrator jobFetchAllOrchestrator, JobFetchOneOrchestrator jobFetchOneOrchestrator)
         {
-            _jobCreateProvider = jobCreateProvider;
+            _jobCreateOrchestrator = jobCreateOrchestrator;
+            _jobDeleteOneOrchestrator = jobDeleteOneOrchestrator;
             _jobFetchAllOrchestrator = jobFetchAllOrchestrator;
             _jobFetchOneOrchestrator = jobFetchOneOrchestrator;
         }
@@ -35,10 +37,11 @@ namespace SftpSchedulerService.Controllers.Api
             return await _jobFetchOneOrchestrator.Execute(id);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] JobViewModel model)
         {
-            return await _jobCreateProvider.Execute(model);
+            return await _jobCreateOrchestrator.Execute(model);
         }
 
         //// PUT api/<ApiAuthController>/5
@@ -47,11 +50,14 @@ namespace SftpSchedulerService.Controllers.Api
         //{
         //}
 
-        //// DELETE api/<ApiAuthController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        // DELETE api/<ApiAuthController>/5
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return await _jobDeleteOneOrchestrator.Execute(id);
+           
+        }
 
     }
 }

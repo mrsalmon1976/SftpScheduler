@@ -1,10 +1,6 @@
 ﻿using Quartz;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Jobs;
-using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility;
-using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +9,12 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.Job
 {
-    public class DeleteJobCommand
+    public interface IDeleteJobCommand
+    {
+        Task<bool> ExecuteAsync(IDbContext dbContext, int jobId);
+    }
+
+    public class DeleteJobCommand : IDeleteJobCommand
     {
         private readonly ISchedulerFactory _schedulerFactory;
 
@@ -32,8 +33,10 @@ namespace SftpScheduler.BLL.Commands.Job
 
             IScheduler scheduler = await _schedulerFactory.GetScheduler();
 
-            TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobId), TransferJob.DefaultGroup);
-            return await scheduler.UnscheduleJob(triggerKey);
+            JobKey jobKey = new JobKey(TransferJob.GetJobKeyName(jobId), TransferJob.DefaultGroup);
+
+            return await scheduler.DeleteJob(jobKey);
+
         }
     }
 }
