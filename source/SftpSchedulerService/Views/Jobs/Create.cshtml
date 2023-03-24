@@ -48,7 +48,7 @@
                 <div class="form-group row">
                     <label for="job-schedule" class="col-sm-2 col-form-label">Schedule</label>
                     <div class="col-sm-4">
-                        <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="? ? ? ? ? ?" autocomplete="false">
+                        <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="0 0/15 * ? * * *" autocomplete="false">
                         <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
                     </div>
                     <div class="col-sm-2">
@@ -65,7 +65,7 @@
                 <div class="form-group row">
                     <label for="job-remote-path" class="col-sm-2 col-form-label">Remote Path</label>
                     <div class="col-sm-4">
-                        <input type="text" v-model="job.remotePath" @@blur="job.validateRemotePath()" class="form-control" id="job-remote-path" placeholder="\\server\share">
+                        <input type="text" v-model="job.remotePath" @@blur="job.validateRemotePath()" class="form-control" id="job-remote-path" placeholder="/RemoteFolder/">
                         <span v-if="!job.isRemotePathValid" class="invalid-feedback">Please provide a valid remote path</span>
                     </div>
                 </div>

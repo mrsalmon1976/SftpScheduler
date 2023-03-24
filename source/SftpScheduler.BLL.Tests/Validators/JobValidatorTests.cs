@@ -3,13 +3,13 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Utility.IO;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SystemWrapper.IO;
 
 namespace SftpScheduler.BLL.Tests.Validators
 {

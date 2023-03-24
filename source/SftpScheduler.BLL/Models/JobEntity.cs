@@ -34,6 +34,9 @@ namespace SftpScheduler.BLL.Models
         [CronSchedule]
         public virtual string Schedule { get; set; }
 
+        // not marked as required as this is a "cached" value and system-handled
+        public virtual string ScheduleInWords { get; internal set; }
+
         [Required(ErrorMessage = "Local path is required")]  
         public virtual string LocalPath { get; set; }
 

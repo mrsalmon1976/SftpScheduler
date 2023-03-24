@@ -29,6 +29,8 @@ namespace SftpSchedulerService.Models.Job
 
         public string? Schedule { get; set; }
 
+        public string? ScheduleInWords { get; set; }
+
         public string? LocalPath { get; set; }
 
         public string? RemotePath { get; set; }

@@ -7,6 +7,7 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Utility.IO;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
-using SystemWrapper.IO;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
@@ -72,6 +72,26 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
             Assert.That(result.Id, Is.EqualTo(newEntityId));
         }
+
+        [Test]
+        public void Execute_ValidJob_SetsScheduleInWords()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            IJobValidator jobValidator = Substitute.For<IJobValidator>();
+
+            var jobEntity = EntityTestHelper.CreateJobEntity();
+
+            jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
+
+            CreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+
+            string expectedScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
+            Assert.That(result.ScheduleInWords, Is.EqualTo(expectedScheduleInWords));
+        }
+
 
         [Test]
         public void Execute_ValidJob_SchedulesQuartzJob()
