@@ -46,6 +46,9 @@ createApp({
             this.selectedJob = job;
             $('#modal-delete-job').modal();
 
+        },
+        formatNextRunTime(job) {
+            return UiHelpers.formatDateTime(job.nextRunTime);
         }
     },
     mounted: function () {

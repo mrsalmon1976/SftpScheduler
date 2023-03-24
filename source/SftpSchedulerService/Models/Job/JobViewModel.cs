@@ -34,5 +34,7 @@ namespace SftpSchedulerService.Models.Job
         public string? LocalPath { get; set; }
 
         public string? RemotePath { get; set; }
+
+        public DateTime? NextRunTime { get; set; }
     }
 }

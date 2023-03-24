@@ -1,5 +1,10 @@
 ﻿class UiHelpers
 {
+    static formatDateTime(dt) {
+        return moment(dt).format('YYYY-MM-DD HH:mm:SS')
+
+    };
+
     static showErrorToast(title, subtitle, message) {
         $(document).Toasts('create', {
             class: 'bg-danger',
