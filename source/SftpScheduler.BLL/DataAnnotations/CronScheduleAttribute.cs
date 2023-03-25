@@ -25,7 +25,9 @@ namespace SftpScheduler.BLL.DataAnnotations
                 return false;
             }
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             string schedule = value.ToString();
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             if (string.IsNullOrEmpty(schedule))
             {
                 return false;

@@ -14,6 +14,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
 {
     [TestFixture]

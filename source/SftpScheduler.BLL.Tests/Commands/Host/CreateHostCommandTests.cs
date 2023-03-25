@@ -85,7 +85,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
                     HostEntity result = createHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(result);
-                    Assert.AreEqual(result.Name, hostEntity.Name);
+                    Assert.That(result.Name, Is.EqualTo(hostEntity.Name));
                     Assert.That(hostEntity.Created, Is.GreaterThanOrEqualTo(dtBefore));
 
                 }

@@ -16,6 +16,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
 {
     [TestFixture]
@@ -80,9 +83,9 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
 
             JobCreateOrchestrator JobCreateOrchestrator = new JobCreateOrchestrator(dbContextFactory, mapper, createJobCommand);
             var result = (OkObjectResult)JobCreateOrchestrator.Execute(jobViewModel).Result;
-            JobViewModel JobViewModelResult = (JobViewModel)result.Value;
+            JobViewModel resultModel = (JobViewModel)result.Value;
 
-            Assert.That(JobViewModelResult.Id, Is.EqualTo(jobViewModelExpected.Id));
+            Assert.That(resultModel.Id, Is.EqualTo(jobViewModelExpected.Id));
         }
 
         private CreateJobCommand MockCreateJobCommand()

@@ -14,17 +14,23 @@ namespace SftpScheduler.BLL.Models
         public JobEntity()
         {
             this.Id = 0;
+            this.HostId = 0;
+            this.Name = String.Empty;
+            this.Schedule = String.Empty;
+            this.RemotePath = String.Empty;
+            this.ScheduleInWords = String.Empty;
+            this.LocalPath = String.Empty;
             this.Created = DateTime.UtcNow;
         }
 
         public virtual int Id { get; internal set; }
 
         [Required]
-        public virtual string? Name { get; set; }
+        public virtual string Name { get; set; }
 
         [Required]
         [Range(1, Int32.MaxValue)]
-        public virtual int? HostId { get; set; }
+        public virtual int HostId { get; set; }
 
         [Required(ErrorMessage = "Job type is required")]
         [Range(1, 2, ErrorMessage = "Job type must be 1 (Download) or 2 (Upload)")]

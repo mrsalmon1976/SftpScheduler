@@ -26,7 +26,7 @@ namespace SftpScheduler.BLL.Tests.Validators
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             HostRepository hostRepository = Substitute.For<HostRepository>();
-            hostRepository.GetByIdAsync(dbContext, jobEntity.HostId.Value).Returns(Task.FromResult(hostEntity));
+            hostRepository.GetByIdAsync(dbContext, jobEntity.HostId).Returns(Task.FromResult(hostEntity));
 
             IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
             directoryWrap.Exists(jobEntity.LocalPath).Returns(true);
@@ -53,7 +53,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_InValidNoHost_ExceptionThrown()
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.HostId = null;
+            jobEntity.HostId = 0;
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -66,7 +66,9 @@ namespace SftpScheduler.BLL.Tests.Validators
             int hostId = Faker.RandomNumber.Next(1, 100);
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.HostId = hostId;
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             HostEntity hostEntity = null;
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
             var directoryWrap = Substitute.For<IDirectoryWrap>();
             directoryWrap.Exists(Arg.Any<string>()).Returns(true);
@@ -74,7 +76,9 @@ namespace SftpScheduler.BLL.Tests.Validators
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             HostRepository hostRepository = Substitute.For<HostRepository>();
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             hostRepository.GetByIdAsync(dbContext, hostId).Returns(Task.FromResult(hostEntity));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             JobValidator jobValidator = CreateJobValidator(hostRepository, directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);

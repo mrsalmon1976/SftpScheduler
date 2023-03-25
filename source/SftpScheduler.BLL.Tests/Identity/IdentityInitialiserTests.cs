@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
 namespace SftpScheduler.BLL.Tests.Identity
 {
     [TestFixture]
@@ -87,10 +89,8 @@ namespace SftpScheduler.BLL.Tests.Identity
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
             CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
 
-            IdentityUser? user = null;
-
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
-            userManager.FindByNameAsync(IdentityInitialiser.DefaultAdminUserName).Returns(Task.FromResult(user));
+            userManager.FindByNameAsync(IdentityInitialiser.DefaultAdminUserName).Returns(Task.FromResult<IdentityUser>(null));
 
             IdentityInitialiser identityInitialiser = new IdentityInitialiser(logger, userManager, roleManager, createUserCommand);
             identityInitialiser.Seed();
@@ -99,7 +99,7 @@ namespace SftpScheduler.BLL.Tests.Identity
 
             createUserCommand.Received(1).ExecuteAsync(userManager
                 , IdentityInitialiser.DefaultAdminUserName
-                , IdentityInitialiser.DefaultAdminUserPassword, Arg.Any<IEnumerable<string>>());
+                , IdentityInitialiser.DefaultAdminUserPassword, Arg.Any<IEnumerable<string>>()).GetAwaiter().GetResult();
 
         }
 
@@ -124,7 +124,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             createUserCommand.DidNotReceive().ExecuteAsync(Arg.Any<UserManager<IdentityUser>>()
                 , Arg.Any<string>()
                 , Arg.Any<string>()
-                , Arg.Any<IEnumerable<string>>());
+                , Arg.Any<IEnumerable<string>>()).GetAwaiter().GetResult();
         }
 
     }

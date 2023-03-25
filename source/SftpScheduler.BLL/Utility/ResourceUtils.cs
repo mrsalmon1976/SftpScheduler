@@ -6,23 +6,28 @@ namespace SftpScheduler.BLL.Utility
     {
         public virtual string ReadResource(string qualifiedName)
         {
-            var assembly = Assembly.GetAssembly(typeof(ResourceUtils));
+            Assembly? assembly = Assembly.GetAssembly(typeof(ResourceUtils));
             string? result = null;
-
-            Stream? resourceStream = assembly.GetManifestResourceStream(qualifiedName);
-            if (resourceStream == null)
+            if (assembly != null)
             {
-                throw new ArgumentException($"Resource {qualifiedName} does not exist in the current assembly");
-            }
 
-            using (resourceStream)
-            {
-                using (StreamReader reader = new StreamReader(resourceStream))
+                Stream? resourceStream = assembly?.GetManifestResourceStream(qualifiedName);
+                if (resourceStream != null)
                 {
-                    result = reader.ReadToEnd();
+                    using (resourceStream)
+                    {
+                        using (StreamReader reader = new StreamReader(resourceStream))
+                        {
+                            result = reader.ReadToEnd();
+                        }
+                    }
                 }
             }
 
+            if (result == null)
+            {
+                throw new ArgumentException($"Resource {qualifiedName} does not exist in the current assembly");
+            }
             return result;
         }
     }

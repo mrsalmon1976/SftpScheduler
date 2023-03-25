@@ -137,7 +137,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
         }
 
 
-        private TransferJob CreateTransferJob(ILogger<TransferJob> logger = null, IDbContextFactory dbContextFactory = null, ITransferCommandFactory transferCommandFactory = null, ICreateJobResultCommand createJobResultCommand = null, IUpdateJobResultCompleteCommand updateJobResultCompleteCommand = null)
+        private TransferJob CreateTransferJob(ILogger<TransferJob>? logger = null, IDbContextFactory? dbContextFactory = null, ITransferCommandFactory? transferCommandFactory = null, ICreateJobResultCommand? createJobResultCommand = null, IUpdateJobResultCompleteCommand? updateJobResultCompleteCommand = null)
         {
             return new TransferJob(logger ?? Substitute.For<ILogger<TransferJob>>()
                 , dbContextFactory ?? Substitute.For<IDbContextFactory>()

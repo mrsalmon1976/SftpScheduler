@@ -53,39 +53,35 @@ namespace SftpScheduler.BLL.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             int jobId = GetJobIdFromKeyName(context.JobDetail.Key.Name);
-            JobResultEntity jobResult = null;
             _logger.LogInformation($"Starting job {jobId}");
 
             // create the result record
             using (IDbContext dbContext = _dbContextFactory.GetDbContext()) 
             {
                 dbContext.BeginTransaction();
-                jobResult = await _createJobResultCommand.ExecuteAsync(dbContext, jobId);
+                JobResultEntity jobResult = await _createJobResultCommand.ExecuteAsync(dbContext, jobId);
                 dbContext.Commit();
                 _logger.LogInformation($"Created job result record for job {jobId}");
-            }
 
-            string jobStatus = JobResult.Success;
-            string? errorMessage = null;
+                string jobStatus = JobResult.Success;
+                string? errorMessage = null;
 
-            // execute the transfer
-            using (ITransferCommand transferCommand = _transferCommandFactory.CreateTransferCommand())
-            {
-                try
+                // execute the transfer
+                using (ITransferCommand transferCommand = _transferCommandFactory.CreateTransferCommand())
                 {
-                    transferCommand.Execute(jobId);
+                    try
+                    {
+                        transferCommand.Execute(jobId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, ex.Message);
+                        jobStatus = JobResult.Failure;
+                        errorMessage = ex.Message;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, ex.Message);
-                    jobStatus = JobResult.Failure;
-                    errorMessage = ex.Message;
-                }
-            }
 
-            // update the record
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
-            {
+                // update the record
                 dbContext.BeginTransaction();
                 await _updateJobResultCompleteCommand.ExecuteAsync(dbContext, jobResult.Id, 100, jobStatus, errorMessage);
                 dbContext.Commit();

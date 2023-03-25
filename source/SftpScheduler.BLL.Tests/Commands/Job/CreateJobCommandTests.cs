@@ -189,7 +189,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                     JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(result);
-                    Assert.AreEqual(result.Name, jobEntity.Name);
+                    Assert.That(result.Name, Is.EqualTo(jobEntity.Name));
                     Assert.That(jobEntity.Created, Is.GreaterThanOrEqualTo(dtBefore));
 
                 }

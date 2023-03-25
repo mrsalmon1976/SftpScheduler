@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.ViewOrchestrators.Api.Login;
@@ -13,6 +14,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+
+#pragma warning disable CS8625
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Login
 {
@@ -25,10 +28,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Login
             UserManager<IdentityUser> userManager = IdentityTestHelper.CreateUserManagerMock();
             HttpContext httpContext = Substitute.For<HttpContext>();
 
-            IdentityUser? user = null;
             LoginModel loginModel = new LoginModel();
             loginModel.Username = Guid.NewGuid().ToString();
-            userManager.FindByNameAsync(Arg.Any<string>()).Returns(Task.FromResult(user));
+            //userManager.FindByNameAsync(Arg.Any<string>()).ReturnsNull<Task<IdentityUser>>();
+            userManager.FindByNameAsync(Arg.Any<string>()).Returns(Task.FromResult<IdentityUser>(null));
 
             LoginPostOrchestrator loginPostOrchestrator = CreateLoginPostOrchestrator(userManager);
             IActionResult result = loginPostOrchestrator.Execute(loginModel, httpContext).GetAwaiter().GetResult();

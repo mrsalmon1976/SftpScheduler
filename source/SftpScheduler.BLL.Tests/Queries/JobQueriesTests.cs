@@ -27,7 +27,7 @@ namespace SftpScheduler.BLL.Tests.Queries
             IEnumerable<JobEntity> result = jobQueries.GetAllAsync(dbContext).Result;
 
             dbContext.Received(1).QueryAsync<JobEntity>(Arg.Any<string>());
-            Assert.AreEqual(2, result.Count());
+            Assert.That(result.Count(), Is.EqualTo(2));
 
         }
 
@@ -49,7 +49,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     JobRepository jobQueries = new JobRepository();
                     JobEntity[] result = jobQueries.GetAllAsync(dbContext).Result.ToArray();
 
-                    Assert.That(3, Is.EqualTo(result.Length));
+                    Assert.That(result.Length, Is.EqualTo(3));
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity2.Id), Is.Not.Null);
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity3.Id), Is.Not.Null);
@@ -69,7 +69,7 @@ namespace SftpScheduler.BLL.Tests.Queries
             dbContext.QueryAsync<JobEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
             
             JobRepository jobQueries = new JobRepository();
-            JobEntity result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
+            jobQueries.GetByIdAsync(dbContext, jobEntity.Id).GetAwaiter().GetResult();
 
             dbContext.Received(1).QuerySingleAsync<JobEntity>(Arg.Any<string>(), Arg.Any<object>());
 
@@ -90,8 +90,8 @@ namespace SftpScheduler.BLL.Tests.Queries
                     JobRepository jobQueries = new JobRepository();
                     JobEntity result = jobQueries.GetByIdAsync(dbContext, jobEntity.Id).Result;
 
-                    Assert.AreEqual(result.Id, jobEntity.Id);
-                    Assert.AreEqual(result.Name, jobEntity.Name);
+                    Assert.That(result.Id, Is.EqualTo(jobEntity.Id));
+                    Assert.That(result.Name, Is.EqualTo(jobEntity.Name));
                 }
             }
         }

@@ -63,7 +63,7 @@ namespace SftpScheduler.BLL.Tests
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.HostId = hostId;
 
-            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, LocalPath, RemotePath, Created) VALUES (@Name, @HostId, @Type, @Schedule, @LocalPath, @RemotePath, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";

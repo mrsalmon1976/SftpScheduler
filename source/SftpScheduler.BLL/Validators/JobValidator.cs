@@ -46,7 +46,7 @@ namespace SftpScheduler.BLL.Validators
             }
 
             // check that the host actually exists
-            var hostEntity = _hostRepository.GetByIdAsync(dbContext, jobEntity.HostId.Value).GetAwaiter().GetResult();
+            var hostEntity = _hostRepository.GetByIdAsync(dbContext, jobEntity.HostId).GetAwaiter().GetResult();
             if (hostEntity == null)
             {
                 validationResult.ErrorMessages.Add("Host does not exist");

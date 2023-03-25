@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using WinSCP;
 
+#pragma warning disable CS8629 // Nullable value type may be null.
+
 namespace SftpScheduler.BLL.Commands.Transfer
 {
     public class SftpTransferCommand : ITransferCommand
@@ -31,16 +33,13 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         public void Dispose()
         {
-            if (_dbContext != null) 
-            {
-                _dbContext.Dispose();
-            }
+            _dbContext?.Dispose();
         }
 
         public void Execute(int jobId)
         {
             JobEntity jobEntity = _jobRepository.GetByIdAsync(_dbContext, jobId).GetAwaiter().GetResult();
-            HostEntity hostEntity = _hostRepository.GetByIdAsync(_dbContext, jobEntity.HostId.Value).GetAwaiter().GetResult();
+            HostEntity hostEntity = _hostRepository.GetByIdAsync(_dbContext, jobEntity.HostId).GetAwaiter().GetResult();
 
             // Setup session options
             SessionOptions sessionOptions = new SessionOptions
@@ -108,7 +107,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
             {
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 string extension = Path.GetExtension(file);
-                string folder = Path.GetDirectoryName(file);
+                string? folder = Path.GetDirectoryName(file);
 
                 if (fileName.EndsWith(".uploaded", StringComparison.CurrentCultureIgnoreCase))
                 {

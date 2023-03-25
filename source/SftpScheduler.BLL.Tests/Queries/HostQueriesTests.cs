@@ -47,7 +47,7 @@ namespace SftpScheduler.BLL.Tests.Queries
                     HostRepository hostQueries = new HostRepository();
                     HostEntity[] result = hostQueries.GetAllAsync(dbContext).Result.ToArray();
 
-                    Assert.That(3, Is.EqualTo(result.Length));
+                    Assert.That(result.Length, Is.EqualTo(3));
                     Assert.That(result.SingleOrDefault(x => x.Id == HostEntity1.Id), Is.Not.Null);
                     Assert.That(result.SingleOrDefault(x => x.Id == HostEntity2.Id), Is.Not.Null);
                     Assert.That(result.SingleOrDefault(x => x.Id == HostEntity3.Id), Is.Not.Null);
@@ -87,8 +87,8 @@ namespace SftpScheduler.BLL.Tests.Queries
                     HostRepository hostQueries = new HostRepository();
                     HostEntity result = hostQueries.GetByIdAsync(dbContext, hostEntity.Id).Result;
 
-                    Assert.AreEqual(result.Id, hostEntity.Id);
-                    Assert.AreEqual(result.Name, hostEntity.Name);
+                    Assert.That(result.Id, Is.EqualTo(hostEntity.Id));
+                    Assert.That(result.Name, Is.EqualTo(hostEntity.Name));
                 }
             }
         }
