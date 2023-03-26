@@ -27,7 +27,8 @@
 
     <ItemGroup>
 	    <InternalsVisibleTo Include="SftpScheduler.BLL.Tests" />
-    </ItemGroup>
+		<InternalsVisibleTo Include="SftpSchedulerService.Tests" />
+	</ItemGroup>
 
 
 </Project>

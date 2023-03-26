@@ -12,16 +12,24 @@ namespace SftpScheduler.BLL.Repositories
     {
         public virtual async Task<IEnumerable<HostEntity>> GetAllAsync(IDbContext dbContext)
         {
-            string sql = @"SELECT * FROM Host ORDER BY Name";
+            const string sql = @"SELECT * FROM Host ORDER BY Name";
             return await dbContext.QueryAsync<HostEntity>(sql);
         }
 
         public virtual async Task<HostEntity> GetByIdAsync(IDbContext dbContext, int id)
         {
-            string sql = @"SELECT * FROM Host WHERE Id = @Id";
+            const string sql = @"SELECT * FROM Host WHERE Id = @Id";
             return await dbContext.QuerySingleAsync<HostEntity>(sql, new { Id = id });
         }
 
+        public virtual async Task<IEnumerable<HostJobCountEntity>> GetAllJobCountsAsync(IDbContext dbContext)
+        {
+            const string sql = @"SELECT Host.Id AS HostId, COUNT(Job.Id) AS JobCount
+                FROM HOST
+                LEFT JOIN Job ON Host.Id = Job.HostId
+                GROUP BY Host.Id";
+            return await dbContext.QueryAsync<HostJobCountEntity>(sql);
+        }
 
     }
 }

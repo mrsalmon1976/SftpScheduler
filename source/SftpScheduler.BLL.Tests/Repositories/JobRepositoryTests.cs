@@ -9,10 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Tests.Queries
+namespace SftpScheduler.BLL.Tests.Repositories
 {
     [TestFixture]
-    public class JobQueriesTests
+    public class JobRepositoryTests
     {
 
         #region GetAll Tests

@@ -9,10 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Tests.Queries
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
+namespace SftpScheduler.BLL.Tests.Repositories
 {
     [TestFixture]
-    public class HostQueriesTests
+    public class HostRepositoryTests
     {
 
         #region GetAll Tests
@@ -95,5 +98,47 @@ namespace SftpScheduler.BLL.Tests.Queries
 
         #endregion
 
+        #region GetAllJobCountsAsync Tests
+
+        [Test]
+        public void GetAllJobCountsAsync_OnExecute_PerformsQuery()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            HostRepository hostRepo = new HostRepository();
+            IEnumerable<HostJobCountEntity> result = hostRepo.GetAllJobCountsAsync(dbContext).Result;
+
+            dbContext.Received(1).QueryAsync<HostJobCountEntity>(Arg.Any<string>());
+
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(5)]
+        public void GetAllJobCountsAsync_Integration_ReturnsDbRecord(int jobCount)
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    for (int i=0; i<jobCount; i++)
+                    {
+                        dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    }
+
+                    HostRepository hostRepo = new HostRepository();
+                    HostJobCountEntity result = hostRepo.GetAllJobCountsAsync(dbContext).Result.SingleOrDefault();
+
+                    Assert.That(result.HostId, Is.EqualTo(hostEntity.Id));
+                    Assert.That(result.JobCount, Is.EqualTo(jobCount));
+                }
+            }
+        }
+
+        #endregion
     }
 }

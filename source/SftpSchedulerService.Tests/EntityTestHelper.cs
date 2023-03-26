@@ -12,9 +12,10 @@ namespace SftpSchedulerService.Tests
     internal class EntityTestHelper
     {
 
-        internal static HostEntity CreateHostEntity()
+        internal static HostEntity CreateHostEntity(int hostId = 0)
         {
             HostEntity hostEntity = new HostEntity();
+            hostEntity.Id = hostId;
             hostEntity.Name = Faker.Lorem.GetFirstWord();
             hostEntity.Host = Faker.Internet.DomainName();
             hostEntity.Port = Faker.RandomNumber.Next(1, 9999);
@@ -22,6 +23,14 @@ namespace SftpSchedulerService.Tests
             hostEntity.Password = Guid.NewGuid().ToString();
             return hostEntity;
 
+        }
+
+        internal static HostJobCountEntity CreateHostJobCountEntity(int hostId)
+        {
+            HostJobCountEntity hostJobCountEntity = new HostJobCountEntity();
+            hostJobCountEntity.HostId = hostId;
+            hostJobCountEntity.JobCount = Faker.RandomNumber.Next(0, 20);
+            return hostJobCountEntity;
         }
 
         internal static JobEntity CreateJobEntity()

@@ -26,8 +26,25 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
         {
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
-                var hostEntities = await _hostRepository.GetAllAsync(dbContext);
+                var hostEntityTask = _hostRepository.GetAllAsync(dbContext);
+                var jobCountTask = _hostRepository.GetAllJobCountsAsync(dbContext);
+                await Task.WhenAll(hostEntityTask, jobCountTask);
+
+                var hostEntities = hostEntityTask.Result;
+                var jobCounts = jobCountTask.Result;
+
+                // hydrate objects with aggregated values
                 var result = _mapper.Map<HostEntity[], HostViewModel[]>(hostEntities.ToArray());
+                foreach (HostViewModel hostView in result)
+                {
+                    HostJobCountEntity jobCountEntity = jobCounts.SingleOrDefault(x => x.HostId == hostView.Id);
+                    if (jobCountEntity != null)
+                    {
+                        hostView.JobCount = jobCountEntity.JobCount;
+
+                    }
+                }
+
                 return new OkObjectResult(result);
             }
         }
