@@ -21,7 +21,7 @@ namespace SftpSchedulerService.Controllers
         [HttpGet]
         public ViewResult Create()
         {
-            return this.View("Create");
+            return this.View("Form");
         }
 
     }

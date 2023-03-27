@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Models
 {
-    public class JobResultEntity
+    public class JobLogEntity
     {
         public int Id { get; set; }
 

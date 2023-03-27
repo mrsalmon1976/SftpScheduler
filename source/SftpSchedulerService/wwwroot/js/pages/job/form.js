@@ -8,7 +8,8 @@ createApp({
             isLoading: true,
             schedule: '',
             scheduleInWords: 'No schedule entered',
-            job: new JobModel()
+            job: new JobModel(),
+            logs: []
         }
     },
     watch: {
@@ -40,6 +41,28 @@ createApp({
 
             this.allHosts = result.data;
             this.isLoading = false;
+
+        },
+        async loadJobDetail() {
+
+            let result = await axios.get('/api/jobs/' + this.job.hashId)
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    this.isLoading = false;
+                    return;
+                });
+
+            var jobData = result.data;
+            this.job.name = jobData.name;
+            this.job.hostId = jobData.hostId;
+            this.job.type = jobData.type;
+            this.job.localPath = jobData.localPath;
+            this.job.remotePath = jobData.remotePath;
+
+            this.schedule = jobData.schedule;
+
+        },
+        async loadLogs() {
 
         },
         async submit() {
@@ -74,5 +97,11 @@ createApp({
     mounted: function () {
         this.isLoading = false;
         this.loadHosts();
+
+        this.job.hashId = $('#job-id').text();
+        if (this.job.hasId != '') {
+            this.loadJobDetail();
+            this.loadLogs();
+        }
     }
 }).mount('#app-job')

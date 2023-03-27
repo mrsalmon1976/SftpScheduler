@@ -18,16 +18,14 @@ namespace SftpSchedulerService.Controllers
             return this.View();
         }
 
-        [HttpGet]
-        public ViewResult Create()
-        {
-            return this.View("Create");
-        }
-
         [HttpGet("jobs/{id}")]
         public ViewResult Detail(string id)
         {
-            return this.View("Create");
+            if (id.Equals("create", StringComparison.OrdinalIgnoreCase))
+            {
+                id = "";
+            }
+            return this.View("Form", new { JobId = id });
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿class JobModel {
     constructor() {
+        this.hashId = '';
         this.name = '';
         this.hostId = 0;
         this.schedule = '';

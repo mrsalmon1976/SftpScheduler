@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Data
 {
-    public static class JobResult
+    public static class JobStatus
     {
         public const string InProgress = "In Progress";
 

@@ -31,7 +31,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         }
 
         [TestCase("Job")]
-        [TestCase("JobResult")]
+        [TestCase("JobLog")]
         public void Execute_OnDelete_RunsDeleteOnTable(string tableName)
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
@@ -84,8 +84,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                     JobEntity job = dbIntegrationTestHelper.CreateJobEntity(dbContext, host.Id);
 
                     int jobId = job.Id;
-                    JobResultEntity jobResult1 = dbIntegrationTestHelper.CreateJobResultEntity(dbContext, jobId);
-                    JobResultEntity jobResult2 = dbIntegrationTestHelper.CreateJobResultEntity(dbContext, jobId);
+                    JobLogEntity jobLog1 = dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobId);
+                    JobLogEntity jobLog2 = dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobId);
 
                     deleteJobCommand.ExecuteAsync(dbContext, jobId).GetAwaiter().GetResult();
 

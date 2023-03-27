@@ -1,0 +1,98 @@
+﻿@using SftpScheduler.BLL.Data;
+@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Jobs - Create New Job";
+
+}
+@section PageActionMenu {
+}
+@section Scripts {
+    <script src="~/js/models/job.js"></script>
+    <script src="~/js/pages/job/form.js"></script>
+}
+<div id="app-job">
+
+    <div class="card card-primary card-tabs">
+        <div class="card-header p-0 pt-1">
+            <ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
+                <li class="pt-2 px-3"><h3 class="card-title">New Job</h3></li>
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-job-detail" data-toggle="pill" href="#tab-job-detail-content" role="tab" aria-controls="tab-job-detail-content" aria-selected="true">Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-job-logs" data-toggle="pill" href="#tab-job-logs-content" role="tab" aria-controls="tab-job-logs-content" aria-selected="false">Logs</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="custom-tabs-two-tabContent">
+                <div class="tab-pane fade show active" id="tab-job-detail-content" role="tabpanel" aria-labelledby="tab-job-detail">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="job-name" class="col-sm-2 col-form-label">Name</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="job.name" @@blur="job.validateName()" class="form-control" id="job-name" placeholder="Name">
+                                <span v-if="!job.isNameValid" class="invalid-feedback">Please provide a name at least 3 characters long</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-host" class="col-sm-2 col-form-label">Host</label>
+                            <div class="col-sm-4">
+                                <select v-model="job.hostId" class="form-control" id="job-host" @@blur="job.validateHost()">
+                                    <option value="0"></option>
+                                    <option v-for="h in allHosts" :value="h.id">{{ h.name }}</option>
+                                </select>
+                                <span v-if="!job.isHostValid" class="invalid-feedback">Please select a host</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-type" class="col-sm-2 col-form-label">Type</label>
+                            <div class="col-sm-4">
+                                <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()">
+                                    <option value="0"></option>
+                                    <option value="1">@JobType.Download</option>
+                                    <option value="2">@JobType.Upload</option>
+                                </select>
+                                <span v-if="!job.isTypeValid" class="invalid-feedback">Please select a job type</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-schedule" class="col-sm-2 col-form-label">Schedule</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="0 0/15 * ? * * *" autocomplete="false">
+                                <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="https://www.freeformatter.com/cron-expression-generator-quartz.html" target="_blank" class="text-sm">Help!!</a>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-local-path" class="col-sm-2 col-form-label">Local Path</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="job.localPath" @@blur="job.validateLocalPath()" class="form-control" id="job-local-path" placeholder="\\server\share">
+                                <span v-if="!job.isLocalPathValid" class="invalid-feedback">Please provide a valid local path</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-remote-path" class="col-sm-2 col-form-label">Remote Path</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="job.remotePath" @@blur="job.validateRemotePath()" class="form-control" id="job-remote-path" placeholder="/RemoteFolder/">
+                                <span v-if="!job.isRemotePathValid" class="invalid-feedback">Please provide a valid remote path</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">Create Job</button>
+                            <button type="reset" class="btn btn-default float-right">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="tab-job-logs-content" role="tabpanel" aria-labelledby="tab-job-logs">
+                    Job logs displayed here
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div style="display:none;" id="job-id">@Model.JobId</div>
+

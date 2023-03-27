@@ -42,20 +42,20 @@ namespace SftpScheduler.BLL.Tests.Jobs
         }
 
         [Test]
-        public void Execute_CreatesNewJobResult()
+        public void Execute_CreatesNewJobLog()
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
-            ICreateJobResultCommand createJobResultCommand = Substitute.For<ICreateJobResultCommand>();
-            TransferJob transferJob = CreateTransferJob(createJobResultCommand: createJobResultCommand);
+            ICreateJobLogCommand createJobLogCmd = Substitute.For<ICreateJobLogCommand>();
+            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
-            JobResultEntity jobResultEntity = EntityTestHelper.CreateJobResultEntity();
-            jobResultEntity.JobId = jobId;
-            createJobResultCommand.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobResultEntity));
+            JobLogEntity jobLog = EntityTestHelper.CreateJobLogEntity();
+            jobLog.JobId = jobId;
+            createJobLogCmd.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLog));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
 
-            createJobResultCommand.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobId);
+            createJobLogCmd.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobId);
 
 
         }
@@ -64,19 +64,19 @@ namespace SftpScheduler.BLL.Tests.Jobs
         public void Execute_ExecutesTransfer()
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
-            ICreateJobResultCommand createJobResultCommand = Substitute.For<ICreateJobResultCommand>();
+            ICreateJobLogCommand createJobLogCmd = Substitute.For<ICreateJobLogCommand>();
 
             ITransferCommandFactory transferCommandFactory = Substitute.For<ITransferCommandFactory>();
             ITransferCommand transferCommand = Substitute.For<ITransferCommand>();
             transferCommandFactory.CreateTransferCommand().Returns(transferCommand);
 
-            TransferJob transferJob = CreateTransferJob(createJobResultCommand: createJobResultCommand, transferCommandFactory: transferCommandFactory);
+            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, transferCommandFactory: transferCommandFactory);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
 
-            JobResultEntity jobResultEntity = EntityTestHelper.CreateJobResultEntity();
-            jobResultEntity.JobId = jobId;
-            createJobResultCommand.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobResultEntity));
+            JobLogEntity jobLog = EntityTestHelper.CreateJobLogEntity();
+            jobLog.JobId = jobId;
+            createJobLogCmd.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLog));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
 
@@ -86,11 +86,11 @@ namespace SftpScheduler.BLL.Tests.Jobs
         }
 
         [Test]
-        public void Execute_OnSuccessfulTransfer_UpdatesJobResultWithSuccess()
+        public void Execute_OnSuccessfulTransfer_UpdatesJobLogWithSuccess()
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
-            ICreateJobResultCommand createJobResultCommand = Substitute.For<ICreateJobResultCommand>();
-            IUpdateJobResultCompleteCommand updateJobResultCompleteCommand = Substitute.For<IUpdateJobResultCompleteCommand>();
+            ICreateJobLogCommand createJobLogCmd = Substitute.For<ICreateJobLogCommand>();
+            IUpdateJobLogCompleteCommand updateJobLogCompleteCmd = Substitute.For<IUpdateJobLogCompleteCommand>();
 
             ITransferCommandFactory transferCommandFactory = Substitute.For<ITransferCommandFactory>();
             ITransferCommand transferCommand = Substitute.For<ITransferCommand>();
@@ -98,52 +98,52 @@ namespace SftpScheduler.BLL.Tests.Jobs
             Exception thrownException = new Exception("Transfer failed!");
             transferCommand.When(x => x.Execute(Arg.Any<int>())).Throw(thrownException);
 
-            TransferJob transferJob = CreateTransferJob(createJobResultCommand: createJobResultCommand, transferCommandFactory: transferCommandFactory, updateJobResultCompleteCommand: updateJobResultCompleteCommand);
+            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, transferCommandFactory: transferCommandFactory, updateJobLogCompleteCommand: updateJobLogCompleteCmd);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
-            JobResultEntity jobResultEntity = EntityTestHelper.CreateJobResultEntity();
-            jobResultEntity.Id = Faker.RandomNumber.Next(1, 1000);
-            jobResultEntity.JobId = jobId;
-            createJobResultCommand.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobResultEntity));
+            JobLogEntity jobLogEntity = EntityTestHelper.CreateJobLogEntity();
+            jobLogEntity.Id = Faker.RandomNumber.Next(1, 1000);
+            jobLogEntity.JobId = jobId;
+            createJobLogCmd.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLogEntity));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
 
-            updateJobResultCompleteCommand.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobResultEntity.Id, 100, JobResult.Failure, thrownException.Message);
+            updateJobLogCompleteCmd.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobLogEntity.Id, 100, JobStatus.Failure, thrownException.Message);
 
 
         }
 
         [Test]
-        public void Execute_OnFailedTransfer_UpdatesJobResultWithFailure()
+        public void Execute_OnFailedTransfer_UpdatesJobLogWithFailure()
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
-            ICreateJobResultCommand createJobResultCommand = Substitute.For<ICreateJobResultCommand>();
-            IUpdateJobResultCompleteCommand updateJobResultCompleteCommand = Substitute.For<IUpdateJobResultCompleteCommand>();
+            ICreateJobLogCommand createJobLogCommand = Substitute.For<ICreateJobLogCommand>();
+            IUpdateJobLogCompleteCommand updateJobLogCompleteCommand = Substitute.For<IUpdateJobLogCompleteCommand>();
 
-            TransferJob transferJob = CreateTransferJob(createJobResultCommand: createJobResultCommand, updateJobResultCompleteCommand: updateJobResultCompleteCommand);
+            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCommand, updateJobLogCompleteCommand: updateJobLogCompleteCommand);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
 
-            JobResultEntity jobResultEntity = EntityTestHelper.CreateJobResultEntity();
-            jobResultEntity.Id = Faker.RandomNumber.Next(1, 1000);
-            jobResultEntity.JobId = jobId;
-            createJobResultCommand.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobResultEntity));
+            JobLogEntity jobLogEntity = EntityTestHelper.CreateJobLogEntity();
+            jobLogEntity.Id = Faker.RandomNumber.Next(1, 1000);
+            jobLogEntity.JobId = jobId;
+            createJobLogCommand.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLogEntity));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
 
-            updateJobResultCompleteCommand.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobResultEntity.Id, 100, JobResult.Success, null);
+            updateJobLogCompleteCommand.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobLogEntity.Id, 100, JobStatus.Success, null);
 
 
         }
 
 
-        private TransferJob CreateTransferJob(ILogger<TransferJob>? logger = null, IDbContextFactory? dbContextFactory = null, ITransferCommandFactory? transferCommandFactory = null, ICreateJobResultCommand? createJobResultCommand = null, IUpdateJobResultCompleteCommand? updateJobResultCompleteCommand = null)
+        private TransferJob CreateTransferJob(ILogger<TransferJob>? logger = null, IDbContextFactory? dbContextFactory = null, ITransferCommandFactory? transferCommandFactory = null, ICreateJobLogCommand? createJobLogCommand = null, IUpdateJobLogCompleteCommand? updateJobLogCompleteCommand = null)
         {
             return new TransferJob(logger ?? Substitute.For<ILogger<TransferJob>>()
                 , dbContextFactory ?? Substitute.For<IDbContextFactory>()
                 , transferCommandFactory ?? Substitute.For<ITransferCommandFactory>()
-                , createJobResultCommand ?? Substitute.For<ICreateJobResultCommand>()
-                , updateJobResultCompleteCommand ?? Substitute.For<IUpdateJobResultCompleteCommand>()
+                , createJobLogCommand ?? Substitute.For<ICreateJobLogCommand>()
+                , updateJobLogCompleteCommand ?? Substitute.For<IUpdateJobLogCompleteCommand>()
                 );
         }
 

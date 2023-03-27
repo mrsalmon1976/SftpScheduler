@@ -63,10 +63,10 @@ try
 
     builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
     builder.Services.AddTransient<CreateJobCommand>();
-    builder.Services.AddTransient<ICreateJobResultCommand, CreateJobResultCommand>();
+    builder.Services.AddTransient<ICreateJobLogCommand, CreateJobLogCommand>();
     builder.Services.AddTransient<CreateUserCommand>();
     builder.Services.AddTransient<IDeleteJobCommand, DeleteJobCommand>();
-    builder.Services.AddTransient<IUpdateJobResultCompleteCommand, UpdateJobResultCompleteCommand>();
+    builder.Services.AddTransient<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
 
     builder.Services.AddTransient<ITransferCommandFactory, TransferCommandFactory>();
 

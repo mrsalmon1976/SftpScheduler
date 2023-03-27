@@ -54,7 +54,7 @@ namespace SftpScheduler.BLL.Tests.Data
         }
 
         [TestCase("Job")]
-        [TestCase("JobResult")]
+        [TestCase("JobLog")]
         [TestCase("Host")]
         [TestCase("AspNetRoleClaims")]
         [TestCase("AspNetRoles")]

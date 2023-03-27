@@ -73,19 +73,19 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal JobResultEntity CreateJobResultEntity(IDbContext dbContext, int jobId)
+        internal JobLogEntity CreateJobLogEntity(IDbContext dbContext, int jobId)
         {
-            JobResultEntity jobResultEntity = EntityTestHelper.CreateJobResultEntity();
-            jobResultEntity.JobId = jobId;
-            jobResultEntity.Status = JobResult.InProgress;
+            JobLogEntity jobLog = EntityTestHelper.CreateJobLogEntity();
+            jobLog.JobId = jobId;
+            jobLog.Status = JobStatus.InProgress;
 
-            string sql = @"INSERT INTO JobResult (JobId, StartDate, Progress, Status) VALUES (@JobId, DATETIME(), @Progress, @Status)";
-            dbContext.ExecuteNonQueryAsync(sql, jobResultEntity).GetAwaiter().GetResult();
+            string sql = @"INSERT INTO JobLog (JobId, StartDate, Progress, Status) VALUES (@JobId, DATETIME(), @Progress, @Status)";
+            dbContext.ExecuteNonQueryAsync(sql, jobLog).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";
-            jobResultEntity.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
+            jobLog.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
 
-            return jobResultEntity;
+            return jobLog;
 
         }
 

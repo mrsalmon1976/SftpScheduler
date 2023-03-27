@@ -13,12 +13,12 @@ using System.Xml.Schema;
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
     [TestFixture]
-    public class CreateJobResultCommandTests
+    public class CreateJobLogCommandTests
     {
 
 
         [Test]
-        public void Execute_ValidJobResult_PopulatesJobResultIdOnReturnValue()
+        public void Execute_ValidJobLog_PopulatesJobLogIdOnReturnValue()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
 
@@ -27,15 +27,15 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             dbContext.ExecuteScalarAsync<int>(Arg.Any<string>()).Returns(newEntityId);
 
-            CreateJobResultCommand createJobResultCommand = new CreateJobResultCommand();
-            JobResultEntity result = createJobResultCommand.ExecuteAsync(dbContext, jobEntity.Id).GetAwaiter().GetResult();
+            CreateJobLogCommand createJobLogCommand = new CreateJobLogCommand();
+            JobLogEntity result = createJobLogCommand.ExecuteAsync(dbContext, jobEntity.Id).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
             Assert.That(result.Id, Is.EqualTo(newEntityId));
         }
 
         [Test]
-        public void Execute_ValidJobResult_ValidJobResultCreated()
+        public void Execute_ValidJobLog_ValidJobLogCreated()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
 
@@ -43,10 +43,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
 
             // execute
-            CreateJobResultCommand createJobCommand = new CreateJobResultCommand();
+            CreateJobLogCommand createJobCommand = new CreateJobLogCommand();
             createJobCommand.ExecuteAsync(dbContext, jobEntity.Id).GetAwaiter().GetResult();
 
-            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<JobResultEntity>());
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<JobLogEntity>());
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
         }
@@ -61,15 +61,15 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
-                    CreateJobResultCommand createJobResultCommand = new CreateJobResultCommand();
+                    CreateJobLogCommand createJobLogCmd = new CreateJobLogCommand();
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
                     JobEntity job = dbIntegrationTestHelper.CreateJobEntity(dbContext, host.Id);
 
                     DateTime dtBefore = DateTime.Now;
-                    JobResultEntity result = createJobResultCommand.ExecuteAsync(dbContext, job.Id).GetAwaiter().GetResult();
+                    JobLogEntity result = createJobLogCmd.ExecuteAsync(dbContext, job.Id).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(result);
-                    Assert.That(result.Status, Is.EqualTo(JobResult.InProgress));
+                    Assert.That(result.Status, Is.EqualTo(JobStatus.InProgress));
                     Assert.That(result.StartDate, Is.GreaterThanOrEqualTo(dtBefore));
                     Assert.IsNull(result.EndDate);
 

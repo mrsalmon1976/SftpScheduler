@@ -18,21 +18,21 @@ namespace SftpScheduler.BLL.Jobs
         private readonly ILogger<TransferJob> _logger;
         private readonly IDbContextFactory _dbContextFactory;
         private readonly ITransferCommandFactory _transferCommandFactory;
-        private readonly ICreateJobResultCommand _createJobResultCommand;
-        private readonly IUpdateJobResultCompleteCommand _updateJobResultCompleteCommand;
+        private readonly ICreateJobLogCommand _createJobLogCommand;
+        private readonly IUpdateJobLogCompleteCommand _updateJobLogCompleteCommand;
 
         public TransferJob(ILogger<TransferJob> logger
             , IDbContextFactory dbContextFactory
             , ITransferCommandFactory transferCommandFactory
-            , ICreateJobResultCommand createJobResultCommand
-            , IUpdateJobResultCompleteCommand updateJobResultCompleteCommand
+            , ICreateJobLogCommand createJobLogCommand
+            , IUpdateJobLogCompleteCommand updateJobLogCompleteCommand
             ) 
         {
             _logger = logger;
             _dbContextFactory = dbContextFactory;
             _transferCommandFactory = transferCommandFactory;
-            _createJobResultCommand = createJobResultCommand;
-            _updateJobResultCompleteCommand = updateJobResultCompleteCommand;
+            _createJobLogCommand = createJobLogCommand;
+            _updateJobLogCompleteCommand = updateJobLogCompleteCommand;
         }
 
         public static string GetJobKeyName(int jobId)
@@ -59,11 +59,11 @@ namespace SftpScheduler.BLL.Jobs
             using (IDbContext dbContext = _dbContextFactory.GetDbContext()) 
             {
                 dbContext.BeginTransaction();
-                JobResultEntity jobResult = await _createJobResultCommand.ExecuteAsync(dbContext, jobId);
+                JobLogEntity jobLog = await _createJobLogCommand.ExecuteAsync(dbContext, jobId);
                 dbContext.Commit();
-                _logger.LogInformation($"Created job result record for job {jobId}");
+                _logger.LogInformation($"Created job log record for job {jobId}");
 
-                string jobStatus = JobResult.Success;
+                string jobStatus = JobStatus.Success;
                 string? errorMessage = null;
 
                 // execute the transfer
@@ -76,16 +76,16 @@ namespace SftpScheduler.BLL.Jobs
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, ex.Message);
-                        jobStatus = JobResult.Failure;
+                        jobStatus = JobStatus.Failure;
                         errorMessage = ex.Message;
                     }
                 }
 
                 // update the record
                 dbContext.BeginTransaction();
-                await _updateJobResultCompleteCommand.ExecuteAsync(dbContext, jobResult.Id, 100, jobStatus, errorMessage);
+                await _updateJobLogCompleteCommand.ExecuteAsync(dbContext, jobLog.Id, 100, jobStatus, errorMessage);
                 dbContext.Commit();
-                _logger.LogInformation($"Marked job result record for job {jobId} as complete, status {jobStatus}");
+                _logger.LogInformation($"Marked job log record for job {jobId} as complete, status {jobStatus}");
             }
 
         }
