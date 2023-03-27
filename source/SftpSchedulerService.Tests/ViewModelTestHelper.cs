@@ -32,5 +32,15 @@ namespace SftpSchedulerService.Tests
 
         }
 
+        internal static JobLogViewModel CreateJobLogViewModel()
+        {
+            JobLogViewModel jobLogViewModel = new JobLogViewModel();
+            jobLogViewModel.JobId = Faker.RandomNumber.Next(1, 1000);
+            jobLogViewModel.StartDate = DateTime.Now.AddSeconds(Faker.RandomNumber.Next(1, Int32.MaxValue) * -1);
+            jobLogViewModel.Progress = Faker.RandomNumber.Next(1, 100);
+            jobLogViewModel.Status = Faker.Lorem.GetFirstWord();
+            return jobLogViewModel;
+        }
+
     }
 }

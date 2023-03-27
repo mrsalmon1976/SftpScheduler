@@ -17,6 +17,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Utility.IO;
+using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -72,6 +73,7 @@ try
 
     builder.Services.AddTransient<HostRepository>();
     builder.Services.AddTransient<JobRepository>();
+    builder.Services.AddTransient<JobLogRepository>();
 
     builder.Services.AddQuartzScheduler(appSettings);
 
@@ -82,6 +84,7 @@ try
     builder.Services.AddTransient<JobDeleteOneOrchestrator>();
     builder.Services.AddTransient<JobFetchAllOrchestrator>();
     builder.Services.AddTransient<JobFetchOneOrchestrator>();
+    builder.Services.AddTransient<JobLogFetchAllOrchestrator>();
     builder.Services.AddTransient<LoginPostOrchestrator>();
 
 

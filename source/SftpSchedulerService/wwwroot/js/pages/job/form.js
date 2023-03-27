@@ -30,6 +30,9 @@ createApp({
         }, 500)
     },
     methods: {
+        formatDateTime(dt) {
+            return UiHelpers.formatDateTime(dt);
+        },
         async loadHosts() {
             this.isLoading = true;
 
@@ -63,7 +66,13 @@ createApp({
 
         },
         async loadLogs() {
+            let result = await axios.get('/api/jobs/' + this.job.hashId + '/logs')
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    this.isLoading = false;
+                });
 
+            this.logs = result.data;
         },
         async submit() {
             this.isLoading = true;

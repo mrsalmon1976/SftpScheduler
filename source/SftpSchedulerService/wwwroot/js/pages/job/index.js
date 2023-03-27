@@ -29,6 +29,9 @@ createApp({
             }
 
         },
+        formatDateTime(dt) {
+            return UiHelpers.formatDateTime(dt);
+        },
         async loadJobs() {
             var that = this;
             this.isLoading = true;
@@ -46,9 +49,6 @@ createApp({
             this.selectedJob = job;
             $('#modal-delete-job').modal();
 
-        },
-        formatNextRunTime(job) {
-            return UiHelpers.formatDateTime(job.nextRunTime);
         }
     },
     mounted: function () {

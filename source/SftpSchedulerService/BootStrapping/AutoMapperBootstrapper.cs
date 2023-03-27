@@ -13,6 +13,8 @@ namespace SftpSchedulerService.BootStrapping
             cfg.CreateMap<HostViewModel, HostEntity>();
             cfg.CreateMap<JobEntity, JobViewModel>();
             cfg.CreateMap<JobViewModel, JobEntity>();
+            cfg.CreateMap<JobLogEntity, JobLogViewModel>();
+            cfg.CreateMap<JobLogViewModel, JobLogEntity>();
         }
     }
 }

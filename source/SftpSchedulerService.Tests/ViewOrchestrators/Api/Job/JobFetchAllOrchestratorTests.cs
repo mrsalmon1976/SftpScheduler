@@ -75,7 +75,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
             mapper.Map<JobEntity[], JobViewModel[]>(Arg.Any<JobEntity[]>()).Returns(jobViewModels);
 
-
             // execute
             JobFetchAllOrchestrator jobFetchAllProvider = new JobFetchAllOrchestrator(dbContextFactory, mapper, jobRepo, schedulerFactory);
             var result = jobFetchAllProvider.Execute().Result as OkObjectResult;

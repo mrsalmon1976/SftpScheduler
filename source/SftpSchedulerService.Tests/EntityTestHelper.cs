@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
+using SftpSchedulerService.Models.Job;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +41,19 @@ namespace SftpSchedulerService.Tests
             jobEntity.Name = Faker.Lorem.GetFirstWord();
             jobEntity.HostId = Faker.RandomNumber.Next(1, 9999);
             return jobEntity;
+
+        }
+
+        internal static JobLogEntity CreateJobLogEntity(int jobId)
+        {
+            const int Days100 = 8640000;
+
+            JobLogEntity jobLogEntity = new JobLogEntity();
+            jobLogEntity.JobId = jobId;
+            jobLogEntity.StartDate = DateTime.Now.AddSeconds(Faker.RandomNumber.Next(1, Days100) * -1);
+            jobLogEntity.Progress = Faker.RandomNumber.Next(1, 100);
+            jobLogEntity.Status = JobStatus.InProgress;
+            return jobLogEntity;
 
         }
 
