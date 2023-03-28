@@ -113,7 +113,9 @@
                 </div>
             </div>
         </div>
-
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
     </div>
 </div>
 <div style="display:none;" id="job-id">@Model.JobId</div>

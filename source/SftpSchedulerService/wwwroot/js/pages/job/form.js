@@ -34,8 +34,6 @@ createApp({
             return UiHelpers.formatDateTime(dt);
         },
         async loadHosts() {
-            this.isLoading = true;
-
             let result = await axios.get('/api/hosts')
                 .catch(err => {
                     UiHelpers.showErrorToast('Error', '', err.message);
@@ -43,15 +41,12 @@ createApp({
                 });
 
             this.allHosts = result.data;
-            this.isLoading = false;
-
         },
         async loadJobDetail() {
 
             let result = await axios.get('/api/jobs/' + this.job.hashId)
                 .catch(err => {
                     UiHelpers.showErrorToast('Error', '', err.message);
-                    this.isLoading = false;
                     return;
                 });
 
@@ -69,7 +64,6 @@ createApp({
             let result = await axios.get('/api/jobs/' + this.job.hashId + '/logs')
                 .catch(err => {
                     UiHelpers.showErrorToast('Error', '', err.message);
-                    this.isLoading = false;
                 });
 
             this.logs = result.data;
@@ -84,7 +78,7 @@ createApp({
                 return;
             }
 
-            axios.post('/api/jobs', this.job)
+            await axios.post('/api/jobs', this.job)
 
                 .then(response => {
                     window.location.href = '/jobs';
@@ -104,13 +98,14 @@ createApp({
         }
     },
     mounted: function () {
-        this.isLoading = false;
+        this.isLoading = true;
         this.loadHosts();
 
         this.job.hashId = $('#job-id').text();
-        if (this.job.hasId != '') {
+        if (this.job.hashId != '') {
             this.loadJobDetail();
             this.loadLogs();
         }
+        this.isLoading = false;
     }
 }).mount('#app-job')

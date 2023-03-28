@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using SftpScheduler.BLL.Commands.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +11,8 @@ namespace SftpSchedulerService.Controllers
 {
     public class AuthController : CustomBaseController
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly CreateUserCommand _createUserCommand;
-
-        public AuthController(UserManager<IdentityUser> userManager, CreateUserCommand createUserCommand) 
+        public AuthController() 
         {
-            _userManager = userManager;
-            _createUserCommand = createUserCommand;
         }
 
         [HttpGet]
@@ -25,5 +20,13 @@ namespace SftpSchedulerService.Controllers
         {
             return this.View("Login");
         }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            AuthenticationHttpContextExtensions.SignOutAsync(HttpContext, CookieAuthenticationDefaults.AuthenticationScheme).GetAwaiter().GetResult();
+            return this.Redirect("/");
+        }
+
     }
 }
