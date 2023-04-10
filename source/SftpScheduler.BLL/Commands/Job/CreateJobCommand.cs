@@ -34,6 +34,9 @@ namespace SftpScheduler.BLL.Commands.Job
 
             // set the cached/calculated values
             jobEntity.ScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
+            // ensure remote path is always suffixed and prefixed with "/"
+            jobEntity.RemotePath = $"/{ jobEntity.RemotePath.Trim('/')}/";
+
 
             string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @Created)";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);

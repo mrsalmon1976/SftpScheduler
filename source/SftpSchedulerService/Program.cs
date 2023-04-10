@@ -55,38 +55,21 @@ try
     builder.Services.AddSingleton<ResourceUtils>();
 
     builder.Services.AddTransient<IDirectoryWrap, DirectoryWrap>();
+    builder.Services.AddTransient<IFileWrap, FileWrap>();
+    builder.Services.AddTransient<IFileTransferService, FileTransferService>();
+    builder.Services.AddTransient<ISessionWrapperFactory, SessionWrapperFactory>();
+
 
     builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
     builder.Services.AddTransient<IdentityInitialiser>();
 
-    builder.Services.AddTransient<HostValidator>();
-    builder.Services.AddTransient<IJobValidator, JobValidator>();
-
-    builder.Services.AddTransient<ICreateHostCommand, CreateHostCommand>();
-    builder.Services.AddTransient<CreateJobCommand>();
-    builder.Services.AddTransient<ICreateJobLogCommand, CreateJobLogCommand>();
-    builder.Services.AddTransient<CreateUserCommand>();
-    builder.Services.AddTransient<IDeleteJobCommand, DeleteJobCommand>();
-    builder.Services.AddTransient<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
-
-    builder.Services.AddTransient<ITransferCommandFactory, TransferCommandFactory>();
-
-    builder.Services.AddTransient<HostRepository>();
-    builder.Services.AddTransient<JobRepository>();
-    builder.Services.AddTransient<JobLogRepository>();
+    // custom stuff
+    builder.Services.AddRepositories();
+    builder.Services.AddValidators();
+    builder.Services.AddCommands();
+    builder.Services.AddControllerOrchestrators();
 
     builder.Services.AddQuartzScheduler(appSettings);
-
-    builder.Services.AddTransient<CronGetScheduleOrchestrator>();
-    builder.Services.AddTransient<HostCreateOrchestrator>();
-    builder.Services.AddTransient<HostFetchAllOrchestrator>();
-    builder.Services.AddTransient<JobCreateOrchestrator>();
-    builder.Services.AddTransient<JobDeleteOneOrchestrator>();
-    builder.Services.AddTransient<JobFetchAllOrchestrator>();
-    builder.Services.AddTransient<JobFetchOneOrchestrator>();
-    builder.Services.AddTransient<JobLogFetchAllOrchestrator>();
-    builder.Services.AddTransient<LoginPostOrchestrator>();
-
 
     // set up 
     var app = builder.Build();
@@ -94,15 +77,6 @@ try
     //var config = builder.Configuration;
     var serviceProvider = app.Services;
 
-
-    //app.UseStatusCodePages(async context => {
-    //    var response = context.HttpContext.Response;
-
-    //    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
-    //    {
-    //        response.Redirect("/auth/login");
-    //    }
-    //});
     app.UseAuthentication();
     app.UseAuthorization();
     app.UseStaticFiles();

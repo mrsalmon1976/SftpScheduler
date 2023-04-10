@@ -66,11 +66,9 @@ namespace SftpScheduler.BLL.Tests.Jobs
             int jobId = Faker.RandomNumber.Next(1, 10000);
             ICreateJobLogCommand createJobLogCmd = Substitute.For<ICreateJobLogCommand>();
 
-            ITransferCommandFactory transferCommandFactory = Substitute.For<ITransferCommandFactory>();
             ITransferCommand transferCommand = Substitute.For<ITransferCommand>();
-            transferCommandFactory.CreateTransferCommand().Returns(transferCommand);
 
-            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, transferCommandFactory: transferCommandFactory);
+            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, transferCommand: transferCommand);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
 
@@ -80,26 +78,26 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
 
-            transferCommand.Received(1).Execute(jobId);
+            transferCommand.Received(1).Execute(Arg.Any<IDbContext>(), jobId);
 
 
         }
 
         [Test]
-        public void Execute_OnSuccessfulTransfer_UpdatesJobLogWithSuccess()
+        public void Execute_OnFailedTransfer_UpdatesJobLogWithFailure()
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
             ICreateJobLogCommand createJobLogCmd = Substitute.For<ICreateJobLogCommand>();
             IUpdateJobLogCompleteCommand updateJobLogCompleteCmd = Substitute.For<IUpdateJobLogCompleteCommand>();
 
-            ITransferCommandFactory transferCommandFactory = Substitute.For<ITransferCommandFactory>();
             ITransferCommand transferCommand = Substitute.For<ITransferCommand>();
-            transferCommandFactory.CreateTransferCommand().Returns(transferCommand);
             Exception thrownException = new Exception("Transfer failed!");
-            transferCommand.When(x => x.Execute(Arg.Any<int>())).Throw(thrownException);
+            transferCommand.When(x => x.Execute(Arg.Any<IDbContext>(), Arg.Any<int>())).Throw(thrownException);
 
-            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, transferCommandFactory: transferCommandFactory, updateJobLogCompleteCommand: updateJobLogCompleteCmd);
+
+            TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, updateJobLogCompleteCommand: updateJobLogCompleteCmd, transferCommand: transferCommand);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
+
 
             JobLogEntity jobLogEntity = EntityTestHelper.CreateJobLogEntity();
             jobLogEntity.Id = Faker.RandomNumber.Next(1, 1000);
@@ -114,7 +112,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
         }
 
         [Test]
-        public void Execute_OnFailedTransfer_UpdatesJobLogWithFailure()
+        public void Execute_OnSuccessfulTransfer_UpdatesJobLogWithSuccess()
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
             ICreateJobLogCommand createJobLogCommand = Substitute.For<ICreateJobLogCommand>();
@@ -137,11 +135,11 @@ namespace SftpScheduler.BLL.Tests.Jobs
         }
 
 
-        private TransferJob CreateTransferJob(ILogger<TransferJob>? logger = null, IDbContextFactory? dbContextFactory = null, ITransferCommandFactory? transferCommandFactory = null, ICreateJobLogCommand? createJobLogCommand = null, IUpdateJobLogCompleteCommand? updateJobLogCompleteCommand = null)
+        private TransferJob CreateTransferJob(ILogger<TransferJob>? logger = null, IDbContextFactory? dbContextFactory = null, ITransferCommand? transferCommand = null, ICreateJobLogCommand? createJobLogCommand = null, IUpdateJobLogCompleteCommand? updateJobLogCompleteCommand = null)
         {
             return new TransferJob(logger ?? Substitute.For<ILogger<TransferJob>>()
                 , dbContextFactory ?? Substitute.For<IDbContextFactory>()
-                , transferCommandFactory ?? Substitute.For<ITransferCommandFactory>()
+                , transferCommand ?? Substitute.For<ITransferCommand>()
                 , createJobLogCommand ?? Substitute.For<ICreateJobLogCommand>()
                 , updateJobLogCompleteCommand ?? Substitute.For<IUpdateJobLogCompleteCommand>()
                 );

@@ -17,20 +17,20 @@ namespace SftpScheduler.BLL.Jobs
         public const string DefaultGroup = "TransferJob";
         private readonly ILogger<TransferJob> _logger;
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly ITransferCommandFactory _transferCommandFactory;
+        private readonly ITransferCommand _transferCommand;
         private readonly ICreateJobLogCommand _createJobLogCommand;
         private readonly IUpdateJobLogCompleteCommand _updateJobLogCompleteCommand;
 
         public TransferJob(ILogger<TransferJob> logger
             , IDbContextFactory dbContextFactory
-            , ITransferCommandFactory transferCommandFactory
+            , ITransferCommand transferCommand
             , ICreateJobLogCommand createJobLogCommand
             , IUpdateJobLogCompleteCommand updateJobLogCompleteCommand
             ) 
         {
             _logger = logger;
             _dbContextFactory = dbContextFactory;
-            _transferCommandFactory = transferCommandFactory;
+            _transferCommand = transferCommand;
             _createJobLogCommand = createJobLogCommand;
             _updateJobLogCompleteCommand = updateJobLogCompleteCommand;
         }
@@ -53,39 +53,45 @@ namespace SftpScheduler.BLL.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             int jobId = GetJobIdFromKeyName(context.JobDetail.Key.Name);
-            _logger.LogInformation($"Starting job {jobId}");
+            string jobStatus = JobStatus.Success;
+            string? errorMessage = null;
+            int jobLogId = 0;
+            _logger.LogInformation("Starting job {JobId}", jobId);
 
             // create the result record
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext()) 
+            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
+
                 dbContext.BeginTransaction();
                 JobLogEntity jobLog = await _createJobLogCommand.ExecuteAsync(dbContext, jobId);
+                jobLogId = jobLog.Id;
                 dbContext.Commit();
-                _logger.LogInformation($"Created job log record for job {jobId}");
+                _logger.LogInformation("Created job log record for job {JobId}", jobId);
+            }
 
-                string jobStatus = JobStatus.Success;
-                string? errorMessage = null;
 
-                // execute the transfer
-                using (ITransferCommand transferCommand = _transferCommandFactory.CreateTransferCommand())
+            // execute the transfer
+            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            {
+                try
                 {
-                    try
-                    {
-                        transferCommand.Execute(jobId);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, ex.Message);
-                        jobStatus = JobStatus.Failure;
-                        errorMessage = ex.Message;
-                    }
+                    _transferCommand.Execute(dbContext, jobId);
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Transfer of job {JobId} failed", jobId);
+                    jobStatus = JobStatus.Failure;
+                    errorMessage = ex.Message;
+                }
+            }
 
-                // update the record
+            // update the job log record
+            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            {
                 dbContext.BeginTransaction();
-                await _updateJobLogCompleteCommand.ExecuteAsync(dbContext, jobLog.Id, 100, jobStatus, errorMessage);
+                await _updateJobLogCompleteCommand.ExecuteAsync(dbContext, jobLogId, 100, jobStatus, errorMessage);
                 dbContext.Commit();
-                _logger.LogInformation($"Marked job log record for job {jobId} as complete, status {jobStatus}");
+                _logger.LogInformation("Marked job log record for job {JobId} as complete, status {JobStatus}", jobId, jobStatus);
             }
 
         }

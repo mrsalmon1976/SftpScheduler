@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using WinSCP;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
@@ -90,6 +91,29 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             string expectedScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
             Assert.That(result.ScheduleInWords, Is.EqualTo(expectedScheduleInWords));
+        }
+
+        [TestCase("Test")]
+        [TestCase("/Test")]
+        [TestCase("Test/")]
+        [TestCase("/Test/")]
+        public void Execute_ValidJob_SetsLeadingTrailingSlash(string remotePath)
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            IJobValidator jobValidator = Substitute.For<IJobValidator>();
+
+            var jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.RemotePath = remotePath;
+
+            jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
+
+            CreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+
+            string expectedScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
+            Assert.That(result.RemotePath, Is.EqualTo("/Test/"));
         }
 
 

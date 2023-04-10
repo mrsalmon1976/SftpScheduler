@@ -10,9 +10,10 @@ namespace SftpScheduler.BLL.Tests
     internal class EntityTestHelper
     {
 
-        internal static HostEntity CreateHostEntity()
+        internal static HostEntity CreateHostEntity(int id = 0)
         {
             HostEntity hostEntity = new HostEntity();
+            hostEntity.Id = id;
             hostEntity.Name = Faker.Lorem.GetFirstWord();
             hostEntity.Host = Faker.Internet.DomainName();
             hostEntity.Port = Faker.RandomNumber.Next(1, 65535);
@@ -22,11 +23,12 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal static JobEntity CreateJobEntity()
+        internal static JobEntity CreateJobEntity(int id = 0, int? hostId = null)
         {
             JobEntity jobEntity = new JobEntity();
+            jobEntity.Id = id;
             jobEntity.Name = Faker.Lorem.GetFirstWord();
-            jobEntity.HostId = Faker.RandomNumber.Next(1, 100);
+            jobEntity.HostId = hostId ?? Faker.RandomNumber.Next(1, 100);
             jobEntity.Type = BLL.Data.JobType.Download;
             jobEntity.Schedule = "0 * 0 ? * * *";
             jobEntity.ScheduleInWords = "Every minute";

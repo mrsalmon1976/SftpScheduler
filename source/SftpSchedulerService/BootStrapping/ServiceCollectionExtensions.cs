@@ -6,10 +6,22 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Quartz;
 using Quartz.Impl;
+using SftpScheduler.BLL.Commands.Host;
+using SftpScheduler.BLL.Commands.Job;
+using SftpScheduler.BLL.Commands.Transfer;
+using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Jobs;
+using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Config;
+using SftpSchedulerService.ViewOrchestrators.Api.Cron;
+using SftpSchedulerService.ViewOrchestrators.Api.Host;
+using SftpSchedulerService.ViewOrchestrators.Api.Job;
+using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
+using SftpSchedulerService.ViewOrchestrators.Api.Login;
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SftpSchedulerService.BootStrapping
@@ -17,6 +29,19 @@ namespace SftpSchedulerService.BootStrapping
     public static class ServiceCollectionExtensions
     {
         private const string CustomAuthenticationScheme = "JWT_OR_COOKIE";
+
+
+        public static void AddCommands(this IServiceCollection services)
+        {
+            services.AddTransient<ICreateHostCommand, CreateHostCommand>();
+            services.AddTransient<CreateJobCommand>();
+            services.AddTransient<ICreateJobLogCommand, CreateJobLogCommand>();
+            services.AddTransient<CreateUserCommand>();
+            services.AddTransient<IDeleteJobCommand, DeleteJobCommand>();
+            services.AddTransient<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
+
+            services.AddTransient<ITransferCommand, TransferCommand>();
+        }
 
         public static void AddIdentity(this IServiceCollection services, AppSettings appSettings)
         {
@@ -88,6 +113,26 @@ namespace SftpSchedulerService.BootStrapping
 
         }
 
+        public static void AddControllerOrchestrators(this IServiceCollection services)
+        {
+            services.AddTransient<CronGetScheduleOrchestrator>();
+            services.AddTransient<HostCreateOrchestrator>();
+            services.AddTransient<HostFetchAllOrchestrator>();
+            services.AddTransient<JobCreateOrchestrator>();
+            services.AddTransient<JobDeleteOneOrchestrator>();
+            services.AddTransient<JobFetchAllOrchestrator>();
+            services.AddTransient<JobFetchOneOrchestrator>();
+            services.AddTransient<JobLogFetchAllOrchestrator>();
+            services.AddTransient<LoginPostOrchestrator>();
+        }
+
+        public static void AddRepositories(this IServiceCollection services)
+        {
+            services.AddTransient<HostRepository>();
+            services.AddTransient<JobRepository>();
+            services.AddTransient<JobLogRepository>();
+        }
+
         public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings)
         {
             services.AddQuartz(q =>
@@ -134,6 +179,12 @@ namespace SftpSchedulerService.BootStrapping
             //scheduler.Start().GetAwaiter().GetResult();
 
             //
+        }
+
+        public static void AddValidators(this IServiceCollection services)
+        {
+            services.AddTransient<HostValidator>();
+            services.AddTransient<IJobValidator, JobValidator>();
         }
     }
 }
