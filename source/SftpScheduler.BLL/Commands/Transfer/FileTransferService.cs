@@ -49,6 +49,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
                 if (fileName.EndsWith(".uploaded", StringComparison.CurrentCultureIgnoreCase))
                 {
+                    _logger.LogDebug("File '{file}' skipped: already uploaded", file);
                     continue;
                 }
 
@@ -74,7 +75,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
                 string destFilePath = $"{folder}\\{fileName}.uploaded{extension}";
                 _fileWrap.Move(file, destFilePath);
-                _logger.LogInformation($"File {file} uploaded and renamed to {destFilePath}");
+                _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", file, destFilePath);
             }
         }
     }

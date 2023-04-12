@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="CronExpressionDescriptor" Version="2.19.0" />
     <PackageReference Include="Hashids.net" Version="1.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
@@ -22,7 +22,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="5.2.2" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.2.3" />
     <PackageReference Include="Quartz" Version="3.6.2" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.2" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.6.2" />
@@ -129,4 +129,8 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\SftpScheduler.BLL\SftpScheduler.BLL.csproj" />
 	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="RD /S /Q &quot;$(TargetDir)da\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)de\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)es\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)es-MX\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)fa\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)fi\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)fr\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)he-IL\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)it\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)ja\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)ko\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)nb\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)nl\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)pl\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)pt\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)ro\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)ru\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)sl\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)sv\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)tr\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)uk\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)zh-Hans\&quot;&#xD;&#xA;RD /S /Q &quot;$(TargetDir)zh-Hant\&quot;" />
+	</Target>
 </Project>

@@ -16,6 +16,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable CS8604 // Possible null reference argument.
+
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 {
     [TestFixture]
@@ -77,7 +79,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             Assert.That(hostViewModelResult.Single(x => x.Id == hostEntity2.Id).JobCount, Is.EqualTo(hostJobCountEntity2.JobCount));
         }
 
-        private IMapper CreateMapper()
+        private static IMapper CreateMapper()
         {
             var config = new MapperConfiguration(cfg => cfg.CreateMap<HostEntity, HostViewModel>());
             return config.CreateMapper();

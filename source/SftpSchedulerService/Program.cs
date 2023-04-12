@@ -18,6 +18,7 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Utility.IO;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
+using SftpScheduler.BLL.Security;
 
 //var webApplicationOptions = new WebApplicationOptions() { 
 //    ContentRootPath = AppContext.BaseDirectory, 
@@ -57,6 +58,7 @@ try
     builder.Services.AddTransient<IDirectoryWrap, DirectoryWrap>();
     builder.Services.AddTransient<IFileWrap, FileWrap>();
     builder.Services.AddTransient<IFileTransferService, FileTransferService>();
+    builder.Services.AddTransient<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
     builder.Services.AddTransient<ISessionWrapperFactory, SessionWrapperFactory>();
 
 

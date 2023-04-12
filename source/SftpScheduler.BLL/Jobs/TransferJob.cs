@@ -91,7 +91,7 @@ namespace SftpScheduler.BLL.Jobs
                 dbContext.BeginTransaction();
                 await _updateJobLogCompleteCommand.ExecuteAsync(dbContext, jobLogId, 100, jobStatus, errorMessage);
                 dbContext.Commit();
-                _logger.LogInformation("Marked job log record for job {JobId} as complete, status {JobStatus}", jobId, jobStatus);
+                _logger.LogInformation("Marked job log record for job {JobId} as complete, with status: '{JobStatus}'", jobId, jobStatus);
             }
 
         }

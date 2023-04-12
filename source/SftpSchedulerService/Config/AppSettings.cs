@@ -95,5 +95,13 @@ namespace SftpSchedulerService.Config
             }
         }
 
+        public virtual string SecretKey
+        {
+            get
+            {
+                return _configuration["AppSettings:SecretKey"];
+            }
+        }
+
     }
 }

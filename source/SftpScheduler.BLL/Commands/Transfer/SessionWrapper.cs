@@ -37,7 +37,10 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         public void Close()
         {
-            _session.Close();
+            if (_session != null && _session.Opened)
+            {
+                _session.Close();
+            }
         }
 
         public void Open() 
