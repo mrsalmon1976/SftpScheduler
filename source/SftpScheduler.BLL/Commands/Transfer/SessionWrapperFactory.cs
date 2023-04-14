@@ -37,10 +37,20 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 PortNumber = hostEntity.Port ?? DefaultPort,
                 UserName = hostEntity.Username,
                 Password = password,
-                SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny  // TODO!  This needs to be removed!
+                //ssh
+                //SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny  // TODO!  This needs to be removed!
 
                 //SshHostKeyFingerprint = "ssh-rsa 2048 xxxxxxxxxxx..."
             };
+
+            if (String.IsNullOrEmpty(hostEntity.KeyFingerprint))
+            {
+                sessionOptions.SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny;
+            }
+            else
+            {
+                sessionOptions.SshHostKeyFingerprint = hostEntity.KeyFingerprint;
+            }
 
             ISessionWrapper sessionWrapper = new SessionWrapper(sessionOptions);
             return sessionWrapper;

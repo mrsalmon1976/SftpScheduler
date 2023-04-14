@@ -14,16 +14,20 @@ namespace SftpScheduler.BLL.Models
         {
             this.Id = 0;
             this.Created = DateTime.UtcNow;
+            this.Name = String.Empty;
+            this.Host = String.Empty;
+            this.Password = String.Empty;
+            this.KeyFingerprint = String.Empty;
         }
 
         public virtual int Id { get; internal set; }
 
         [Required]
-        public virtual string? Name { get; set; }
+        public virtual string Name { get; set; }
 
         [Required]
         [Host]
-        public virtual string? Host { get; set; }
+        public virtual string Host { get; set; }
 
         [Required]
         [Range(1, 65535)]
@@ -31,7 +35,10 @@ namespace SftpScheduler.BLL.Models
 
         public virtual string? Username { get; set; }
 
-        public virtual string? Password { get; set; }
+        public virtual string Password { get; set; }
+
+        [HostKeyFingerprint]
+        public virtual string KeyFingerprint {  get; set; }
 
         public virtual DateTime Created { get; internal set; }
     }

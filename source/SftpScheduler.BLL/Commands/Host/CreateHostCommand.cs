@@ -38,7 +38,7 @@ namespace SftpScheduler.BLL.Commands.Host
 
             hostEntity.Password = _passwordProvider.Encrypt(hostEntity.Password);
 
-            string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @Created)";
+            string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, KeyFingerprint, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @KeyFingerprint, @Created)";
             await dbContext.ExecuteNonQueryAsync(sql, hostEntity);
 
             sql = @"select last_insert_rowid()";

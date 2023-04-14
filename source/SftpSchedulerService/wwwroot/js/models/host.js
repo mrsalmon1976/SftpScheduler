@@ -5,10 +5,12 @@
         this.port = 22;
         this.userName = '';
         this.password = '';
+        this.keyFingerprint = '';
 
         // these default to true, as you don't want the screen showing everything is invalid at first pass
         this.isHostValid = true;
         this.isNameValid = true;
+        this.isKeyFingerprintEmpty = true;
     }
 
     validate = function () {
@@ -20,6 +22,11 @@
     validateHost = function () {
         this.isHostValid = (this.host.length >= 5);
         return this.isHostValid;
+    }
+
+    validateKeyFingerprint = function () {
+        this.isKeyFingerprintEmpty = (this.keyFingerprint.length == 0);
+        return this.isKeyFingerprintEmpty;
     }
 
     validateName = function () {

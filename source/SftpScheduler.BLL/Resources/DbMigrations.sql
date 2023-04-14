@@ -5,6 +5,7 @@
 	Port INTEGER NOT NULL,
 	Username TEXT NOT NULL,
 	Password TEXT NOT NULL,
+	KeyFingerprint TEXT NULL,
 	Created TEXT NOT NULL
 );
 

@@ -4,7 +4,13 @@ namespace SftpSchedulerService.Models
 {
     public class HostViewModel
     {
+
         private string _hashId = "";
+
+        public HostViewModel() 
+        {
+            this.KeyFingerprint = String.Empty;
+        }  
 
         public int Id { get; set; }
 
@@ -29,6 +35,8 @@ namespace SftpSchedulerService.Models
         public string? UserName { get; set; }
 
         public string? Password { get; set; }
+
+        public string KeyFingerprint { get; set; }
 
         public int JobCount { get; set; }
     }
