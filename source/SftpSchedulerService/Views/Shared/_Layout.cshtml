@@ -1,6 +1,7 @@
 ﻿@using System.Security.Claims
 @using SftpScheduler.BLL.Identity
 @using SftpSchedulerService.Utilities
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment enviroment
 @{
     void RenderMenuItem(string elementId, string text, string url, string icon, string[]? roles = null)
     {
@@ -14,40 +15,47 @@
         if (httpContext.Request.Path.ToString().StartsWith(url)) {
             activeClass = "active";
         }
-    <li id="@elementId" class="nav-item">
-                <a href="@url" class="nav-link @activeClass">
-                    <i class="nav-icon fas @icon"></i>
-                    <p>@text</p>
-                </a>
-    </li>
+        <li id="@elementId" class="nav-item">
+                    <a href="@url" class="nav-link @activeClass">
+                        <i class="nav-icon fas @icon"></i>
+                        <p>@text</p>
+                    </a>
+        </li>
     }
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SftpScheduler | @ViewBag.PageTitle</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SftpScheduler | @ViewBag.PageTitle</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!--
-  <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!--
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
     -->
-  <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!--
-  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
-  -->
-  <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
-    <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
-  <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!--
+    <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
+    -->
+    <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
+    <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    @if (enviroment.IsDevelopment())
+    {
+        <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/custom.min.css?v=@ViewBag.Version">
+    }
     <!--
     <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-  -->
+    <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+    -->
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -69,7 +77,7 @@
         <a href="index3.html" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <a href="#" class="nav-link">Contact @enviroment.EnvironmentName</a>
       </li>
     </ul>
 
@@ -128,7 +136,7 @@
             @{
                 RenderMenuItem("menu-dashboard", "Dashboard", "/dashboard", "fa-tachometer-alt");
                 RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fa-server", new string[] { UserRoles.Admin });
-                        RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt", new string[] { UserRoles.Admin });
+                RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt", new string[] { UserRoles.Admin });
                 RenderMenuItem("menu-users", "Users", "/users", "fa-users", new string[] { UserRoles.Admin });
             }
         </ul>
