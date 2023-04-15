@@ -1,22 +1,31 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
+<!DOCTYPE html>
 @{
     var title = $"SftpScheduler v{ViewBag.Version}";
 }
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>@title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@title</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
-  <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    @if (environment.IsDevelopment())
+    {
+        <link rel="stylesheet" href="~/css/adminlte/adminlte.css">
+        <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
+        <link rel="stylesheet" href="~/css/custom.min.css?v=@ViewBag.Version">
+    }
 </head>
 <body class="hold-transition login-page">
 <div id="app-login" class="login-box">
@@ -67,11 +76,20 @@
 <script src="~/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="~/plugins/vue/vue.global.js"></script>
 <script src="~/plugins/axios/axios.min.js"></script>
-<!-- AdminLTE App -->
-<script src="~/js/adminlte/adminlte.min.js"></script>
-<script src="~/js/common.js?@ViewBag.Version"></script>
-<script src="~/js/pages/auth/login.js?@ViewBag.Version"></script>
+@if (environment.IsDevelopment())
+{
+    <script src="~/plugins/vue/vue.global.js"></script>
+    <script src="~/js/adminlte/adminlte.js"></script>
+    <script src="~/js/common.js?@ViewBag.Version"></script>
+    <script src="~/js/pages/auth/login.js?@ViewBag.Version"></script>
+}
+else
+{
+    <script src="~/plugins/vue/vue.global.prod.js"></script>
+    <script src="~/js/adminlte/adminlte.min.js"></script>
+    <script src="~/js/common.min.js?@ViewBag.Version"></script>
+    <script src="~/js/pages/auth/login.min.js?@ViewBag.Version"></script>
+}
 </body>
 </html>

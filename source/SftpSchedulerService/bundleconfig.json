@@ -1,0 +1,50 @@
+[
+  {
+    "outputFileName": "wwwroot/js/common.min.js",
+    "inputFiles": [
+      "wwwroot/js/common.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/job/form.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/job/form.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/job/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/job/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/host/form.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/host/form.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/host/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/host/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/auth/login.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/auth/login.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/models/host.min.js",
+    "inputFiles": [
+      "wwwroot/js/models/host.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/models/job.min.js",
+    "inputFiles": [
+      "wwwroot/js/models/job.js"
+    ]
+  }
+]

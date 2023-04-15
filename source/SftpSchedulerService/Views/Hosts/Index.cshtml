@@ -1,10 +1,19 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
+@{
     Layout = "_Layout";
     ViewBag.PageTitle = "Hosts";
 }
 @section Scripts {
-    <script src="~/js/models/host.js"></script>
-    <script src="~/js/pages/host/index.js"></script>
+    @if (environment.IsDevelopment())
+    {
+        <script src="~/js/models/host.js"></script>
+        <script src="~/js/pages/host/index.js"></script>
+    }
+    else
+    {
+        <script src="~/js/models/host.min.js?v=@ViewBag.Version"></script>
+        <script src="~/js/pages/host/index.min.js?v=@ViewBag.Version"></script>
+    }
 }
 @section PageActionMenu {
     <ol class="breadcrumb float-sm-right">

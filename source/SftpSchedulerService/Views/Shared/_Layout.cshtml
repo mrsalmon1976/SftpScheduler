@@ -1,13 +1,12 @@
 ﻿@using System.Security.Claims
 @using SftpScheduler.BLL.Identity
 @using SftpSchedulerService.Utilities
-@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment enviroment
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
 @{
     void RenderMenuItem(string elementId, string text, string url, string icon, string[]? roles = null)
     {
         var httpContext = ViewContext.HttpContext;
-        AuthUtils authUtils = new AuthUtils();
-        if (roles == null || !authUtils.UserHasAtLeastOneRole(httpContext, roles))
+        if (roles == null || !AuthUtils.UserHasAtLeastOneRole(httpContext, roles))
         {
             return;
         }
@@ -16,10 +15,10 @@
             activeClass = "active";
         }
         <li id="@elementId" class="nav-item">
-                    <a href="@url" class="nav-link @activeClass">
-                        <i class="nav-icon fas @icon"></i>
-                        <p>@text</p>
-                    </a>
+            <a href="@url" class="nav-link @activeClass">
+                <i class="nav-icon fas @icon"></i>
+                <p>@text</p>
+            </a>
         </li>
     }
 }
@@ -44,7 +43,7 @@
     -->
     <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
     <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    @if (enviroment.IsDevelopment())
+    @if (environment.IsDevelopment())
     {
         <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
     }
@@ -77,7 +76,7 @@
         <a href="index3.html" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact @enviroment.EnvironmentName</a>
+        <a href="#" class="nav-link">Contact</a>
       </li>
     </ul>
 
@@ -205,10 +204,19 @@
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
 -->
 <script src="~/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-<script src="~/plugins/vue/vue.global.js"></script>
 <script src="~/plugins/axios/axios.min.js"></script>
-<script src="~/js/adminlte/adminlte.js"></script>
-<script src="~/js/common.js?v=@ViewBag.Version"></script>
+@if (environment.IsDevelopment())
+{
+    <script src="~/plugins/vue/vue.global.js"></script>
+    <script src="~/js/adminlte/adminlte.js?v=@ViewBag.Version"></script>
+    <script src="~/js/common.js?v=@ViewBag.Version"></script>
+}
+else
+{
+    <script src="~/plugins/vue/vue.global.prod.js?v=@ViewBag.Version"></script>
+    <script src="~/js/adminlte/adminlte.min.js?v=@ViewBag.Version"></script>
+    <script src="~/js/common.min.js?v=@ViewBag.Version"></script>
+}        
 @RenderSection("Scripts", false);
 </body>
 </html>
