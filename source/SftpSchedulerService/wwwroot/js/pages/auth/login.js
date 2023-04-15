@@ -37,5 +37,6 @@ createApp({
     },
     mounted: function () {
         this.isLoading = false;
+        document.getElementById("login-username").focus();
     }
 }).mount('#app-login')

@@ -9,6 +9,13 @@
 .invalid-feedback {
     display: inline;
 }
+.login-header {
+    background-color: #007BFF;
+    background-image: url(/img/logo_login.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 105px;
+}
 .valid-feedback {
     color: #28a745;
 }
