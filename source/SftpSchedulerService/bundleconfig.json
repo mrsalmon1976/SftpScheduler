@@ -46,5 +46,11 @@
     "inputFiles": [
       "wwwroot/js/models/job.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/plugins/moment/moment.min.js",
+    "inputFiles": [
+      "wwwroot/plugins/moment/moment.js"
+    ]
   }
 ]

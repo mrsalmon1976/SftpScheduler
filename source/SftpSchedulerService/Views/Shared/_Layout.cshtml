@@ -1,7 +1,6 @@
 ﻿@using System.Security.Claims
 @using SftpScheduler.BLL.Identity
 @using SftpSchedulerService.Utilities
-@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
 @{
     void RenderMenuItem(string elementId, string text, string url, string icon, string[]? roles = null)
     {
@@ -109,7 +108,8 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="/dashboard" class="brand-link">
-        <img src="/img/logo_header.png" width="204" height="35" aalt="SftpScheduler" />
+        <img class="logo-header" src="/img/logo_header.png" width="204" height="35" alt="SftpScheduler" />
+        <img class="logo-header-collapsed" src="/img/logo_header_collapsed.png" width="36" height="35" alt="SftpScheduler" />
     </a>
 
       <!-- Sidebar Menu -->

@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using SftpSchedulerService.Utilities;
-using System.Net.Http;
-using System.Text;
 
 namespace SftpSchedulerService.TagHelpers
 {

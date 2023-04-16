@@ -16,6 +16,20 @@
     background-color: #007BFF;
     padding: 10px 0px 5px 0px;
 }
+.logo-header-collapsed {
+    display: none;
+}
+.sidebar-collapse .nav-sidebar .nav-item p {
+    margin-left: -10px;
+    opacity: 0;
+    visibility: hidden;
+}
+.sidebar-collapse img.logo-header {
+    display: none;
+}
+.sidebar-collapse img.logo-header-collapsed {
+    display: inline !important;
+}
 .valid-feedback {
     color: #28a745;
 }

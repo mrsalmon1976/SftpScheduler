@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="Pages\" />
+    <Folder Include="wwwroot\plugins\moment\" />
   </ItemGroup>
 
   <ItemGroup>
