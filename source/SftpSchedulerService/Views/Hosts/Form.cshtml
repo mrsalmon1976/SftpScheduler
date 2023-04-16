@@ -1,20 +1,11 @@
-﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
-@{
+﻿@{
     Layout = "_Layout";
     ViewBag.PageTitle = "Hosts - Create New Host";
    
 }
 @section Scripts {
-    @if (environment.IsDevelopment())
-    {
-        <script src="~/js/models/host.js"></script>
-        <script src="~/js/pages/host/form.js"></script>
-    }
-    else
-    {
-        <script src="~/js/models/host.min.js?v=@ViewBag.Version"></script>
-        <script src="~/js/pages/host/form.min.js?v=@ViewBag.Version"></script>
-    }
+    <environment-script src="~/js/models/host.js"></environment-script>
+    <environment-script src="~/js/pages/host/form.js"></environment-script>
 }
 <div id="app-host">
     <form class="form-horizontal">

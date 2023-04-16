@@ -1,5 +1,4 @@
-﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
-@using SftpScheduler.BLL.Data;
+﻿@using SftpScheduler.BLL.Data;
 @{
     Layout = "_Layout";
     ViewBag.PageTitle = "Jobs - Create New Job";
@@ -8,16 +7,8 @@
 @section PageActionMenu {
 }
 @section Scripts {
-    @if (environment.IsDevelopment())
-    {
-        <script src="~/js/models/job.js"></script>
-        <script src="~/js/pages/job/form.js"></script>
-    }
-    else
-    {
-        <script src="~/js/models/job.min.js?v=@ViewBag.Version"></script>
-        <script src="~/js/pages/job/form.min.js?v=@ViewBag.Version"></script>
-    }
+    <environment-script src="~/js/models/job.js"></environment-script>
+    <environment-script src="~/js/pages/job/form.js"></environment-script>
 }
 <div id="app-job">
 
