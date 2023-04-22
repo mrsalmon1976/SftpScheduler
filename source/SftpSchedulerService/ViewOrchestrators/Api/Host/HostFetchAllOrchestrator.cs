@@ -37,11 +37,10 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
                 var result = _mapper.Map<HostEntity[], HostViewModel[]>(hostEntities.ToArray());
                 foreach (HostViewModel hostView in result)
                 {
-                    HostJobCountEntity jobCountEntity = jobCounts.SingleOrDefault(x => x.HostId == hostView.Id);
+                    HostJobCountEntity? jobCountEntity = jobCounts.SingleOrDefault(x => x.HostId == hostView.Id);
                     if (jobCountEntity != null)
                     {
                         hostView.JobCount = jobCountEntity.JobCount;
-
                     }
                 }
 

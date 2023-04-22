@@ -11,6 +11,8 @@ using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.Models;
 using Microsoft.AspNetCore.Authorization;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
+using SftpScheduler.BLL.Identity;
+using SftpSchedulerService.ViewOrchestrators.Api.Job;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -21,11 +23,13 @@ namespace SftpSchedulerService.Controllers.Api
     {
         private readonly HostCreateOrchestrator _hostCreateProvider;
         private readonly HostFetchAllOrchestrator _hostFetchAllProvider;
+        private readonly HostDeleteOneOrchestrator _hostDeleteOneOrchestrator;
 
-        public HostsController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider)
+        public HostsController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider, HostDeleteOneOrchestrator hostDeleteOneOrchestrator)
         {
             _hostCreateProvider = hostCreateProvider;
             _hostFetchAllProvider = hostFetchAllProvider;
+            _hostDeleteOneOrchestrator = hostDeleteOneOrchestrator;
         }
 
         //// GET: api/<ApiAuthController>
@@ -55,11 +59,13 @@ namespace SftpSchedulerService.Controllers.Api
         //{
         //}
 
-        //// DELETE api/<ApiAuthController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return await _hostDeleteOneOrchestrator.Execute(id);
+
+        }
 
     }
 }

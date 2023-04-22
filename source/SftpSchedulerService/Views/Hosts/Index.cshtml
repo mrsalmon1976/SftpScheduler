@@ -21,14 +21,37 @@
                 <th>Name</th>
                 <th>Host</th>
                 <th style="width: 40px">Jobs</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="host in hosts">
                 <td><a :href="'/hosts/' + host.hashId">{{ host.name }}</a></td>
                 <td>{{ host.host }}</td>
-                <td><span class="badge bg-secondary">{{ host.jobCount }}</span></td>
+                <td><span class="badge bg-primary">{{ host.jobCount }}</span></td>
+                <td><a href="#" class="btn btn-sm" :class="{ 'disabled' : (host.jobCount > 0) }" v-on:click="showDeleteDialog(host)"><i class="fa-regular fa-trash-can"></i></a></td>
             </tr>
          </tbody>
     </table>
+
+    <div class="modal fade" id="modal-delete-host" tabindex="-1" role="dialog" aria-labelledby="modal-delete-host-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-warning">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-delete-host-label">Confirm : Delete '{{ selectedHost.name }}'</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this host?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-dark" v-on:click="deleteHost(selectedHost.hashId)">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

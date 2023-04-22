@@ -60,7 +60,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
 
         #endregion
 
-        #region GetById Tests
+        #region GetByIdAsync Tests
 
         [Test]
         public void GetById_OnExecute_PerformsQuery()
@@ -95,6 +95,62 @@ namespace SftpScheduler.BLL.Tests.Repositories
                 }
             }
         }
+
+        #endregion
+
+        #region GetByIdOrDefaultAsync Tests
+
+        [Test]
+        public void GetByIdOrDefault_OnExecute_PerformsQuery()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            HostEntity hostEntity = new HostEntity();
+            dbContext.QueryAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { hostEntity });
+
+            HostRepository hostRepo = new HostRepository();
+            HostEntity result = hostRepo.GetByIdOrDefaultAsync(dbContext, hostEntity.Id).Result;
+
+            dbContext.Received(1).QuerySingleOrDefaultAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>());
+
+        }
+
+        [Test]
+        public void GetByIdOrDefault_Integration_ReturnsDbRecord()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    HostRepository hostRepo = new HostRepository();
+                    HostEntity result = hostRepo.GetByIdOrDefaultAsync(dbContext, hostEntity.Id).Result;
+
+                    Assert.That(result.Id, Is.EqualTo(hostEntity.Id));
+                    Assert.That(result.Name, Is.EqualTo(hostEntity.Name));
+                }
+            }
+        }
+
+        [Test]
+        public void GetByIdOrDefault_Integration_ReturnsNullWhenNoRecord()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostRepository hostRepo = new HostRepository();
+                    HostEntity result = hostRepo.GetByIdOrDefaultAsync(dbContext, 100).Result;
+
+                    Assert.That(result, Is.Null);
+                }
+            }
+        }
+
 
         #endregion
 
@@ -135,6 +191,36 @@ namespace SftpScheduler.BLL.Tests.Repositories
 
                     Assert.That(result.HostId, Is.EqualTo(hostEntity.Id));
                     Assert.That(result.JobCount, Is.EqualTo(jobCount));
+                }
+            }
+        }
+
+        #endregion
+
+        #region GetJobCountAsync Tests
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(5)]
+        public void GetJobCountAsync_Integration_ReturnsCorrectCount(int jobCount)
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    for (int i = 0; i < jobCount; i++)
+                    {
+                        dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    }
+
+                    HostRepository hostRepo = new HostRepository();
+                    int result = hostRepo.GetJobCountAsync(dbContext, hostEntity.Id).Result;
+
+                    Assert.That(result, Is.EqualTo(jobCount));
                 }
             }
         }

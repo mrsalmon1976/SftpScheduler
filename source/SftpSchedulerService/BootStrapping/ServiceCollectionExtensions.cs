@@ -34,6 +34,7 @@ namespace SftpSchedulerService.BootStrapping
         public static void AddCommands(this IServiceCollection services)
         {
             services.AddTransient<ICreateHostCommand, CreateHostCommand>();
+            services.AddTransient<IDeleteHostCommand, DeleteHostCommand>();
             services.AddTransient<CreateJobCommand>();
             services.AddTransient<ICreateJobLogCommand, CreateJobLogCommand>();
             services.AddTransient<CreateUserCommand>();
@@ -117,6 +118,7 @@ namespace SftpSchedulerService.BootStrapping
         {
             services.AddTransient<CronGetScheduleOrchestrator>();
             services.AddTransient<HostCreateOrchestrator>();
+            services.AddTransient<HostDeleteOneOrchestrator>();
             services.AddTransient<HostFetchAllOrchestrator>();
             services.AddTransient<JobCreateOrchestrator>();
             services.AddTransient<JobDeleteOneOrchestrator>();
