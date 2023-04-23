@@ -14,9 +14,11 @@ namespace SftpScheduler.BLL.Commands.User
 
         public virtual async Task<IdentityUser> ExecuteAsync(UserManager<IdentityUser> userManager, string userName, string password, IEnumerable<string> roles)
         {
-            var user = new IdentityUser();
-            user.Id = Guid.NewGuid().ToString();
-            user.UserName = userName;
+            var user = new IdentityUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = userName
+            };
 
             var result = await userManager.CreateAsync(user, password);
             if (!result.Succeeded)

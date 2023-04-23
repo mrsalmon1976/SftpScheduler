@@ -97,7 +97,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         [TestCase("/Test")]
         [TestCase("Test/")]
         [TestCase("/Test/")]
-        public void Execute_ValidJob_SetsLeadingTrailingSlash(string remotePath)
+        public void Execute_ValidJob_SetsRemotePathLeadingTrailingSlash(string remotePath)
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
@@ -112,8 +112,29 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
-            string expectedScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
             Assert.That(result.RemotePath, Is.EqualTo("/Test/"));
+        }
+
+        [TestCase("Test")]
+        [TestCase("/Test")]
+        [TestCase("Test/")]
+        [TestCase("/Test/")]
+        public void Execute_ValidJob_SetsRemoteArchivePathLeadingTrailingSlash(string remoteArchivePath)
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            IJobValidator jobValidator = Substitute.For<IJobValidator>();
+
+            var jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.RemoteArchivePath = remoteArchivePath;
+
+            jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
+
+            CreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+
+            Assert.That(result.RemoteArchivePath, Is.EqualTo("/Test/"));
         }
 
 

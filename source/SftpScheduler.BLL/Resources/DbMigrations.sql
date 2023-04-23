@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS Job (
 	ScheduleInWords TEXT NOT NULL,
 	LocalPath TEXT NOT NULL,
 	RemotePath TEXT NOT NULL,
+	DeleteAfterDownload INTEGER NULL,
+	RemoteArchivePath TEXT NULL,
+	LocalCopyPaths TEXT NULL,
 	Created TEXT NOT NULL,
 	FOREIGN KEY(HostId) REFERENCES Host(Id)
 );

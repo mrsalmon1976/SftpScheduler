@@ -7,6 +7,9 @@
         this.type = 0;
         this.localPath = '';
         this.remotePath = '';
+        this.deleteAfterDownload = false;
+        this.remoteArchivePath = '';
+        this.localCopyPaths = '';
 
         // these default to true, as you don't want the screen showing everything is invalid at first pass
         this.isNameValid = true;
@@ -15,6 +18,7 @@
         this.isTypeValid = true;
         this.isLocalPathValid = true;
         this.isRemotePathValid = true;
+        this.isRemoteArchivePathValid = false;
     }
 
     convertScheduleToWords = function (text, callback) {
@@ -44,6 +48,7 @@
         this.validateHost();
         this.validateType();
         this.validateLocalPath();
+        this.validateRemoteArchivePath();
         this.validateRemotePath();
         return (
             this.isNameValid
@@ -51,6 +56,7 @@
             && this.isScheduleValid
             && this.isTypeValid
             && this.isLocalPathValid
+            && this.isRemoteArchivePathValid
             && this.isRemotePathValid
             );
     }
@@ -66,13 +72,23 @@
     }
 
     validateType = function () {
-        this.isTypeValid = (this.type >= 1 && this.type <= 2);
+        this.isTypeValid = (this.type >= JobTypes.Download && this.type <= JobTypes.Upload);
         return this.isTypeValid;
     }
 
     validateLocalPath = function () {
         this.isLocalPathValid = (this.localPath.length > 0);
         return this.isLocalPathValid;
+    }
+
+    validateRemoteArchivePath = function () {
+        if (this.deleteAfterDownload) {
+            this.isRemoteArchivePathValid = true;
+        }
+        else {
+            this.isRemoteArchivePathValid = (this.remoteArchivePath.length > 0);
+        }
+        return this.isRemoteArchivePathValid;
     }
 
     validateRemotePath = function () {

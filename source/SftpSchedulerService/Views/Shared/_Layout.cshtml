@@ -68,6 +68,7 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+        
 
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
@@ -96,10 +97,19 @@
           <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
         </div>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/auth/logout" title="Sign out">
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
             <i class="fas fa-user-lock"></i>
         </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <a href="~/auth/logout" class="dropdown-item">
+            <i class="fas fa-key mr-2"></i> Change password
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="~/auth/logout" class="dropdown-item">
+            <i class="fas fa-user-slash mr-2"></i> Sign out
+          </a>
+        </div>
       </li>
     </ul>
   </nav>

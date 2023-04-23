@@ -42,7 +42,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
         public void Execute(IDbContext dbContext, int jobId)
         {
             JobEntity jobEntity = _jobRepository.GetByIdAsync(dbContext, jobId).GetAwaiter().GetResult();
-            HostEntity hostEntity = _hostRepository.GetByIdAsync(dbContext, jobEntity.HostId).GetAwaiter().GetResult();
+            HostEntity hostEntity = _hostRepository.GetByIdOrDefaultAsync(dbContext, jobEntity.HostId).GetAwaiter().GetResult();
             List<string> filesToUpload = new List<string>();
 
             // for upload jobs, check if there are any files first to avoid the overhead of a connection

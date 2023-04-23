@@ -34,6 +34,7 @@ namespace SftpScheduler.BLL.Tests
             jobEntity.ScheduleInWords = "Every minute";
             jobEntity.LocalPath = "\\\\localshare\\localfolder";
             jobEntity.RemotePath = "/remotefolder";
+            jobEntity.DeleteAfterDownload = true;
             return jobEntity;
 
         }

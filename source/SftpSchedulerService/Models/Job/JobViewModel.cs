@@ -35,6 +35,12 @@ namespace SftpSchedulerService.Models.Job
 
         public string? RemotePath { get; set; }
 
+        public bool DeleteAfterDownload { get; set; }
+
+        public virtual string? RemoteArchivePath { get; set; }
+
+        public virtual string? LocalCopyPaths { get; set; }
+
         public DateTime? NextRunTime { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
@@ -44,7 +45,11 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.Name = name;
             JobValidator jobValidator = CreateJobValidator();
+
+            // execute
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+
+            // assert
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
         }
@@ -150,6 +155,62 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.ErrorMessages[0].Contains("remote path is required", StringComparison.InvariantCultureIgnoreCase));
         }
 
+        [TestCase("")]
+        [TestCase("  ")]
+        [TestCase(null)]
+        public void Validate_DeleteRemoteFalseAndNoRemoteArchiveFolderProvided_ExceptionThrown(string remoteArchiveFolder)
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.DeleteAfterDownload = false;
+            jobEntity.RemoteArchivePath = remoteArchiveFolder;
+
+            JobValidator jobValidator = CreateJobValidator();
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("Remote archive path must be supplied if deletion after download is not selected", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        [Test]
+        public void Validate_LocalCopyPathsExist_ValidatesCorrectly()
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";
+
+            IDirectoryWrap dirWrap = Substitute.For<IDirectoryWrap>();
+            dirWrap.Exists(jobEntity.LocalPath).Returns(true);
+            dirWrap.Exists("C:\\Temp\\Folder1").Returns(true);
+            dirWrap.Exists("C:\\Temp\\Folder2").Returns(true);
+
+            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), dirWrap);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+
+            Assert.That(validationResult.IsValid, Is.True);
+            dirWrap.Received(1).Exists("C:\\Temp\\Folder1");
+            dirWrap.Received(1).Exists("C:\\Temp\\Folder2");
+            dirWrap.Received(3).Exists(Arg.Any<string>()); ;
+        }
+
+        [Test]
+        public void Validate_LocalCopyPathDoesNotExist_ThrowsException()
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";
+
+            IDirectoryWrap dirWrap = Substitute.For<IDirectoryWrap>();
+            dirWrap.Exists(jobEntity.LocalPath).Returns(true);
+            dirWrap.Exists("C:\\Temp\\Folder1").Returns(false);
+            dirWrap.Exists("C:\\Temp\\Folder2").Returns(false);
+
+            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), dirWrap);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(2));
+            Assert.That(validationResult.ErrorMessages[0].Contains("Local copy path 'C:\\Temp\\Folder1' does not exist", StringComparison.InvariantCultureIgnoreCase));
+        }
+
 
         [Test]
         public void Validate_InValidAllFields_ExceptionThrown()
@@ -159,14 +220,22 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(6));
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(7));
         }
 
         #region Private Methods
 
+        // creates a validator which passes everything
         private JobValidator CreateJobValidator()
         {
-            return CreateJobValidator(Substitute.For<HostRepository>(), Substitute.For<IDirectoryWrap>());
+            HostRepository hostRepository = Substitute.For<HostRepository>();
+            hostRepository.GetByIdAsync(Arg.Any<IDbContext>(), Arg.Any<int>()).Returns(Task.FromResult(new HostEntity()));
+
+            IDirectoryWrap dirWrap = Substitute.For<IDirectoryWrap>();
+            dirWrap.Exists(Arg.Any<string>()).Returns(true);
+
+
+            return CreateJobValidator(hostRepository, dirWrap);
 
         }
 

@@ -42,7 +42,6 @@ namespace SftpScheduler.BLL.Validators
             {
                 IEnumerable<string> errors = dataAnnotationValidationResults.Where(x => !String.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage ?? "");
                 validationResult.ErrorMessages.AddRange(errors);
-                return validationResult;
             }
 
             // check that the host actually exists
@@ -56,6 +55,21 @@ namespace SftpScheduler.BLL.Validators
             if (!_directoryWrap.Exists(jobEntity.LocalPath))
             {
                 validationResult.ErrorMessages.Add("Local path does not exist");
+            }
+
+            // if we are not deleting remote, then a remote archive path needs to be supplied
+            if (!jobEntity.DeleteAfterDownload && String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath)) 
+            {
+                validationResult.ErrorMessages.Add("Remote archive path must be supplied if deletion after download is not selected");
+            }
+
+            // check local paths exist
+            foreach (string localCopyPath in jobEntity.LocalCopyPathsAsEnumerable())
+            {
+                if (!_directoryWrap.Exists(localCopyPath))
+                {
+                    validationResult.ErrorMessages.Add($"Local copy path '{localCopyPath}' does not exist");
+                }
             }
 
             return validationResult;

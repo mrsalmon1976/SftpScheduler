@@ -3,7 +3,6 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -34,11 +33,16 @@ namespace SftpScheduler.BLL.Commands.Job
 
             // set the cached/calculated values
             jobEntity.ScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
-            // ensure remote path is always suffixed and prefixed with "/"
+            
+            // ensure remote paths are always suffixed and prefixed with "/"
             jobEntity.RemotePath = $"/{ jobEntity.RemotePath.Trim('/')}/";
 
+            if (!String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath)) 
+            {
+                jobEntity.RemoteArchivePath = $"/{jobEntity.RemoteArchivePath.Trim('/')}/";
+            }
 
-            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, DeleteAfterDownload, RemoteArchivePath, LocalCopyPaths, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @DeleteAfterDownload, @RemoteArchivePath, @LocalCopyPaths, @Created)";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 
             sql = @"select last_insert_rowid()";

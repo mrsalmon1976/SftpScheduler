@@ -1,4 +1,18 @@
-﻿class UiHelpers
+﻿var JobTypes = {};
+Object.defineProperty(JobTypes, "Download", {
+    value: "1",
+    writable: false,
+    enumerable: true,
+    configurable: false 
+});
+Object.defineProperty(JobTypes, "Upload", {
+    value: "2",
+    writable: false,
+    enumerable: true,
+    configurable: false
+});
+
+class UiHelpers
 {
     static formatDateTime(dt) {
         return moment(dt).format('YYYY-MM-DD HH:mm:SS')
@@ -26,3 +40,5 @@
         }
     };
 }
+
+

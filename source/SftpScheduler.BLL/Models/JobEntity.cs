@@ -49,6 +49,22 @@ namespace SftpScheduler.BLL.Models
         [Required(ErrorMessage = "Remote path is required")]
         public virtual string RemotePath { get; set; }
 
+        public virtual bool DeleteAfterDownload { get; set; }
+
+        public virtual string? RemoteArchivePath { get; set; }
+
+        public virtual string? LocalCopyPaths { get; set; }
+
         public virtual DateTime Created { get; internal set; }
+
+        public virtual IEnumerable<string> LocalCopyPathsAsEnumerable()
+        {
+            if (String.IsNullOrWhiteSpace(this.LocalCopyPaths)) 
+            { 
+                return Enumerable.Empty<string>(); 
+            }
+            
+            return this.LocalCopyPaths.Split(';').Where(x => !String.IsNullOrWhiteSpace(x));
+        }
     }
 }

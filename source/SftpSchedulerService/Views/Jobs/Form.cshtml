@@ -29,6 +29,17 @@
                 <div class="tab-pane fade show active" id="tab-job-detail-content" role="tabpanel" aria-labelledby="tab-job-detail">
                     <form class="form-horizontal">
                         <div class="form-group row">
+                            <label for="job-type" class="col-sm-2 col-form-label">Type</label>
+                            <div class="col-sm-4">
+                                <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()">
+                                    <option value="0"></option>
+                                    <option value="1">@JobType.Download</option>
+                                    <option value="2">@JobType.Upload</option>
+                                </select>
+                                <span v-if="!job.isTypeValid" class="invalid-feedback">Please select a job type</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="job-name" class="col-sm-2 col-form-label">Name</label>
                             <div class="col-sm-4">
                                 <input type="text" v-model="job.name" @@blur="job.validateName()" class="form-control" id="job-name" placeholder="Name">
@@ -43,17 +54,6 @@
                                     <option v-for="h in allHosts" :value="h.id">{{ h.name }}</option>
                                 </select>
                                 <span v-if="!job.isHostValid" class="invalid-feedback">Please select a host</span>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="job-type" class="col-sm-2 col-form-label">Type</label>
-                            <div class="col-sm-4">
-                                <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()">
-                                    <option value="0"></option>
-                                    <option value="1">@JobType.Download</option>
-                                    <option value="2">@JobType.Upload</option>
-                                </select>
-                                <span v-if="!job.isTypeValid" class="invalid-feedback">Please select a job type</span>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -78,6 +78,30 @@
                             <div class="col-sm-4">
                                 <input type="text" v-model="job.remotePath" @@blur="job.validateRemotePath()" class="form-control" id="job-remote-path" placeholder="/RemoteFolder/">
                                 <span v-if="!job.isRemotePathValid" class="invalid-feedback">Please provide a valid remote path</span>
+                            </div>
+                        </div>
+                        <div v-if="isDownloadVisible()">
+                            <div class="form-group row">
+                                <label for="job-remote-delete" class="col-sm-2 col-form-label">Delete</label>
+                                <div class="col-sm-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" v-model="job.deleteAfterDownload" @@change="job.validateRemoteArchivePath()" class="form-check-input" id="job-remote-delete" />
+                                        <label class="form-check-label" for="job-remote-delete">Remote files will be removed after download</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="!job.deleteRemoteAfterDownload" class="form-group row">
+                                <label for="job-remote-archive-path" class="col-sm-2 col-form-label">Remote Archive Path</label>
+                                <div class="col-sm-4">
+                                    <input type="text" v-model="job.remoteArchivePath" @@blur="job.validateRemoteArchivePath()" class="form-control" id="job-remote-archive-path" placeholder="/RemoteFolder/Archive/">
+                                    <span v-if="!job.isRemoteArchivePathValid" class="invalid-feedback">Please provide a valid remote archive path</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="job-local-copy-paths" class="col-sm-2 col-form-label">Local Copy Paths</label>
+                                <div class="col-sm-4">
+                                    <input type="text" v-model="job.localCopyPaths" class="form-control" id="job-local-copy-paths" placeholder="\\server\folder1;\\server\folder2;C:\Temp" />
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer">

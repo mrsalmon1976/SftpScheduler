@@ -33,6 +33,9 @@ createApp({
         formatDateTime(dt) {
             return UiHelpers.formatDateTime(dt);
         },
+        isDownloadVisible() {
+            return (this.job.type == JobTypes.Download);
+        },
         async loadHosts() {
             let result = await axios.get('/api/hosts')
                 .catch(err => {
@@ -56,6 +59,10 @@ createApp({
             this.job.type = jobData.type;
             this.job.localPath = jobData.localPath;
             this.job.remotePath = jobData.remotePath;
+            this.job.deleteAfterDownload = jobData.deleteAfterDownload;
+            this.job.remoteArchivePath = jobData.remoteArchivePath;
+            this.job.localCopyPaths = jobData.localCopyPaths;
+            this.job.validate();
 
             this.schedule = jobData.schedule;
 
