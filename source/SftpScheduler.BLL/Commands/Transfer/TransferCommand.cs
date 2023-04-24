@@ -43,13 +43,13 @@ namespace SftpScheduler.BLL.Commands.Transfer
         {
             JobEntity jobEntity = _jobRepository.GetByIdAsync(dbContext, jobId).GetAwaiter().GetResult();
             HostEntity hostEntity = _hostRepository.GetByIdOrDefaultAsync(dbContext, jobEntity.HostId).GetAwaiter().GetResult();
-            List<string> filesToUpload = new List<string>();
+            List<string> filesToTransfer = new List<string>();
 
             // for upload jobs, check if there are any files first to avoid the overhead of a connection
             if (jobEntity.Type == JobType.Upload)
             {
-                filesToUpload.AddRange(_fileTransferService.UploadFilesAvailable(jobEntity.LocalPath));
-                if (filesToUpload.Count == 0)
+                filesToTransfer.AddRange(_fileTransferService.UploadFilesAvailable(jobEntity.LocalPath));
+                if (filesToTransfer.Count == 0)
                 {
                     _logger.LogInformation("No files available for upload for job {JobId}", jobId);
                     return;
@@ -71,7 +71,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     }
                     else
                     {
-                        _fileTransferService.UploadFiles(sessionWrapper, filesToUpload, jobEntity.RemotePath);
+                        _fileTransferService.UploadFiles(sessionWrapper, filesToTransfer, jobEntity.RemotePath);
                     }
 
                 }

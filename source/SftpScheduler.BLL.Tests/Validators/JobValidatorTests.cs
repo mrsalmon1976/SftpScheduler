@@ -193,7 +193,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
-        public void Validate_LocalCopyPathDoesNotExist_ThrowsException()
+        public void Validate_LocalCopyPathDoesNotExist_ExceptionThrown()
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";

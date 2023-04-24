@@ -15,6 +15,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
     {
         void DownloadFiles(ISessionWrapper sessionWrapper, string localPath);
 
+        IEnumerable<string> DownloadFilesAvailable(ISessionWrapper sessionWrapper, string remotePath);
+
         void UploadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToUpload, string remotePath);
 
         IEnumerable<string> UploadFilesAvailable(string localPath);
@@ -36,6 +38,12 @@ namespace SftpScheduler.BLL.Commands.Transfer
         public void DownloadFiles(ISessionWrapper sessionWrapper, string localPath)
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> DownloadFilesAvailable(ISessionWrapper sessionWrapper, string remotePath)
+        {
+            IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> remoteFiles = sessionWrapper.ListDirectory(remotePath);
+            return remoteFiles.Where(x => !x.IsDirectory).Select(x => x.FullName);
         }
 
         public IEnumerable<string> UploadFilesAvailable(string localPath)

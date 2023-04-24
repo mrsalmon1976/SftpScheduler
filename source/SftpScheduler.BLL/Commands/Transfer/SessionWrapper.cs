@@ -15,6 +15,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Close();
 
+        IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath);
+
         void Open();
 
         void PutFiles(string localPath, string remotePath, TransferOptions options);
@@ -41,6 +43,21 @@ namespace SftpScheduler.BLL.Commands.Transfer
             {
                 _session.Close();
             }
+        }
+
+        public IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath)
+        {
+            RemoteDirectoryInfo remoteDirectoryInfo = _session.ListDirectory(remotePath);
+            var remoteFiles = remoteDirectoryInfo.Files.Select(x => new SftpScheduler.BLL.Models.RemoteFileInfo()
+            {
+                IsDirectory = x.IsDirectory,
+                Name = x.Name,
+                FullName = x.FullName,
+                Length = x.Length,
+                LastWriteTime = x.LastWriteTime
+            });
+
+            return remoteFiles;
         }
 
         public void Open() 

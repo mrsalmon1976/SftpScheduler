@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
+using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility.IO;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,76 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
     [TestFixture]
     public class FileTransferServiceTests
     {
+
+        #region DownloadFilesAvailable Tests
+
+        [Test]
+        public void DownloadFilesAvailable_NoFiles_ReturnsEmptyCollection()
+        {
+            // setup
+            string remotePath = "/Test/";
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            sessionWrapper.ListDirectory(remotePath).Returns(Enumerable.Empty<SftpScheduler.BLL.Models.RemoteFileInfo>());
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            IEnumerable<string> files = fileTransferService.DownloadFilesAvailable(sessionWrapper, remotePath);
+
+            //assert
+            sessionWrapper.Received(1).ListDirectory(remotePath);
+            Assert.That(0, Is.EqualTo(files.Count()));
+        }
+
+        [Test]
+        public void DownloadFilesAvailable_MultipleFiles_ReturnsFiles()
+        {
+            // setup
+            string remotePath = "/Test/";
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            int fileCount = Faker.RandomNumber.Next(2, 10);
+            var remoteFiles = this.CreateRemoteFileList(fileCount, remotePath, false);
+            sessionWrapper.ListDirectory(remotePath).Returns(remoteFiles);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            IEnumerable<string> files = fileTransferService.DownloadFilesAvailable(sessionWrapper, remotePath);
+
+            //assert
+            sessionWrapper.Received(1).ListDirectory(remotePath);
+            Assert.That(fileCount, Is.EqualTo(files.Count()));
+
+        }
+
+        [Test]
+        public void DownloadFilesAvailable_DirectoriesOnRemote_OnlyFilesReturned()
+        {
+            // setup
+            string remotePath = "/Test/";
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            int fileCount = Faker.RandomNumber.Next(2, 10);
+            var remoteFiles = this.CreateRemoteFileList(fileCount, remotePath, false);
+            remoteFiles.AddRange(this.CreateRemoteFileList(2, remotePath, true));
+            sessionWrapper.ListDirectory(remotePath).Returns(remoteFiles);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            IEnumerable<string> files = fileTransferService.DownloadFilesAvailable(sessionWrapper, remotePath);
+
+            //assert
+            sessionWrapper.Received(1).ListDirectory(remotePath);
+            Assert.That(fileCount, Is.EqualTo(files.Count()));
+
+        }
+
+        #endregion
+
         #region UploadFilesAvailable Tests
 
         [Test]
         public void UploadFilesAvailable_NoNewFiles_NoFilesReturned()
         {
             int fileCount = Faker.RandomNumber.Next(2, 9);
-            IEnumerable<string> files = CreateFileList(fileCount, true);
+            IEnumerable<string> files = CreateLocalFileList(fileCount, true);
 
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -39,7 +103,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         public void UploadFilesAvailable_AllNewFiles_AllFilesReturned()
         {
             int fileCount = Faker.RandomNumber.Next(2, 9);
-            IEnumerable<string> files = CreateFileList(fileCount, false);
+            IEnumerable<string> files = CreateLocalFileList(fileCount, false);
 
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -56,8 +120,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void UploadFilesAvailables_SomeNewFiles_SomeNewFilesReturned()
         {
-            IEnumerable<string> uploadedFiles = CreateFileList(Faker.RandomNumber.Next(2, 5), true);
-            List<string> newFiles = CreateFileList(Faker.RandomNumber.Next(6, 9), false);
+            IEnumerable<string> uploadedFiles = CreateLocalFileList(Faker.RandomNumber.Next(2, 5), true);
+            List<string> newFiles = CreateLocalFileList(Faker.RandomNumber.Next(6, 9), false);
             List<string> allFiles = new List<string>(uploadedFiles);
             allFiles.AddRange(newFiles);
 
@@ -84,7 +148,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void UploadFiles_FilesAvailableForUpload_MarkedAsUploaded()
         {
-            List<string> newFiles = CreateFileList(Faker.RandomNumber.Next(6, 9), false);
+            List<string> newFiles = CreateLocalFileList(Faker.RandomNumber.Next(6, 9), false);
 
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -109,7 +173,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void UploadFiles_FilesAvailableForUpload_FilesUploaded()
         {
-            List<string> newFiles = CreateFileList(Faker.RandomNumber.Next(6, 9), false);
+            List<string> newFiles = CreateLocalFileList(Faker.RandomNumber.Next(6, 9), false);
 
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -136,7 +200,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
         #region Private Methods
 
-        private List<string> CreateFileList(int count, bool isUploaded)
+        private List<string> CreateLocalFileList(int count, bool isUploaded)
         {
             List<string> files = new List<string>();
             string uploadedToken = (isUploaded ? ".uploaded" : "");
@@ -147,6 +211,27 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             }
             return files;
         }
+
+        private List<SftpScheduler.BLL.Models.RemoteFileInfo> CreateRemoteFileList(int count, string remotePath, bool isDirectory)
+        {
+            List<SftpScheduler.BLL.Models.RemoteFileInfo> files = new List<SftpScheduler.BLL.Models.RemoteFileInfo>();
+            for (int i = 0; i < count; i++)
+            {
+                string fileName = Path.GetRandomFileName();
+                string fullName = $"{remotePath}{fileName}";
+                var remoteFileInfo = new SftpScheduler.BLL.Models.RemoteFileInfo
+                {
+                    FullName = fullName,
+                    IsDirectory = isDirectory,
+                    LastWriteTime = DateTime.UtcNow,
+                    Length = Faker.RandomNumber.Next(1, 1000),
+                    Name = fileName
+                };
+                files.Add(remoteFileInfo);
+            }
+            return files;
+        }
+
 
         private IFileTransferService CreateFileTransferService(ILogger<FileTransferService>? logger = null, IDirectoryWrap? directoryWrap = null, IFileWrap? fileWrap = null)
         {
