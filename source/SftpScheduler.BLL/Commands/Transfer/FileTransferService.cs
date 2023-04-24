@@ -1,19 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
-using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using WinSCP;
+using System.Text.RegularExpressions;
 
 namespace SftpScheduler.BLL.Commands.Transfer
 {
     public interface IFileTransferService
     {
-        void DownloadFiles(ISessionWrapper sessionWrapper, string localPath);
+        void DownloadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToDownload, string localPath, bool deleteAfterDownload);
 
         IEnumerable<string> DownloadFilesAvailable(ISessionWrapper sessionWrapper, string remotePath);
 
@@ -28,6 +24,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
         private readonly IDirectoryWrap _directoryWrap;
         private readonly IFileWrap _fileWrap;
 
+        public const string UploadNamePattern = "^*.uploaded_?\\d?\\d?\\d?$";
+
         public FileTransferService(ILogger<FileTransferService> logger, IDirectoryWrap directoryWrap, IFileWrap fileWrap)
         {
             _logger = logger;
@@ -35,9 +33,18 @@ namespace SftpScheduler.BLL.Commands.Transfer
             _fileWrap = fileWrap;
         }
 
-        public void DownloadFiles(ISessionWrapper sessionWrapper, string localPath)
+        public void DownloadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToDownload
+            , string localPath, bool deleteAfterDownload)
         {
-            throw new NotImplementedException();
+            foreach (var remotePath in filesToDownload)
+            {
+                string fileName = Path.GetFileName(remotePath);
+                string localFilePath = Path.Combine(localPath, fileName);
+                sessionWrapper.GetFiles(remotePath, localFilePath, deleteAfterDownload);
+
+                _logger.LogInformation("Downloaded file {remotePath} to {localPath}", remotePath, localFilePath);
+
+            }
         }
 
         public IEnumerable<string> DownloadFilesAvailable(ISessionWrapper sessionWrapper, string remotePath)
@@ -50,12 +57,13 @@ namespace SftpScheduler.BLL.Commands.Transfer
         {
             IEnumerable<string> files = _directoryWrap.EnumerateFiles(localPath);
             List<string> newFiles = new List<string>();
+            Regex regEx = new Regex(UploadNamePattern, RegexOptions.IgnoreCase);
 
             foreach (string file in files)
             {
                 string fileName = Path.GetFileNameWithoutExtension(file);
 
-                if (fileName.EndsWith(".uploaded", StringComparison.CurrentCultureIgnoreCase))
+                if (regEx.IsMatch(fileName))
                 {
                     _logger.LogDebug("File '{file}' skipped: already uploaded", file);
                     continue;
@@ -70,21 +78,32 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         public void UploadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToUpload, string remotePath)
         {
-            TransferOptions transferOptions = new TransferOptions();
-            transferOptions.TransferMode = TransferMode.Automatic;
-
             foreach (string file in filesToUpload)
             {
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 string extension = Path.GetExtension(file);
                 string? folder = Path.GetDirectoryName(file);
 
-                sessionWrapper.PutFiles(file, remotePath, transferOptions);
+                sessionWrapper.PutFiles(file, remotePath);
 
-                string destFilePath = $"{folder}\\{fileName}.uploaded{extension}";
+                string destFilePath = GetUniqueFileName(folder, fileName, extension);
                 _fileWrap.Move(file, destFilePath);
                 _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", file, destFilePath);
             }
+        }
+
+        private string GetUniqueFileName(string? folder, string fileName, string extension)
+        {
+            string destFilePath = $"{folder}\\{fileName}.uploaded{extension}";
+            int fileSuffix = 1;
+
+            while (_fileWrap.Exists(destFilePath))
+            {
+                destFilePath = $"{folder}\\{fileName}.uploaded_{fileSuffix}{extension}";
+                fileSuffix++;
+            }
+
+            return destFilePath;
         }
     }
 }

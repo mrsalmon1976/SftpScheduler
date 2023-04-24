@@ -15,11 +15,13 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Close();
 
+        void GetFiles(string remotePath, string localPath, bool remove);
+
         IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath);
 
         void Open();
 
-        void PutFiles(string localPath, string remotePath, TransferOptions options);
+        void PutFiles(string localPath, string remotePath);
     }
 
     public class SessionWrapper : ISessionWrapper
@@ -45,6 +47,12 @@ namespace SftpScheduler.BLL.Commands.Transfer
             }
         }
 
+        public void GetFiles(string remotePath, string localPath, bool remove)
+        {
+            TransferOperationResult result = _session.GetFiles(remotePath, localPath, remove);
+            result.Check();
+        }
+
         public IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath)
         {
             RemoteDirectoryInfo remoteDirectoryInfo = _session.ListDirectory(remotePath);
@@ -65,9 +73,9 @@ namespace SftpScheduler.BLL.Commands.Transfer
             _session.Open(this.SessionOptions);
         }
 
-        public void PutFiles(string localPath, string remotePath, TransferOptions options)
+        public void PutFiles(string localPath, string remotePath)
         {
-            TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false, options);
+            TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false);
             transferResult.Check();
         }
 

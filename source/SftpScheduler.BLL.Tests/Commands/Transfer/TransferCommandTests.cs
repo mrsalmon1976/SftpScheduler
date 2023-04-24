@@ -78,6 +78,33 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         }
 
         [Test]
+        public void Execute_DownloadJob_UploadsCorrectly()
+        {
+            int jobId = Faker.RandomNumber.Next(10, 100);
+            ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>(), Arg.Any<JobEntity>()).Returns(sessionWrapper);
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.Type = JobType.Download;
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+            jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
+
+            IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();
+            string[] availableFiles = { "/Test/file.zip" };
+            fileTransferService.DownloadFilesAvailable(sessionWrapper, jobEntity.RemotePath).Returns(availableFiles);
+
+            // execute
+            ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepository: jobRepo);
+            transferCommand.Execute(dbContext, jobId);
+
+            // assert
+            fileTransferService.Received(1).DownloadFilesAvailable(sessionWrapper, jobEntity.RemotePath);
+            fileTransferService.Received(1).DownloadFiles(sessionWrapper, Arg.Any<IEnumerable<string>>(), jobEntity.LocalPath, jobEntity.DeleteAfterDownload);
+        }
+
+        [Test]
         public void Execute_UploadJob_UploadsCorrectly()
         {
             int jobId = Faker.RandomNumber.Next(10, 100);    

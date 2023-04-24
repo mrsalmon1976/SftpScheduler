@@ -10,13 +10,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WinSCP;
 
 namespace SftpScheduler.BLL.Tests.Commands.Transfer
 {
     [TestFixture]
     public class FileTransferServiceTests
     {
+        #region DownloadFiles Test
+
+        [Test]
+        public void DownloadFiles_MultipleFiles_VerifyDownloads()
+        {
+            // setup
+            int fileCount = Faker.RandomNumber.Next(2, 10);
+            string localPath = "C:\\Temp";
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            List<string> filesToDownload = CreateRemoteFileList(fileCount, "/Test/", false).Select(x => x.FullName).ToList();
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            fileTransferService.DownloadFiles(sessionWrapper, filesToDownload, localPath, false);
+
+            // assert
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), false);
+            foreach (string remotePath in filesToDownload)
+            {
+                string fileName = Path.GetFileName(remotePath);
+                string localFilePath = Path.Combine(localPath, fileName);
+
+                sessionWrapper.Received(1).GetFiles(remotePath, localFilePath, false);
+            }
+
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void DownloadFiles_FileDownload_ObeysDelete(bool deleteAfterDownload)
+        {
+            // setup
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            List<string> filesToDownload = CreateRemoteFileList(1, "/Test/", false).Select(x => x.FullName).ToList();
+            string remoteFileName = filesToDownload[0];
+            
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            fileTransferService.DownloadFiles(sessionWrapper, filesToDownload, "C:\\Temp", deleteAfterDownload);
+
+            // assert
+            sessionWrapper.Received(1).GetFiles(remoteFileName, Arg.Any<string>(), deleteAfterDownload);
+        }
+
+        #endregion
 
         #region DownloadFilesAvailable Tests
 
@@ -26,7 +70,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             // setup
             string remotePath = "/Test/";
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapper.ListDirectory(remotePath).Returns(Enumerable.Empty<SftpScheduler.BLL.Models.RemoteFileInfo>());
+            sessionWrapper.ListDirectory(remotePath).Returns(Enumerable.Empty<RemoteFileInfo>());
 
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService();
@@ -171,6 +215,38 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         }
 
         [Test]
+        public void UploadFiles_FilesAvailableForUploadAndRenameExists_MarkedAsUploadedWithSuffix()
+        {
+            // setup
+            List<string> newFiles = CreateLocalFileList(1, false);
+            string localFileName = newFiles[0];
+            string localFileExt = Path.GetExtension(localFileName);
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            string localPath = AppDomain.CurrentDomain.BaseDirectory;
+            string remotePath = $"/{Path.GetRandomFileName()}/";
+
+            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            directoryWrap.EnumerateFiles(localPath).Returns(newFiles);
+
+            IFileWrap fileWrap = Substitute.For<IFileWrap>();
+
+            string expectedRename1 = localFileName.Replace(localFileExt, $".uploaded{localFileExt}");
+            string expectedRename2 = localFileName.Replace(localFileExt, $".uploaded_1{localFileExt}");
+            fileWrap.Exists(expectedRename1).Returns(true);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
+            fileTransferService.UploadFiles(sessionWrapper, newFiles, remotePath);
+
+
+            // assert
+            fileWrap.Received(1).Exists(expectedRename1);
+            fileWrap.Received(1).Move(localFileName, expectedRename2);
+        }
+
+
+        [Test]
         public void UploadFiles_FilesAvailableForUpload_FilesUploaded()
         {
             List<string> newFiles = CreateLocalFileList(Faker.RandomNumber.Next(6, 9), false);
@@ -189,10 +265,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             fileTransferService.UploadFiles(sessionWrapper, newFiles, remotePath);
 
             // assert
-            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), remotePath, Arg.Any<TransferOptions>());
+            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), remotePath);
             foreach (string file in newFiles)
             {
-                sessionWrapper.Received(1).PutFiles(file, remotePath, Arg.Any<TransferOptions>());
+                sessionWrapper.Received(1).PutFiles(file, remotePath);
             }
         }
 
@@ -206,7 +282,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string uploadedToken = (isUploaded ? ".uploaded" : "");
             for (int i=0; i<count; i++)
             {
-                string fileName = $"C:\\Temp\\file_{i}{uploadedToken}.zip";
+                int fileNum = Faker.RandomNumber.Next(-10, 10);
+                bool generateSuffix = isUploaded && fileNum <= 1;
+                string nameSuffix = (generateSuffix ? "" : fileNum.ToString());
+
+                string fileName = $"C:\\Temp\\file_{i}{uploadedToken}{nameSuffix}.zip";
                 files.Add(fileName);
             }
             return files;

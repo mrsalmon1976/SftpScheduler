@@ -67,7 +67,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
                     if (jobEntity.Type == JobType.Download)
                     {
-                        _fileTransferService.DownloadFiles(sessionWrapper, "");
+                        filesToTransfer.AddRange(_fileTransferService.DownloadFilesAvailable(sessionWrapper, jobEntity.RemotePath));
+                        _fileTransferService.DownloadFiles(sessionWrapper, filesToTransfer, jobEntity.LocalPath, jobEntity.DeleteAfterDownload);
                     }
                     else
                     {
