@@ -67,8 +67,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
                     if (jobEntity.Type == JobType.Download)
                     {
-                        filesToTransfer.AddRange(_fileTransferService.DownloadFilesAvailable(sessionWrapper, jobEntity.RemotePath));
-                        _fileTransferService.DownloadFiles(sessionWrapper, filesToTransfer, jobEntity.LocalPath, jobEntity.DeleteAfterDownload);
+                        DownloadOptions options = this.BuildDownloadOptions(jobEntity);
+                        _fileTransferService.DownloadFiles(sessionWrapper, options);
                     }
                     else
                     {
@@ -83,6 +83,17 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 }
             }
 
+        }
+
+        private DownloadOptions BuildDownloadOptions(JobEntity jobEntity)
+        {
+            DownloadOptions options = new DownloadOptions(jobEntity.Id, jobEntity.LocalPath, jobEntity.RemotePath) 
+            {
+                DeleteAfterDownload = jobEntity.DeleteAfterDownload,
+                RemoteArchivePath = jobEntity.RemoteArchivePath
+            };
+            options.LocalCopyPaths.AddRange((jobEntity.LocalCopyPaths ?? String.Empty).Split(';'));
+            return options;
         }
 
 

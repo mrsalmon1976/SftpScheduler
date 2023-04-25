@@ -19,6 +19,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath);
 
+        void MoveFile(string sourcePath, string targetPath);
+
         void Open();
 
         void PutFiles(string localPath, string remotePath);
@@ -66,6 +68,11 @@ namespace SftpScheduler.BLL.Commands.Transfer
             });
 
             return remoteFiles;
+        }
+
+        public void MoveFile(string sourcePath, string targetPath)
+        {
+            _session.MoveFile(sourcePath, targetPath);
         }
 
         public void Open() 

@@ -78,7 +78,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         }
 
         [Test]
-        public void Execute_DownloadJob_UploadsCorrectly()
+        public void Execute_DownloadJob_DownloadsCorrectly()
         {
             int jobId = Faker.RandomNumber.Next(10, 100);
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
@@ -92,16 +92,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
             IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();
-            string[] availableFiles = { "/Test/file.zip" };
-            fileTransferService.DownloadFilesAvailable(sessionWrapper, jobEntity.RemotePath).Returns(availableFiles);
 
             // execute
             ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepository: jobRepo);
             transferCommand.Execute(dbContext, jobId);
 
             // assert
-            fileTransferService.Received(1).DownloadFilesAvailable(sessionWrapper, jobEntity.RemotePath);
-            fileTransferService.Received(1).DownloadFiles(sessionWrapper, Arg.Any<IEnumerable<string>>(), jobEntity.LocalPath, jobEntity.DeleteAfterDownload);
+            fileTransferService.Received(1).DownloadFiles(sessionWrapper, Arg.Any<DownloadOptions>());
         }
 
         [Test]

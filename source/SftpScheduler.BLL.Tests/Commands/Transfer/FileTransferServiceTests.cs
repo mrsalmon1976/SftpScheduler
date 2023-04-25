@@ -19,108 +19,87 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         #region DownloadFiles Test
 
         [Test]
-        public void DownloadFiles_MultipleFiles_VerifyDownloads()
+        public void DownloadFiles_NoFiles_Exits()
         {
             // setup
-            int fileCount = Faker.RandomNumber.Next(2, 10);
-            string localPath = "C:\\Temp";
+            DownloadOptions options = CreateDownloadOptions();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            List<string> filesToDownload = CreateRemoteFileList(fileCount, "/Test/", false).Select(x => x.FullName).ToList();
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(Enumerable.Empty<RemoteFileInfo>());
 
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService();
-            fileTransferService.DownloadFiles(sessionWrapper, filesToDownload, localPath, false);
+            fileTransferService.DownloadFiles(sessionWrapper, options);
 
-            // assert
-            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), false);
-            foreach (string remotePath in filesToDownload)
-            {
-                string fileName = Path.GetFileName(remotePath);
-                string localFilePath = Path.Combine(localPath, fileName);
+            //assert
+            sessionWrapper.Received(1).ListDirectory(options.RemotePath);
+            sessionWrapper.DidNotReceive().GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
+        }
 
-                sessionWrapper.Received(1).GetFiles(remotePath, localFilePath, false);
-            }
+        [Test]
+        public void DownloadFilesAvailable_DirectoriesOnRemote_OnlyFilesActioned()
+        {
+            // setup
+            DownloadOptions options = CreateDownloadOptions();
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            int fileCount = Faker.RandomNumber.Next(2, 10);
+            var remoteFiles = this.CreateRemoteFileList(fileCount, options.RemotePath, false);
+            remoteFiles.AddRange(this.CreateRemoteFileList(2, options.RemotePath, true));
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            fileTransferService.DownloadFiles(sessionWrapper, options);
+
+            //assert
+            sessionWrapper.Received(1).ListDirectory(options.RemotePath);
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
 
         }
+
 
         [TestCase(true)]
         [TestCase(false)]
         public void DownloadFiles_FileDownload_ObeysDelete(bool deleteAfterDownload)
         {
             // setup
+            DownloadOptions options = CreateDownloadOptions(deleteAfterDownload: deleteAfterDownload);
+
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            List<string> filesToDownload = CreateRemoteFileList(1, "/Test/", false).Select(x => x.FullName).ToList();
-            string remoteFileName = filesToDownload[0];
             
+            var remoteFiles = this.CreateRemoteFileList(1, options.RemotePath, false);
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
+            string remoteFileName = remoteFiles[0].FullName;
+
+
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService();
-            fileTransferService.DownloadFiles(sessionWrapper, filesToDownload, "C:\\Temp", deleteAfterDownload);
+            fileTransferService.DownloadFiles(sessionWrapper, options);
 
             // assert
             sessionWrapper.Received(1).GetFiles(remoteFileName, Arg.Any<string>(), deleteAfterDownload);
         }
 
-        #endregion
-
-        #region DownloadFilesAvailable Tests
-
         [Test]
-        public void DownloadFilesAvailable_NoFiles_ReturnsEmptyCollection()
+        public void DownloadFiles_FileDownloadWithDelete_NoMoveOccurs()
         {
             // setup
-            string remotePath = "/Test/";
+            DownloadOptions options = CreateDownloadOptions(deleteAfterDownload: true);
+
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapper.ListDirectory(remotePath).Returns(Enumerable.Empty<RemoteFileInfo>());
+
+            int fileCount = Faker.RandomNumber.Next(2, 7);
+            var remoteFiles = this.CreateRemoteFileList(fileCount, options.RemotePath, false);
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
 
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService();
-            IEnumerable<string> files = fileTransferService.DownloadFilesAvailable(sessionWrapper, remotePath);
+            fileTransferService.DownloadFiles(sessionWrapper, options);
 
-            //assert
-            sessionWrapper.Received(1).ListDirectory(remotePath);
-            Assert.That(0, Is.EqualTo(files.Count()));
+            // assert
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), true);
+            sessionWrapper.DidNotReceive().MoveFile(Arg.Any<string>(), Arg.Any<string>());
         }
 
-        [Test]
-        public void DownloadFilesAvailable_MultipleFiles_ReturnsFiles()
-        {
-            // setup
-            string remotePath = "/Test/";
-            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            int fileCount = Faker.RandomNumber.Next(2, 10);
-            var remoteFiles = this.CreateRemoteFileList(fileCount, remotePath, false);
-            sessionWrapper.ListDirectory(remotePath).Returns(remoteFiles);
-
-            // execute
-            IFileTransferService fileTransferService = CreateFileTransferService();
-            IEnumerable<string> files = fileTransferService.DownloadFilesAvailable(sessionWrapper, remotePath);
-
-            //assert
-            sessionWrapper.Received(1).ListDirectory(remotePath);
-            Assert.That(fileCount, Is.EqualTo(files.Count()));
-
-        }
-
-        [Test]
-        public void DownloadFilesAvailable_DirectoriesOnRemote_OnlyFilesReturned()
-        {
-            // setup
-            string remotePath = "/Test/";
-            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            int fileCount = Faker.RandomNumber.Next(2, 10);
-            var remoteFiles = this.CreateRemoteFileList(fileCount, remotePath, false);
-            remoteFiles.AddRange(this.CreateRemoteFileList(2, remotePath, true));
-            sessionWrapper.ListDirectory(remotePath).Returns(remoteFiles);
-
-            // execute
-            IFileTransferService fileTransferService = CreateFileTransferService();
-            IEnumerable<string> files = fileTransferService.DownloadFilesAvailable(sessionWrapper, remotePath);
-
-            //assert
-            sessionWrapper.Received(1).ListDirectory(remotePath);
-            Assert.That(fileCount, Is.EqualTo(files.Count()));
-
-        }
 
         #endregion
 
@@ -275,6 +254,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         #endregion
 
         #region Private Methods
+         
+        private DownloadOptions CreateDownloadOptions(int jobId = 0, string remotePath = "/Test/", string localPath = "C:\\Temp", bool deleteAfterDownload = false)
+        {
+            return new DownloadOptions(jobId, localPath, remotePath)
+            {
+                DeleteAfterDownload = deleteAfterDownload
+            };
+        }
 
         private List<string> CreateLocalFileList(int count, bool isUploaded)
         {

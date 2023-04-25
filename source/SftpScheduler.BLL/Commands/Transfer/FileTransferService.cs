@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
+using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using WinSCP;
 
 namespace SftpScheduler.BLL.Commands.Transfer
 {
     public interface IFileTransferService
     {
-        void DownloadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToDownload, string localPath, bool deleteAfterDownload);
-
-        IEnumerable<string> DownloadFilesAvailable(ISessionWrapper sessionWrapper, string remotePath);
+        void DownloadFiles(ISessionWrapper sessionWrapper, DownloadOptions options);
 
         void UploadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToUpload, string remotePath);
 
@@ -33,24 +33,25 @@ namespace SftpScheduler.BLL.Commands.Transfer
             _fileWrap = fileWrap;
         }
 
-        public void DownloadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToDownload
-            , string localPath, bool deleteAfterDownload)
+        public void DownloadFiles(ISessionWrapper sessionWrapper, DownloadOptions options)
         {
-            foreach (var remotePath in filesToDownload)
-            {
-                string fileName = Path.GetFileName(remotePath);
-                string localFilePath = Path.Combine(localPath, fileName);
-                sessionWrapper.GetFiles(remotePath, localFilePath, deleteAfterDownload);
+            IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> remoteFiles = sessionWrapper.ListDirectory(options.RemotePath);
+            IEnumerable<string> filesToDownload = remoteFiles.Where(x => !x.IsDirectory).Select(x => x.FullName);
 
-                _logger.LogInformation("Downloaded file {remotePath} to {localPath}", remotePath, localFilePath);
+            if (!filesToDownload.Any())
+            {
+                _logger.LogInformation("No files available for download job {jobId}", options.JobId);
+                return;
+            }
+
+            foreach (var remoteFile in filesToDownload)
+            {
+                string fileName = Path.GetFileName(remoteFile);
+                string localFilePath = Path.Combine(options.LocalPath, fileName);
+                sessionWrapper.GetFiles(remoteFile, localFilePath, options.DeleteAfterDownload);
+                _logger.LogInformation("Downloaded file {remoteFile} to {localPath}", remoteFile, localFilePath);
 
             }
-        }
-
-        public IEnumerable<string> DownloadFilesAvailable(ISessionWrapper sessionWrapper, string remotePath)
-        {
-            IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> remoteFiles = sessionWrapper.ListDirectory(remotePath);
-            return remoteFiles.Where(x => !x.IsDirectory).Select(x => x.FullName);
         }
 
         public IEnumerable<string> UploadFilesAvailable(string localPath)
