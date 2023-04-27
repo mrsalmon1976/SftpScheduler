@@ -36,7 +36,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
         public void DownloadFiles(ISessionWrapper sessionWrapper, DownloadOptions options)
         {
             IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> remoteFiles = sessionWrapper.ListDirectory(options.RemotePath);
-            IEnumerable<string> filesToDownload = remoteFiles.Where(x => !x.IsDirectory).Select(x => x.FullName);
+            IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> filesToDownload = remoteFiles.Where(x => !x.IsDirectory);
 
             if (!filesToDownload.Any())
             {
@@ -46,11 +46,27 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
             foreach (var remoteFile in filesToDownload)
             {
-                string fileName = Path.GetFileName(remoteFile);
+                string fileName = remoteFile.Name;
                 string localFilePath = Path.Combine(options.LocalPath, fileName);
-                sessionWrapper.GetFiles(remoteFile, localFilePath, options.DeleteAfterDownload);
+                sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload);
                 _logger.LogInformation("Downloaded file {remoteFile} to {localPath}", remoteFile, localFilePath);
 
+                // archive file remotely
+                if (!options.DeleteAfterDownload)
+                {
+                    string archivePath = $"{options.RemoteArchivePath}{fileName}";
+                    sessionWrapper.MoveFile(remoteFile.FullName, archivePath);
+                    _logger.LogInformation("Remote file moved to {archivePath}", archivePath);
+                }
+
+                // make local copies, if any
+                foreach (string localCopyPath in options.LocalCopyPaths)
+                {
+                    string fileNameWithoutExt = Path.GetFileNameWithoutExtension(localFilePath);
+                    string extension = Path.GetExtension(localFilePath);
+                    string fileCopyPath = GetUniqueFileName(localCopyPath, fileNameWithoutExt, String.Empty, extension);
+                    _fileWrap.Copy(localFilePath, fileCopyPath);
+                }
             }
         }
 
@@ -87,20 +103,20 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
                 sessionWrapper.PutFiles(file, remotePath);
 
-                string destFilePath = GetUniqueFileName(folder, fileName, extension);
+                string destFilePath = GetUniqueFileName(folder, fileName, ".uploaded", extension);
                 _fileWrap.Move(file, destFilePath);
                 _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", file, destFilePath);
             }
         }
 
-        private string GetUniqueFileName(string? folder, string fileName, string extension)
+        private string GetUniqueFileName(string? folder, string fileName, string fileNameSuffix, string extension)
         {
-            string destFilePath = $"{folder}\\{fileName}.uploaded{extension}";
+            string destFilePath = $"{folder}\\{fileName}{fileNameSuffix}{extension}";
             int fileSuffix = 1;
 
             while (_fileWrap.Exists(destFilePath))
             {
-                destFilePath = $"{folder}\\{fileName}.uploaded_{fileSuffix}{extension}";
+                destFilePath = $"{folder}\\{fileName}{fileNameSuffix}_{fileSuffix}{extension}";
                 fileSuffix++;
             }
 

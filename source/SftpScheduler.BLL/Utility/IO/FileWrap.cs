@@ -8,6 +8,8 @@ namespace SftpScheduler.BLL.Utility.IO
 {
     public interface IFileWrap
     {
+        void Copy(string sourceFileName, string destFileName);
+
         bool Exists(string? path);
 
         void Move(string sourceFileName, string destFileName);
@@ -16,6 +18,11 @@ namespace SftpScheduler.BLL.Utility.IO
 
     public class FileWrap : IFileWrap
     {
+
+        public void Copy(string sourceFileName, string destFileName)
+        {
+            File.Copy(sourceFileName, destFileName);
+        }
 
         public bool Exists(string? path)
         {

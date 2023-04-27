@@ -100,6 +100,67 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapper.DidNotReceive().MoveFile(Arg.Any<string>(), Arg.Any<string>());
         }
 
+        [Test]
+        public void DownloadFiles_FileDownloadWithArchive_MovesFileIntoArchiveFolder()
+        {
+            // setup
+            string remoteArchivePath = $"/{Path.GetRandomFileName()}/";
+            DownloadOptions options = CreateDownloadOptions(deleteAfterDownload: false, remoteArchivePath: remoteArchivePath);
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+
+            int fileCount = Faker.RandomNumber.Next(2, 7);
+            var remoteFiles = this.CreateRemoteFileList(fileCount, options.RemotePath, false);
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            fileTransferService.DownloadFiles(sessionWrapper, options);
+
+            // assert
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), false);
+            sessionWrapper.Received(fileCount).MoveFile(Arg.Any<string>(), Arg.Any<string>());
+
+            foreach (RemoteFileInfo downloadFile in remoteFiles)
+            {
+                string targetPath = $"{options.RemoteArchivePath}{downloadFile.Name}";
+                sessionWrapper.Received(1).MoveFile(downloadFile.FullName, targetPath);
+            }
+        }
+
+        [Test]
+        public void DownloadFiles_LocalCopiesSpecified_LocalCopiesMade()
+        {
+            // setup
+            DownloadOptions options = CreateDownloadOptions();
+
+            string localCopyFolder1 = $"C:\\Temp\\{Path.GetRandomFileName()}";
+            string localCopyFolder2 = $"\\\\server\\Share\\{Path.GetRandomFileName()}";
+            options.LocalCopyPaths.Add(localCopyFolder1);
+            options.LocalCopyPaths.Add(localCopyFolder2);
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+
+            var remoteFiles = this.CreateRemoteFileList(1, options.RemotePath, false);
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
+
+            // execute
+            IFileWrap fileWrap = Substitute.For<IFileWrap>();
+            IFileTransferService fileTransferService = CreateFileTransferService(fileWrap: fileWrap);
+            fileTransferService.DownloadFiles(sessionWrapper, options);
+
+            // assert
+
+            foreach (string localCopyFolder in options.LocalCopyPaths)
+            {
+                string fileName = remoteFiles[0].Name;
+                string sourcePath = Path.Combine(options.LocalPath, fileName);
+                string targetPath = Path.Combine(localCopyFolder, fileName);
+                fileWrap.Received(1).Copy(sourcePath, targetPath);
+            }
+
+        }
+
 
         #endregion
 
@@ -255,11 +316,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
         #region Private Methods
          
-        private DownloadOptions CreateDownloadOptions(int jobId = 0, string remotePath = "/Test/", string localPath = "C:\\Temp", bool deleteAfterDownload = false)
+        private DownloadOptions CreateDownloadOptions(int jobId = 0, string remotePath = "/Test/", string localPath = "C:\\Temp", bool deleteAfterDownload = false, string? remoteArchivePath = null)
         {
             return new DownloadOptions(jobId, localPath, remotePath)
             {
-                DeleteAfterDownload = deleteAfterDownload
+                DeleteAfterDownload = deleteAfterDownload,
+                RemoteArchivePath = remoteArchivePath
             };
         }
 
