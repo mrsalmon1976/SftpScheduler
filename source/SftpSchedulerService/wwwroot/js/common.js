@@ -15,8 +15,11 @@ Object.defineProperty(JobTypes, "Upload", {
 class UiHelpers
 {
     static formatDateTime(dt) {
-        return moment(dt).format('YYYY-MM-DD HH:mm:SS')
-
+        var dt = moment(dt);
+        if (dt.isValid()) {
+            return dt.format('YYYY-MM-DD HH:mm:SS')
+        }
+        return '';
     };
 
     static showErrorToast(title, subtitle, message) {

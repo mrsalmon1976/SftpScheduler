@@ -12,7 +12,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 {
     public interface ISessionWrapperFactory
     {
-        ISessionWrapper CreateSession(HostEntity hostEntity, JobEntity jobEntity);
+        ISessionWrapper CreateSession(HostEntity hostEntity);
     }
 
     public class SessionWrapperFactory : ISessionWrapperFactory
@@ -25,9 +25,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
             _passwordProvider = passwordProvider;
         }
 
-        public ISessionWrapper CreateSession(HostEntity hostEntity, JobEntity jobEntity)
+        public ISessionWrapper CreateSession(HostEntity hostEntity)
         {
-            string password = _passwordProvider.Decrypt(hostEntity.Password);
 
             // Setup session options
             SessionOptions sessionOptions = new SessionOptions
@@ -35,13 +34,18 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 Protocol = Protocol.Sftp,   // TODO: could be Ftps
                 HostName = hostEntity.Host,
                 PortNumber = hostEntity.Port ?? DefaultPort,
-                UserName = hostEntity.Username,
-                Password = password,
+                UserName = hostEntity.Username
                 //ssh
                 //SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny  // TODO!  This needs to be removed!
 
                 //SshHostKeyFingerprint = "ssh-rsa 2048 xxxxxxxxxxx..."
             };
+
+            if (!String.IsNullOrWhiteSpace(hostEntity.Password))
+            {
+                string password = _passwordProvider.Decrypt(hostEntity.Password);
+                sessionOptions.Password = password;
+            }
 
             if (String.IsNullOrEmpty(hostEntity.KeyFingerprint))
             {
@@ -55,5 +59,6 @@ namespace SftpScheduler.BLL.Commands.Transfer
             ISessionWrapper sessionWrapper = new SessionWrapper(sessionOptions);
             return sessionWrapper;
         }
+
     }
 }

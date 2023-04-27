@@ -5,7 +5,7 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models;
+using SftpSchedulerService.Models.Host;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {

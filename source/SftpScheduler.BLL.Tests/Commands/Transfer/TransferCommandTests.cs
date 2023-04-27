@@ -25,7 +25,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         {
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>(), Arg.Any<JobEntity>()).Returns(sessionWrapper);
+            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
             IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();
@@ -46,7 +46,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             int jobId = Faker.RandomNumber.Next(1000);
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>(), Arg.Any<JobEntity>()).Returns(sessionWrapper);
+            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity(jobId);
@@ -83,7 +83,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             int jobId = Faker.RandomNumber.Next(10, 100);
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>(), Arg.Any<JobEntity>()).Returns(sessionWrapper);
+            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
@@ -107,7 +107,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             int jobId = Faker.RandomNumber.Next(10, 100);    
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>(), Arg.Any<JobEntity>()).Returns(sessionWrapper);
+            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
@@ -132,7 +132,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         {
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>(), Arg.Any<JobEntity>()).Returns(sessionWrapper);
+            sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
             IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();

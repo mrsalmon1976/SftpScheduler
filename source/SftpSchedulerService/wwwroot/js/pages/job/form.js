@@ -20,11 +20,9 @@ createApp({
                 that.scheduleInWords = 'No schedule entered';
                 return;
             }
-            this.isLoading = true;
             this.scheduleInWords = 'Loading....';
             this.job.convertScheduleToWords(text, function (result) {
                 that.scheduleInWords = result;
-                that.isLoading = false;
             });
             
         }, 500)

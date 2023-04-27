@@ -23,7 +23,6 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             
             HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
             hostEntity.Password = encryptedPassword;
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
 
             // set up
             IPasswordProvider passwordProvider = Substitute.For<IPasswordProvider>();
@@ -31,7 +30,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // execute
             ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(passwordProvider);
-            ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity, jobEntity);
+            ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity);
 
             // assert
             passwordProvider.Received(1).Decrypt(encryptedPassword);
@@ -48,7 +47,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // execute
             ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IPasswordProvider>());
-            ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity, EntityTestHelper.CreateJobEntity());
+            ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity);
 
             // assert
             Assert.That(sessionWrapper.SessionOptions.SshHostKeyPolicy, Is.EqualTo(SshHostKeyPolicy.GiveUpSecurityAndAcceptAny));
@@ -65,7 +64,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // execute
             ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IPasswordProvider>());
-            ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity, EntityTestHelper.CreateJobEntity());
+            ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity);
 
             // assert
             Assert.That(sessionWrapper.SessionOptions.SshHostKeyFingerprint, Is.EqualTo(hostKeyFingerprint));

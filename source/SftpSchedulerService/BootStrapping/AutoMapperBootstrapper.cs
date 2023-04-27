@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SftpScheduler.BLL.Models;
-using SftpSchedulerService.Models;
+using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
 
 namespace SftpSchedulerService.BootStrapping

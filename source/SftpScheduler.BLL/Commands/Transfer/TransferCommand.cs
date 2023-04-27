@@ -57,7 +57,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
             }
 
             // we have to connect now
-            using (ISessionWrapper sessionWrapper = _sessionWrapperFactory.CreateSession(hostEntity, jobEntity))
+            using (ISessionWrapper sessionWrapper = _sessionWrapperFactory.CreateSession(hostEntity))
             {
                 try
                 {
@@ -92,7 +92,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 DeleteAfterDownload = jobEntity.DeleteAfterDownload,
                 RemoteArchivePath = jobEntity.RemoteArchivePath
             };
-            options.LocalCopyPaths.AddRange((jobEntity.LocalCopyPaths ?? String.Empty).Split(';'));
+            options.LocalCopyPaths.AddRange((jobEntity.LocalCopyPaths ?? String.Empty).Split(';').Where(x => x.Length > 0));
             return options;
         }
 

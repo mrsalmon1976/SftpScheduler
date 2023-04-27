@@ -8,11 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using SftpSchedulerService.Config;
 using SftpScheduler.BLL.Identity.Models;
-using SftpSchedulerService.Models;
 using Microsoft.AspNetCore.Authorization;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
+using SftpSchedulerService.Models.Host;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -24,12 +24,14 @@ namespace SftpSchedulerService.Controllers.Api
         private readonly HostCreateOrchestrator _hostCreateProvider;
         private readonly HostFetchAllOrchestrator _hostFetchAllProvider;
         private readonly HostDeleteOneOrchestrator _hostDeleteOneOrchestrator;
+        private readonly HostFingerprintScanOrchestrator _hostFingerprintScanOrchestrator;
 
-        public HostsController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider, HostDeleteOneOrchestrator hostDeleteOneOrchestrator)
+        public HostsController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider, HostDeleteOneOrchestrator hostDeleteOneOrchestrator, HostFingerprintScanOrchestrator hostFingerprintScanOrchestrator)
         {
             _hostCreateProvider = hostCreateProvider;
             _hostFetchAllProvider = hostFetchAllProvider;
             _hostDeleteOneOrchestrator = hostDeleteOneOrchestrator;
+            _hostFingerprintScanOrchestrator = hostFingerprintScanOrchestrator;
         }
 
         //// GET: api/<ApiAuthController>
@@ -51,6 +53,14 @@ namespace SftpSchedulerService.Controllers.Api
         public async Task<IActionResult> Post([FromBody] HostViewModel model)
         {
             return await _hostCreateProvider.Execute(model);
+        }
+
+        [HttpPost("scanfingerprint")]
+        //[Route("api/hosts/scanfingerprint")]
+        public async Task<IActionResult> ScanFingerprint([FromBody] HostViewModel model)
+        {
+            return await _hostFingerprintScanOrchestrator.Execute(model);
+            // return await _hostCreateProvider.Execute(model);
         }
 
         //// PUT api/<ApiAuthController>/5

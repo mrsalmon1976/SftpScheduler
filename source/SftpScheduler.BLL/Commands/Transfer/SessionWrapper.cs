@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SftpScheduler.BLL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,11 +25,16 @@ namespace SftpScheduler.BLL.Commands.Transfer
         void Open();
 
         void PutFiles(string localPath, string remotePath);
+
+        string ScanFingerprint(string algorithm);
     }
 
     public class SessionWrapper : ISessionWrapper
     {
         private readonly Session _session;
+
+        public const string AlgorithmSha256 = "SHA-256";
+        public const string AlgorithmMd5 = "MD5";
 
         public SessionWrapper(SessionOptions sessionOptions)
         {
@@ -76,14 +82,27 @@ namespace SftpScheduler.BLL.Commands.Transfer
         }
 
         public void Open() 
-        { 
+        {
             _session.Open(this.SessionOptions);
+
         }
 
         public void PutFiles(string localPath, string remotePath)
         {
             TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false);
             transferResult.Check();
+        }
+
+        public string ScanFingerprint(string algorithm)
+        {
+            //SessionOptions sessionOptions = new SessionOptions
+            //{
+            //    Protocol = Protocol.Sftp,   
+            //    HostName = hostName,
+            //    PortNumber = port ?? 22
+            //};
+
+            return _session.ScanFingerprint(this.SessionOptions, algorithm);
         }
 
         private void FileTransferProgressEventHandler(object sender, FileTransferProgressEventArgs e)

@@ -4,10 +4,53 @@ createApp({
     data() {
         return {
             isLoading: true,
-            host: new HostModel()
+            host: new HostModel(),
+            scanDialogText: '',
+            isScanError: false,
+            keyFingerprints: []
         }
     },
     methods: {
+        async showScanDialog() {
+
+            this.isScanError = false;
+            this.keyFingerprints = [];
+            this.scanDialogText = 'Scanning host for fingerprint values using SHA-256 and MD5 algorithms...';
+            $('#modal-scan-fingerprint').modal();
+
+            if (!this.host.validate())
+            { 
+                this.isScanError = true;
+                this.scanDialogText = 'The captured host details are invalid - unable to scan for fingerprint.';
+                return;
+            }
+
+
+            axios.post('/api/hosts/scanfingerprint', this.host)
+
+                .then(response => {
+                    this.scanDialogText = '';
+                    this.keyFingerprints = response.data;
+                })
+                .catch(err => {
+                    this.isScanError = true;
+                    if (err.response && err.response.data && err.response.data.errorMessages) {
+                        var errMessages = err.response.data.errorMessages;
+                        var text = '';
+                        for (var i = 0; i < errMessages.length; i++) {
+                            text = text + errMessages[i] + '<br />';
+                        }
+                        this.scanDialogText = text;
+                    }
+                    else {
+                        this.scanDialogText = err.message;
+                    }
+                });
+        },
+        setKeyFingerPrint(keyFingerprint) {
+            this.host.keyFingerprint = keyFingerprint;
+            $('#modal-scan-fingerprint').modal('toggle');
+        },
         async submit() {
             this.isLoading = true;
             $('#toastsContainerTopRight > .toast').remove();

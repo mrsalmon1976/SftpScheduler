@@ -120,6 +120,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddTransient<HostCreateOrchestrator>();
             services.AddTransient<HostDeleteOneOrchestrator>();
             services.AddTransient<HostFetchAllOrchestrator>();
+            services.AddTransient<HostFingerprintScanOrchestrator>();
             services.AddTransient<JobCreateOrchestrator>();
             services.AddTransient<JobDeleteOneOrchestrator>();
             services.AddTransient<JobFetchAllOrchestrator>();

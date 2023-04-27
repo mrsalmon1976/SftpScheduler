@@ -1,4 +1,4 @@
-﻿using SftpSchedulerService.Models;
+﻿using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
 using System;
 using System.Collections.Generic;

@@ -1,16 +1,16 @@
 ﻿using SftpSchedulerService.Utilities;
 
-namespace SftpSchedulerService.Models
+namespace SftpSchedulerService.Models.Host
 {
     public class HostViewModel
     {
 
         private string _hashId = "";
 
-        public HostViewModel() 
+        public HostViewModel()
         {
-            this.KeyFingerprint = String.Empty;
-        }  
+            KeyFingerprint = string.Empty;
+        }
 
         public int Id { get; set; }
 
@@ -18,9 +18,9 @@ namespace SftpSchedulerService.Models
         {
             get
             {
-                if (String.IsNullOrEmpty(_hashId) && this.Id > 0)
+                if (string.IsNullOrEmpty(_hashId) && Id > 0)
                 {
-                    _hashId = UrlUtils.Encode(this.Id);
+                    _hashId = UrlUtils.Encode(Id);
                 }
                 return _hashId;
             }
