@@ -23,6 +23,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void Execute_SuccessfulTransfer_ProgressCallBackSetAndCleared()
         {
+            int jobId = Faker.RandomNumber.Next(1000);
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
@@ -32,9 +33,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string[] availableFiles = { "C:\\Temp\\1.zip" };
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(availableFiles);
 
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(jobId);
+            jobEntity.Type = JobType.Upload;
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+            jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
-            ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService);
-            transferCommand.Execute(dbContext, 1);
+
+            ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepo);
+            transferCommand.Execute(dbContext, jobId);
 
             sessionWrapper.Received(2).ProgressCallback = Arg.Any<Action<int>>();
             Assert.That(sessionWrapper.ProgressCallback, Is.Null);
@@ -138,8 +144,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(new string[] { "C:\\Temp\\1.zip" });
 
-            ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService);
-            transferCommand.Execute(dbContext, 1);
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(Faker.RandomNumber.Next());
+            jobEntity.Type = JobType.Upload;
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+            jobRepo.GetByIdAsync(dbContext, jobEntity.Id).Returns(Task.FromResult(jobEntity));
+
+
+            ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepo);
+            transferCommand.Execute(dbContext, jobEntity.Id);
 
             sessionWrapper.Received(1).Open();
             sessionWrapper.Received(1).Close();
