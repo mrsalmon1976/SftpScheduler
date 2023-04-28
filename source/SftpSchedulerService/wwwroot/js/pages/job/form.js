@@ -74,12 +74,19 @@
 
         },
         async loadLogs() {
+
             let result = await axios.get('/api/jobs/' + this.job.hashId + '/logs')
                 .catch(err => {
                     UiHelpers.showErrorToast('Error', '', err.message);
                 });
 
             this.logs = result.data;
+        },
+        setLogReloadInterval() {
+            var that = this;
+            setInterval(function () {
+                that.loadLogs();
+            }, 60000);
         },
         async submit() {
             this.isLoading = true;
@@ -121,6 +128,7 @@
         else { 
             this.loadJobDetail();
             this.loadLogs();
+            this.setLogReloadInterval();
         }
         this.isLoading = false;
     }
