@@ -1,6 +1,4 @@
-﻿const { createApp } = Vue
-
-createApp({
+﻿createApp({
     data() {
         return {
             hosts: [],
@@ -55,6 +53,7 @@ createApp({
         }
     },
     mounted: function () {
+        UiHelpers.setPageHeader('Hosts')
         this.isLoading = false;
         this.loadHosts();
     }

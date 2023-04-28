@@ -11,7 +11,7 @@
         <li class="breadcrumb-item active"><a href="/jobs/create" class="btn btn-primary bg-gradient-primary">Add Job</a></li>
     </ol>
 }
-<div id="app-job">
+<div id="app-job" v-cloak>
     <div v-if="jobs.length == 0">
         No jobs have been created.  You will need to <a href="~/hosts/create">create at least one host</a> before you can add jobs.
     </div>

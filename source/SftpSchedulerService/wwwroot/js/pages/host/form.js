@@ -1,6 +1,4 @@
-﻿const { createApp } = Vue
-
-createApp({
+﻿createApp({
     data() {
         return {
             isLoading: true,
@@ -23,7 +21,9 @@ createApp({
                     return;
                 });
 
+
             var hostData = result.data;
+            UiHelpers.setPageHeader('Edit Host / ' + hostData.name + ' [' + hostData.host + ']');
             this.host.name = hostData.name;
             this.host.host = hostData.host;
             this.host.port = hostData.port;
@@ -113,6 +113,7 @@ createApp({
         }
         else {
             this.isLoading = false;
+            UiHelpers.setPageHeader('Create New Host');
         }
     }
 }).mount('#app-host')

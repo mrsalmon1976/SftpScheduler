@@ -1,6 +1,4 @@
-﻿const { createApp } = Vue
-
-createApp({
+﻿createApp({
     data() {
         return {
             isLoading: true

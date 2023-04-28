@@ -140,11 +140,11 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header">
+    <div id="app-header" class="content-header" v-cloak>
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6 ">
-            <h1 class="m-0">@ViewBag.PageTitle</h1>
+            <h1 class="m-0">{{ pageHeader }}</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
               &nbsp;
@@ -198,6 +198,7 @@
 -->
 <script src="~/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <script src="~/plugins/axios/axios.min.js"></script>
+<script src="~/plugins/mitt/mitt.umd.js"></script>
 
 <environment-script src="~/plugins/vue/vue.global.js" prod-suffix=".prod.js"></environment-script>
 <environment-script src="~/js/adminlte/adminlte.js"></environment-script>

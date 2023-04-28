@@ -1,4 +1,8 @@
-﻿var JobTypes = {};
+﻿const { createApp } = Vue
+
+const emitter = mitt();
+
+var JobTypes = {};
 Object.defineProperty(JobTypes, "Download", {
     value: "1",
     writable: false,
@@ -12,6 +16,15 @@ Object.defineProperty(JobTypes, "Upload", {
     configurable: false
 });
 
+var BusMessages = {};
+Object.defineProperty(BusMessages, "PageHeader", {
+    value: "PageHeader",
+    writable: false,
+    enumerable: true,
+    configurable: false
+});
+
+
 class UiHelpers
 {
     static formatDateTime(dt) {
@@ -20,6 +33,10 @@ class UiHelpers
             return dt.format('YYYY-MM-DD HH:mm:SS')
         }
         return '';
+    };
+
+    static setPageHeader(headerText) {
+        emitter.emit(BusMessages.PageHeader, headerText);
     };
 
     static showErrorToast(title, subtitle, message) {
@@ -42,6 +59,23 @@ class UiHelpers
             }, delay)
         }
     };
-}
+};
+
+createApp({
+    data() {
+        return {
+            pageHeader: 'Loading...'
+        }
+    },
+    methods: {
+    },
+    mounted: function () {
+        //emitter.emit(BusMessages.PageHeader, this.pad)
+        //bus.$on(BusMessages.PageHeader, headerText => this.pageHeader = headerText);
+        emitter.on(BusMessages.PageHeader, headerText => {
+            this.pageHeader = headerText;
+        });
+    }
+}).mount('#app-header')
 
 

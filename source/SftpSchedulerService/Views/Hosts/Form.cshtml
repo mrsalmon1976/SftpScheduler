@@ -1,13 +1,13 @@
 ﻿@{
     Layout = "_Layout";
-    ViewBag.PageTitle = "Hosts - Create New Host";
+    ViewBag.PageTitle = "Hosts";
    
 }
 @section Scripts {
     <environment-script src="~/js/models/host.js"></environment-script>
     <environment-script src="~/js/pages/host/form.js"></environment-script>
 }
-<div id="app-host" data-host-id="@Model.HostId">
+<div id="app-host" data-host-id="@Model.HostId" v-cloak>
     <div class="card card-info">
         <!-- form start -->
         <div class="card-header">

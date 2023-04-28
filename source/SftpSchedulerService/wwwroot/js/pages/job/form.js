@@ -1,6 +1,4 @@
-﻿const { createApp } = Vue
-
-createApp({
+﻿createApp({
     data() {
         return {
             allHosts: [],
@@ -61,6 +59,7 @@ createApp({
                 });
 
             var jobData = result.data;
+            UiHelpers.setPageHeader('Edit Job / ' + jobData.name);
             this.job.name = jobData.name;
             this.job.hostId = jobData.hostId;
             this.job.type = jobData.type;
@@ -116,7 +115,10 @@ createApp({
         this.loadHosts();
 
         this.job.hashId = this.$el.parentElement.getAttribute('data-job-id');
-        if (this.job.hashId != '') {
+        if (this.job.hashId == '') {
+            UiHelpers.setPageHeader('Create New Job');
+        }
+        else { 
             this.loadJobDetail();
             this.loadLogs();
         }

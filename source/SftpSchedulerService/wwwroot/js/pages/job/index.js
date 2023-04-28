@@ -1,6 +1,4 @@
-﻿const { createApp } = Vue
-
-createApp({
+﻿createApp({
     data() {
         return {
             jobs: [],
@@ -53,6 +51,7 @@ createApp({
     },
     mounted: function () {
         this.isLoading = false;
+        UiHelpers.setPageHeader('Jobs');
         this.loadJobs();
     }
 }).mount('#app-job')
