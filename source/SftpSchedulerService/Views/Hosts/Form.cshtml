@@ -8,13 +8,13 @@
     <environment-script src="~/js/pages/host/form.js"></environment-script>
 }
 <div id="app-host">
-    <form class="form-horizontal">
-        <div class="card card-info">
+    <div class="card card-info">
         <!-- form start -->
-            <div class="card-header">
-                <h3 class="card-title">Host Details</h3>
-            </div>
-            <div class="card-body">
+        <div class="card-header">
+            <h3 class="card-title">Host Details</h3>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal">
                 <div class="form-group row">
                     <label for="host-name" class="col-sm-2 col-form-label">Name</label>
                     <div class="col-sm-4">
@@ -59,13 +59,15 @@
                 </div>
                 <div class="card-footer">
                     <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">Create Host</button>
-                    <button type="reset" class="btn btn-default float-right">Cancel</button>
                 </div>
                 <!-- /.card-footer -->
-            </div>
-            <!-- /.card-body -->
+            </form>
         </div>
-    </form>
+        <!-- /.card-body -->
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
+    </div>
 
     @* Modal for scanning *@
     <div class="modal fade" id="modal-scan-fingerprint" tabindex="-1" role="dialog" aria-labelledby="modal-scan-fingerprint-label" aria-hidden="true">
