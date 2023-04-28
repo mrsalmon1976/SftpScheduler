@@ -1,5 +1,6 @@
 ﻿class HostModel {
     constructor() {
+        this.hashId = '';
         this.name = '';
         this.host = '';
         this.port = 22;
@@ -16,6 +17,7 @@
     validate = function () {
         this.validateName();
         this.validateHost();
+        this.validateKeyFingerprint();
         return (this.isHostValid && this.isNameValid);
     }
 

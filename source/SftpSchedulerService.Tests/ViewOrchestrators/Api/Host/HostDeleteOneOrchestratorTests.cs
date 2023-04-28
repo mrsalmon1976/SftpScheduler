@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
+namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 {
     [TestFixture]
     public class HostDeleteOneOrchestratorTests

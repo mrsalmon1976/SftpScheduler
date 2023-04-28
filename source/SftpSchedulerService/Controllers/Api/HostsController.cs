@@ -13,6 +13,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.Models.Host;
+using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -21,38 +22,56 @@ namespace SftpSchedulerService.Controllers.Api
     [Authorize]
     public class HostsController : ControllerBase
     {
-        private readonly HostCreateOrchestrator _hostCreateProvider;
-        private readonly HostFetchAllOrchestrator _hostFetchAllProvider;
+        private readonly HostCreateOrchestrator _hostCreateOrchestrator;
+        private readonly HostFetchAllOrchestrator _hostFetchAllOrchestrator;
         private readonly HostDeleteOneOrchestrator _hostDeleteOneOrchestrator;
         private readonly HostFingerprintScanOrchestrator _hostFingerprintScanOrchestrator;
+        private readonly HostFetchOneOrchestrator _hostFetchOneOrchestrator;
+        private readonly HostUpdateOrchestrator _hostUpdateOrchestrator;
 
-        public HostsController(HostCreateOrchestrator hostCreateProvider, HostFetchAllOrchestrator hostFetchAllProvider, HostDeleteOneOrchestrator hostDeleteOneOrchestrator, HostFingerprintScanOrchestrator hostFingerprintScanOrchestrator)
+        public HostsController(HostCreateOrchestrator hostCreateOrchestrator
+            , HostFetchAllOrchestrator hostFetchAllOrchestrator
+            , HostDeleteOneOrchestrator hostDeleteOneOrchestrator
+            , HostFingerprintScanOrchestrator hostFingerprintScanOrchestrator
+            , HostFetchOneOrchestrator hostFetchOneOrchestrator
+            , HostUpdateOrchestrator hostUpdateOrchestrator
+            )
         {
-            _hostCreateProvider = hostCreateProvider;
-            _hostFetchAllProvider = hostFetchAllProvider;
+            _hostCreateOrchestrator = hostCreateOrchestrator;
+            _hostFetchAllOrchestrator = hostFetchAllOrchestrator;
             _hostDeleteOneOrchestrator = hostDeleteOneOrchestrator;
             _hostFingerprintScanOrchestrator = hostFingerprintScanOrchestrator;
+            _hostFetchOneOrchestrator = hostFetchOneOrchestrator;
+            _hostUpdateOrchestrator = hostUpdateOrchestrator;
         }
 
         //// GET: api/<ApiAuthController>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return await _hostFetchAllProvider.Execute();
+            return await _hostFetchAllOrchestrator.Execute();
         }
 
-        //// GET api/<ApiAuthController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] string id)
+        {
+            return await _hostFetchOneOrchestrator.Execute(id);
+        }
 
         [HttpPost]
         //[Route("api/auth/login")]
         public async Task<IActionResult> Post([FromBody] HostViewModel model)
         {
-            return await _hostCreateProvider.Execute(model);
+            return await _hostCreateOrchestrator.Execute(model);
+        }
+
+        [HttpPost]
+        [Route("{id}")]
+        public async Task<IActionResult> Post([FromBody] HostViewModel model, [FromRoute]string id)
+        {
+            model.Id = UrlUtils.Decode(id);
+            return await _hostUpdateOrchestrator.Execute(model);
         }
 
         [HttpPost("scanfingerprint")]
@@ -60,7 +79,6 @@ namespace SftpSchedulerService.Controllers.Api
         public async Task<IActionResult> ScanFingerprint([FromBody] HostViewModel model)
         {
             return await _hostFingerprintScanOrchestrator.Execute(model);
-            // return await _hostCreateProvider.Execute(model);
         }
 
         //// PUT api/<ApiAuthController>/5

@@ -31,6 +31,15 @@ createApp({
         formatDateTime(dt) {
             return UiHelpers.formatDateTime(dt);
         },
+        getLogClass(log) {
+            if (log.status == 'Failure') {
+                return 'bg-danger';
+            }
+            else if (log.status == 'Success') {
+                return 'bg-success';
+            }
+            return 'bg-primary';
+        },
         isDownloadVisible() {
             return (this.job.type == JobTypes.Download);
         },
@@ -106,7 +115,7 @@ createApp({
         this.isLoading = true;
         this.loadHosts();
 
-        this.job.hashId = $('#job-id').text();
+        this.job.hashId = this.$el.parentElement.getAttribute('data-job-id');
         if (this.job.hashId != '') {
             this.loadJobDetail();
             this.loadLogs();

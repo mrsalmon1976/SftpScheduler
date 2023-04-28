@@ -10,7 +10,7 @@
     <environment-script src="~/js/models/job.js"></environment-script>
     <environment-script src="~/js/pages/job/form.js"></environment-script>
 }
-<div id="app-job">
+<div id="app-job" data-job-id="@Model.JobId">
 
     <div class="card card-primary card-tabs">
         <div class="card-header p-0 pt-1">
@@ -126,11 +126,11 @@
                         </thead>
                         <tbody>
                             <tr v-for="log in logs">
-                                <td>{{ log.id }}</td>
-                                <td>{{ formatDateTime(log.startDate) }}</td>
-                                <td>{{ formatDateTime(log.endDate) }}</td>
-                                <td>{{ log.status }}</td>
-                                <td>{{ log.errorMessage }}</td>
+                                <td class="text-sm">{{ log.id }}</td>
+                                <td class="nowrap text-sm">{{ formatDateTime(log.startDate) }}</td>
+                                <td class="nowrap text-sm">{{ formatDateTime(log.endDate) }}</td>
+                                <td class="text-sm"><span class="badge" :class="getLogClass(log)">{{ log.status }}</span></td>
+                                <td class="text-sm"><span class="text-danger">{{ log.errorMessage }}</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -142,5 +142,5 @@
         </div>
     </div>
 </div>
-<div style="display:none;" id="job-id">@Model.JobId</div>
+
 

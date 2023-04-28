@@ -4,13 +4,35 @@ createApp({
     data() {
         return {
             isLoading: true,
+            isEdit: false,
+            hostId: '',
             host: new HostModel(),
             scanDialogText: '',
             isScanError: false,
-            keyFingerprints: []
+            keyFingerprints: [],
+            submitButtonText: 'Create Host'
         }
     },
     methods: {
+        async loadHost() {
+
+            let result = await axios.get('/api/hosts/' + this.host.hashId)
+                .catch(err => {
+                    this.isLoading = false;
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    return;
+                });
+
+            var hostData = result.data;
+            this.host.name = hostData.name;
+            this.host.host = hostData.host;
+            this.host.port = hostData.port;
+            this.host.userName = hostData.userName;
+            this.host.password = '';
+            this.host.keyFingerprint = hostData.keyFingerprint;
+            this.host.validate();
+            this.isLoading = false;
+        },
         async showScanDialog() {
 
             this.isScanError = false;
@@ -61,7 +83,8 @@ createApp({
                 return;
             }
 
-            axios.post('/api/hosts', this.host)
+            var url = (this.isEdit ? '/api/hosts/' + this.host.hashId : '/api/hosts');
+            axios.post(url, this.host)
 
                 .then(response => {
                     window.location.href = '/hosts';
@@ -82,6 +105,14 @@ createApp({
         }
     },
     mounted: function () {
-        this.isLoading = false;
+        this.host.hashId = this.$el.parentElement.getAttribute('data-host-id');
+        if (this.host.hashId != '') {
+            this.isEdit = true;
+            this.submitButtonText = 'Update Host';
+            this.loadHost();
+        }
+        else {
+            this.isLoading = false;
+        }
     }
 }).mount('#app-host')
