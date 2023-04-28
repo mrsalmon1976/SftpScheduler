@@ -19,6 +19,7 @@
         }
     },
     mounted: function () {
+        UiHelpers.setPageHeader('Dashboard')
         this.isLoading = false;
         this.loadStats();
     }

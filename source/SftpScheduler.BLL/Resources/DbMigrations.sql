@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS Job (
 	DeleteAfterDownload INTEGER NULL,
 	RemoteArchivePath TEXT NULL,
 	LocalCopyPaths TEXT NULL,
+	IsEnabled INTEGER NOT NULL,
 	Created TEXT NOT NULL,
 	FOREIGN KEY(HostId) REFERENCES Host(Id)
 );

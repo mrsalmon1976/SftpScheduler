@@ -10,6 +10,7 @@
         this.deleteAfterDownload = false;
         this.remoteArchivePath = '';
         this.localCopyPaths = '';
+        this.isEnabled = true;
 
         // these default to true, as you don't want the screen showing everything is invalid at first pass
         this.isNameValid = true;

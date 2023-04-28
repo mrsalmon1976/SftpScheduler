@@ -20,6 +20,7 @@ namespace SftpScheduler.BLL.Models
             this.RemotePath = String.Empty;
             this.ScheduleInWords = String.Empty;
             this.LocalPath = String.Empty;
+            this.IsEnabled = true;
             this.Created = DateTime.UtcNow;
         }
 
@@ -54,6 +55,8 @@ namespace SftpScheduler.BLL.Models
         public virtual string? RemoteArchivePath { get; set; }
 
         public virtual string? LocalCopyPaths { get; set; }
+
+        public bool IsEnabled { get; set; }
 
         public virtual DateTime Created { get; internal set; }
 

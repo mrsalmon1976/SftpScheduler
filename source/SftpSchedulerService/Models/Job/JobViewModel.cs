@@ -41,6 +41,8 @@ namespace SftpSchedulerService.Models.Job
 
         public virtual string? LocalCopyPaths { get; set; }
 
+        public bool IsEnabled { get; set; }
+
         public DateTime? NextRunTime { get; set; }
     }
 }

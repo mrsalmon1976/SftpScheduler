@@ -3,11 +3,13 @@
         return {
             allHosts: [],
             host: '',
+            isEdit: false,
             isLoading: true,
             schedule: '',
             scheduleInWords: 'No schedule entered',
             job: new JobModel(),
-            logs: []
+            logs: [],
+            submitButtonText: 'Create Job'
         }
     },
     watch: {
@@ -68,6 +70,7 @@
             this.job.deleteAfterDownload = jobData.deleteAfterDownload;
             this.job.remoteArchivePath = jobData.remoteArchivePath;
             this.job.localCopyPaths = jobData.localCopyPaths;
+            this.job.isEnabled = jobData.isEnabled;
             this.job.validate();
 
             this.schedule = jobData.schedule;
@@ -98,7 +101,8 @@
                 return;
             }
 
-            await axios.post('/api/jobs', this.job)
+            var url = (this.isEdit ? '/api/jobs/' + this.job.hashId : '/api/jobs');
+            await axios.post(url, this.job)
 
                 .then(response => {
                     window.location.href = '/jobs';
@@ -126,6 +130,8 @@
             UiHelpers.setPageHeader('Create New Job');
         }
         else { 
+            this.isEdit = true;
+            this.submitButtonText = 'Update Job';
             this.loadJobDetail();
             this.loadLogs();
             this.setLogReloadInterval();

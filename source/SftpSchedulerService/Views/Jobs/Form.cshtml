@@ -104,8 +104,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">Create Job</button>
-                            <button type="reset" class="btn btn-default float-right">Cancel</button>
+                            <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">{{ submitButtonText }}</button>
                         </div>
                     </form>
                 </div>

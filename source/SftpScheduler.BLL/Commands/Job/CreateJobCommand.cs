@@ -1,6 +1,5 @@
 ﻿using Quartz;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.Job
 {
-    public class CreateJobCommand
+    public class CreateJobCommand : SaveJobAbstractCommand
     {
         private readonly IJobValidator _jobValidator;
         private readonly ISchedulerFactory _schedulerFactory;
@@ -25,42 +24,19 @@ namespace SftpScheduler.BLL.Commands.Job
         
         public virtual async Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity)
         {
-            ValidationResult validationResult = _jobValidator.Validate(dbContext, jobEntity);
-            if (!validationResult.IsValid)
-            {
-                throw new DataValidationException("Job details supplied are invalid", validationResult);
-            }
+            base.ValidateAndPrepareJobEntity(dbContext, _jobValidator, jobEntity);
 
-            // set the cached/calculated values
-            jobEntity.ScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
-            
-            // ensure remote paths are always suffixed and prefixed with "/"
-            jobEntity.RemotePath = $"/{ jobEntity.RemotePath.Trim('/')}/";
-
-            if (!String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath)) 
-            {
-                jobEntity.RemoteArchivePath = $"/{jobEntity.RemoteArchivePath.Trim('/')}/";
-            }
-
-            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, DeleteAfterDownload, RemoteArchivePath, LocalCopyPaths, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @DeleteAfterDownload, @RemoteArchivePath, @LocalCopyPaths, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, DeleteAfterDownload, RemoteArchivePath, LocalCopyPaths, IsEnabled, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @DeleteAfterDownload, @RemoteArchivePath, @LocalCopyPaths, @IsEnabled, @Created)";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 
             sql = @"select last_insert_rowid()";
             jobEntity.Id = await dbContext.ExecuteScalarAsync<int>(sql);
 
-            IScheduler scheduler = await _schedulerFactory.GetScheduler();
-
-            // define the job 
-            IJobDetail job = JobBuilder.Create<TransferJob>()
-                .WithIdentity(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup)
-                .Build();
-
-            // Trigger the job 
-            ITrigger trigger = TriggerBuilder.Create()
-              .WithIdentity(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup)
-              .WithCronSchedule(jobEntity.Schedule)
-              .Build();
-            await scheduler.ScheduleJob(job, trigger);
+            if (jobEntity.IsEnabled)
+            {
+                IScheduler scheduler = await _schedulerFactory.GetScheduler();
+                await base.ScheduleJob(scheduler, jobEntity); 
+            }
 
             return jobEntity;
 

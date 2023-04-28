@@ -12,31 +12,47 @@
     </ol>
 }
 <div id="app-job" v-cloak>
-    <div v-if="jobs.length == 0">
-        No jobs have been created.  You will need to <a href="~/hosts/create">create at least one host</a> before you can add jobs.
+    <div class="card">
+        <div class="card-body">
+            <div v-if="jobs.length == 0">
+                No jobs have been created.  You will need to <a href="~/hosts/create">create at least one host</a> before you can add jobs.
+            </div>
+            <table class="table table-bordered" v-if="jobs.length > 0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Schedule</th>
+                        <th>Status</th>
+                        <th>Next Run Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="job in jobs">
+                        <td><a :href="'/jobs/' + job.hashId">{{ job.name }}</a></td>
+                        <td>
+                            {{ job.schedule }}
+                            <br />
+                            <span class="text-xs text-info">{{ job.scheduleInWords }}</span>
+                        </td>
+                        <td>
+                            {{ (job.isEnabled ? 'Enabled' : 'Disabled') }}
+                        </td>
+                        <td>{{ formatDateTime(job.nextRunTime) }}</td>
+                        <td>
+                            <a href="#" v-if="!job.isEnabled" v-on:click="showDeleteDialog(job)" class="action-icon" title="Enable job"><i class="fa fa-play fg-success"></i></a>
+                            <a href="#" v-if="job.isEnabled" v-on:click="showDeleteDialog(job)" class="action-icon" title="Disable job"><i class="fa fa-stop fg-danger"></i></a>
+                            <a href="#" v-on:click="showDeleteDialog(job)" title="Delete job"><i class="fa fa-trash-can"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
     </div>
-    <table v-if="jobs.length > 0" class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Schedule</th>
-                <th>Next Run Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="job in jobs">
-                <td><a :href="'/jobs/' + job.hashId">{{ job.name }}</a></td>
-                <td>
-                    {{ job.schedule }}
-                    <br />
-                    <span class="text-xs text-info">{{ job.scheduleInWords }}</span>
-                </td>
-                <td>{{ formatDateTime(job.nextRunTime) }}</td>
-                <td><a href="#" v-on:click="showDeleteDialog(job)"><i class="fa-regular fa-trash-can"></i></a></td>
-            </tr>
-        </tbody>
-    </table>
+
 
     <div class="modal fade" id="modal-delete-job" tabindex="-1" role="dialog" aria-labelledby="modal-delete-job-label" aria-hidden="true">
         <div class="modal-dialog" role="document">
