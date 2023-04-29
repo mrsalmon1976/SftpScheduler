@@ -48,6 +48,28 @@ class UiHelpers
         });
     };
 
+    static showSuccessToast(title, subtitle, message) {
+        $(document).Toasts('create', {
+            class: 'bg-success',
+            title: title,
+            subtitle: subtitle,
+            body: message,
+            autohide: true,
+            delay: 2000
+        });
+    };
+
+    static showWarningToast(title, subtitle, message) {
+        $(document).Toasts('create', {
+            class: 'bg-warning',
+            title: title,
+            subtitle: subtitle,
+            body: message,
+            autohide: true,
+            delay: 2000
+        });
+    };
+
     static debounce(fn, delay) {
         var timeoutID = null
         return function () {

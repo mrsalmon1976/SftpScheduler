@@ -15,7 +15,7 @@
                 let result = await axios.delete('/api/jobs/' + jobIdHash)
                     .then(response => {
                         that.loadJobs();
-
+                        UiHelpers.showSuccessToast('Delete Job', '', 'Job successfully deleted');
                     })
                     .catch(err => {
                         UiHelpers.showErrorToast('Error', '', err.message);
@@ -25,6 +25,17 @@
                         $('#modal-delete-job').modal('toggle');
                     });
             }
+
+        },
+        async executeJob(job) {
+
+            await axios.post('/api/jobs/' + job.hashId + '/run', job)
+                .then(response => {
+                    UiHelpers.showSuccessToast('Run Job', '', 'Job ' + job.name + ' has been scheduled for execution');
+                })
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                });
 
         },
         formatDateTime(dt) {
@@ -46,6 +57,27 @@
         showDeleteDialog(job) {
             this.selectedJob = job;
             $('#modal-delete-job').modal();
+
+        },
+        async toggleJob(job, isEnabled) {
+            var that = this;
+            job.isEnabled = isEnabled;
+            this.isLoading = true;
+            await axios.post('/api/jobs/' + job.hashId, job)
+                .then(response => {
+                    that.loadJobs();
+                    var msg = '\'' + job.name + '\' successfully ' + (isEnabled ? 'enabled' : 'disabled');
+                    if (isEnabled) {
+                        UiHelpers.showSuccessToast('Toggle Job', '', msg);
+                    }
+                    else {
+                        UiHelpers.showWarningToast('Toggle Job', '', msg);
+                    }
+                })
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    that.isLoading = false;
+                });
 
         }
     },

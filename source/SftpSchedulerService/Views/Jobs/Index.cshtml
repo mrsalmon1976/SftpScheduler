@@ -40,8 +40,9 @@
                         </td>
                         <td>{{ formatDateTime(job.nextRunTime) }}</td>
                         <td>
-                            <a href="#" v-if="!job.isEnabled" v-on:click="showDeleteDialog(job)" class="action-icon" title="Enable job"><i class="fa fa-play fg-success"></i></a>
-                            <a href="#" v-if="job.isEnabled" v-on:click="showDeleteDialog(job)" class="action-icon" title="Disable job"><i class="fa fa-stop fg-danger"></i></a>
+                            <a href="#" v-if="!job.isEnabled" v-on:click="toggleJob(job, true)" class="action-icon" title="Enable job"><i class="fa fa-power-off fg-danger"></i></a>
+                            <a href="#" v-if="job.isEnabled" v-on:click="toggleJob(job, false)" class="action-icon" title="Disable job"><i class="fa fa-power-off fg-success"></i></a>
+                            <a href="#" v-on:click="executeJob(job)" class="action-icon" title="Execute job now"><i class="fa fa-play"></i></a>
                             <a href="#" v-on:click="showDeleteDialog(job)" title="Delete job"><i class="fa fa-trash-can"></i></a>
                         </td>
                     </tr>

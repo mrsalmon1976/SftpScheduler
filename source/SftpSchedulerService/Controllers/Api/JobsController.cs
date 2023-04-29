@@ -54,6 +54,7 @@ namespace SftpSchedulerService.Controllers.Api
         }
 
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [Route("{id}")]
         public async Task<IActionResult> Post([FromBody] JobViewModel model, [FromRoute] string id)

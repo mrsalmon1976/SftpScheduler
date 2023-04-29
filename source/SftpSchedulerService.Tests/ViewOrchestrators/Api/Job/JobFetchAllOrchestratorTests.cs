@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using System;
@@ -27,15 +28,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         public void Execute_OnFetch_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = Substitute.For<IMapper>();
+            IMapper mapper = CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             JobViewModel[] jobViewModels = { ViewModelTestHelper.CreateJobViewModel() };
             JobEntity[] jobEntities = { EntityTestHelper.CreateJobEntity() };
 
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
-            mapper.Map<JobEntity[], JobViewModel[]>(Arg.Any<JobEntity[]>()).Returns(jobViewModels);
-
 
             JobFetchAllOrchestrator jobFetchAllProvider = new JobFetchAllOrchestrator(dbContextFactory, mapper, jobRepo, Substitute.For<ISchedulerFactory>());
             var result = jobFetchAllProvider.Execute().Result as OkObjectResult;
@@ -50,30 +49,28 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         }
 
         [Test]
-        public void Execute_JobsFound_HydratesNextRunTime()
+        public void Execute_JobsFoundAndEnabled_HydratesNextRunTime()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = Substitute.For<IMapper>();
+            IMapper mapper = CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
             IScheduler scheduler = Substitute.For<IScheduler>();
             schedulerFactory.GetScheduler().Returns(scheduler);
 
-            JobViewModel jobViewModel = ViewModelTestHelper.CreateJobViewModel();
-            jobViewModel.NextRunTime = null;
-            TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobViewModel.Id), TransferJob.DefaultGroup);
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(1);
+            jobEntity.IsEnabled = true;
+            JobEntity[] jobEntities = { jobEntity };
+
+            TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup);
 
             DateTime nextFireTime = DateTime.UtcNow.AddSeconds(Faker.RandomNumber.Next(1, 1000));
             ITrigger trigger = Substitute.For<ITrigger>();
             scheduler.GetTrigger(triggerKey).Returns(trigger);
             trigger.GetNextFireTimeUtc().Returns(nextFireTime);
 
-            JobViewModel[] jobViewModels = { jobViewModel };
-            JobEntity[] jobEntities = { EntityTestHelper.CreateJobEntity() };
-
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
-            mapper.Map<JobEntity[], JobViewModel[]>(Arg.Any<JobEntity[]>()).Returns(jobViewModels);
 
             // execute
             JobFetchAllOrchestrator jobFetchAllProvider = new JobFetchAllOrchestrator(dbContextFactory, mapper, jobRepo, schedulerFactory);
@@ -84,6 +81,46 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
 
             Assert.That(jobViewModelResult.NextRunTime, Is.EqualTo(nextFireTime.ToLocalTime()));
         }
+
+        [Test]
+        public void Execute_JobsFoundAndDisabled_TriggerNotLoaded()
+        {
+            IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
+            IMapper mapper = CreateMapper();
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+
+            ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
+            IScheduler scheduler = Substitute.For<IScheduler>();
+            schedulerFactory.GetScheduler().Returns(scheduler);
+
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.IsEnabled = false;
+            JobEntity[] jobEntities = { jobEntity };
+
+            jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
+
+            // execute
+            JobFetchAllOrchestrator jobFetchAllProvider = new JobFetchAllOrchestrator(dbContextFactory, mapper, jobRepo, schedulerFactory);
+            var result = jobFetchAllProvider.Execute().Result as OkObjectResult;
+
+            JobViewModel jobViewModelResult = ((IEnumerable<JobViewModel>)result.Value).Single();
+
+            scheduler.DidNotReceive().GetTrigger(Arg.Any<TriggerKey>());
+
+            Assert.That(jobViewModelResult.NextRunTime, Is.Null);
+        }
+
+        private static IMapper CreateMapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<JobEntity, JobViewModel>();
+                cfg.CreateMap<JobViewModel, JobEntity>();
+            });
+            return config.CreateMapper();
+
+        }
+
 
     }
 }

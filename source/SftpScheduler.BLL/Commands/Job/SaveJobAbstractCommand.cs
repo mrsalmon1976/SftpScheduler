@@ -14,21 +14,40 @@ namespace SftpScheduler.BLL.Commands.Job
 {
     public abstract class SaveJobAbstractCommand
     {
-        public async virtual Task<DateTimeOffset> ScheduleJob(IScheduler scheduler, JobEntity jobEntity)
+        public async virtual Task<bool> UpdateJobSchedule(ISchedulerFactory schedulerFactory, JobEntity jobEntity)
         {
-            // define the job 
-            IJobDetail job = JobBuilder.Create<TransferJob>()
-                .WithIdentity(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup)
-                .Build();
 
-            // Trigger the job 
+            IScheduler scheduler = await schedulerFactory.GetScheduler();
+            JobKey jobKey = new JobKey(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup);
+            bool isExistingJob = await scheduler.CheckExists(jobKey);
 
-            ITrigger trigger = TriggerBuilder.Create()
-              .WithIdentity(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup)
-              .WithCronSchedule(jobEntity.Schedule)
-              .Build();
+            // if there is an existing job, just delete it not matter what
+            if (isExistingJob)
+            {
+                await scheduler.DeleteJob(jobKey);
+            }
 
-            return await scheduler.ScheduleJob(job, trigger);
+            // create a new schedule only if the job is enabled
+            if (jobEntity.IsEnabled)
+            {
+
+                // define the job 
+                IJobDetail job = JobBuilder.Create<TransferJob>()
+                    .WithIdentity(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup)
+                    .Build();
+
+                // Trigger the job 
+                ITrigger trigger = TriggerBuilder.Create()
+                  .WithIdentity(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup)
+                  .WithCronSchedule(jobEntity.Schedule)
+                  .Build();
+
+
+                await scheduler.ScheduleJob(job, trigger);
+                return true;
+            }
+
+            return false;
         }
 
         public virtual void ValidateAndPrepareJobEntity(IDbContext dbContext, IJobValidator jobValidator, JobEntity jobEntity)

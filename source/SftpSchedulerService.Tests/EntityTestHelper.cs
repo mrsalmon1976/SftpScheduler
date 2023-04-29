@@ -35,9 +35,10 @@ namespace SftpSchedulerService.Tests
             return hostJobCountEntity;
         }
 
-        internal static JobEntity CreateJobEntity()
+        internal static JobEntity CreateJobEntity(int jobId = 0)
         {
             JobEntity jobEntity = new JobEntity();
+            jobEntity.Id = jobId;
             jobEntity.Name = Faker.Lorem.GetFirstWord();
             jobEntity.HostId = Faker.RandomNumber.Next(1, 9999);
             return jobEntity;

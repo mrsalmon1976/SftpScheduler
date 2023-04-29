@@ -46,21 +46,7 @@ namespace SftpScheduler.BLL.Commands.Job
                 WHERE Id = @Id";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 
-            IScheduler scheduler = await _schedulerFactory.GetScheduler();
-            JobKey jobKey = new JobKey(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup);
-            bool isExistingJob = await scheduler.CheckExists(jobKey);
-
-            // if there is an existing job, just delete it not matter what
-            if (isExistingJob)
-            {
-                await scheduler.DeleteJob(jobKey);
-            }
-
-            // create a new schedule only if the job is enabled
-            if (jobEntity.IsEnabled)
-            {
-                await base.ScheduleJob(scheduler, jobEntity); 
-            }
+            await base.UpdateJobSchedule(_schedulerFactory, jobEntity);
 
             return jobEntity;
 

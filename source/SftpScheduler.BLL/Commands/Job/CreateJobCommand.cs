@@ -32,11 +32,7 @@ namespace SftpScheduler.BLL.Commands.Job
             sql = @"select last_insert_rowid()";
             jobEntity.Id = await dbContext.ExecuteScalarAsync<int>(sql);
 
-            if (jobEntity.IsEnabled)
-            {
-                IScheduler scheduler = await _schedulerFactory.GetScheduler();
-                await base.ScheduleJob(scheduler, jobEntity); 
-            }
+            await base.UpdateJobSchedule(_schedulerFactory, jobEntity); 
 
             return jobEntity;
 

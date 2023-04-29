@@ -37,11 +37,14 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 
                 foreach (JobViewModel jobViewModel in result) 
                 {
-                    TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobViewModel.Id), TransferJob.DefaultGroup);
-                    ITrigger? trigger = await scheduler.GetTrigger(triggerKey);
-                    if (trigger != null)
+                    if (jobViewModel.IsEnabled)
                     {
-                        jobViewModel.NextRunTime = trigger.GetNextFireTimeUtc()?.LocalDateTime;
+                        TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobViewModel.Id), TransferJob.DefaultGroup);
+                        ITrigger? trigger = await scheduler.GetTrigger(triggerKey);
+                        if (trigger != null)
+                        {
+                            jobViewModel.NextRunTime = trigger.GetNextFireTimeUtc()?.LocalDateTime;
+                        }
                     }
                 }
 
