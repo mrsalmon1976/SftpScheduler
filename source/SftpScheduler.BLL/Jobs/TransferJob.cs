@@ -85,7 +85,7 @@ namespace SftpScheduler.BLL.Jobs
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Transfer of job {JobId} failed", jobId);
-                    jobStatus = JobStatus.Failure;
+                    jobStatus = JobStatus.Failed;
                     errorMessage = ex.Message;
                 }
             }

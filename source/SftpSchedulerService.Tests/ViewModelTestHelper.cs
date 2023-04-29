@@ -1,5 +1,8 @@
-﻿using SftpSchedulerService.Models.Host;
+﻿using Microsoft.AspNetCore.Http;
+using SftpScheduler.BLL.Data;
+using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
+using SftpSchedulerService.Models.Notification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +24,15 @@ namespace SftpSchedulerService.Tests
             hostEntity.Password = Guid.NewGuid().ToString();
             return hostEntity;
 
+        }
+
+        internal static JobNotificationViewModel CreateJobNotificationViewModel(int jobId = 0, string? jobName = null, string notificationType = AppConstants.NotificationType.Information)
+        {
+            JobNotificationViewModel model = new JobNotificationViewModel();
+            model.JobId = jobId;
+            model.NotificationType = notificationType;
+            model.JobName = (jobName ?? Guid.NewGuid().ToString());
+            return model;
         }
 
         internal static JobViewModel CreateJobViewModel()

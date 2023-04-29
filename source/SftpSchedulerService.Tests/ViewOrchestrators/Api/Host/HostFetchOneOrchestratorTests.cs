@@ -34,7 +34,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             HostEntity hostEntity = EntityTestHelper.CreateHostEntity(hostId);
             hostRepo.GetByIdAsync(dbContext, hostId).Returns(hostEntity);
 
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
 
             HostFetchOneOrchestrator hostFetchOneOrchestrator = new HostFetchOneOrchestrator(dbContextFactory, mapper, hostRepo);
             var result = hostFetchOneOrchestrator.Execute(hashId).Result as OkObjectResult;
@@ -46,12 +46,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 
         }
 
-        private static IMapper CreateMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<HostEntity, HostViewModel>());
-            return config.CreateMapper();
-
-        }
     }
 
 }

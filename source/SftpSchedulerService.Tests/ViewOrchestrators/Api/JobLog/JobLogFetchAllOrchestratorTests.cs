@@ -24,7 +24,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.JobLog
         public void Execute_OnFetch_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobLogRepository jobLogRepo = Substitute.For<JobLogRepository>();
             int jobId = Faker.RandomNumber.Next(1, 100);
             string jobHash = UrlUtils.Encode(jobId);
@@ -47,13 +47,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.JobLog
             Assert.IsNotNull(jobViewModelResult);
             Assert.That(jobViewModelResult.Count, Is.EqualTo(1));
             jobLogRepo.Received(1).GetAllByJobAsync(Arg.Any<IDbContext>(), jobId, maxLogId, JobLogFetchAllOrchestrator.DefaultRowCount);
-        }
-
-        private IMapper CreateMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<JobLogEntity, JobLogViewModel>());
-            return config.CreateMapper();
-
         }
 
 

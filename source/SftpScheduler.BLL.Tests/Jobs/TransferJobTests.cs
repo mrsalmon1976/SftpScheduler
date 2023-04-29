@@ -106,7 +106,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
 
-            updateJobLogCompleteCmd.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobLogEntity.Id, 100, JobStatus.Failure, thrownException.Message);
+            updateJobLogCompleteCmd.Received(1).ExecuteAsync(Arg.Any<IDbContext>(), jobLogEntity.Id, 100, JobStatus.Failed, thrownException.Message);
 
 
         }

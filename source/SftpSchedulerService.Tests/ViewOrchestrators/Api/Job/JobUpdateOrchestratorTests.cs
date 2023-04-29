@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Quartz;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
@@ -19,7 +18,7 @@ using System.Threading.Tasks;
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 
-namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
+namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
 {
     [TestFixture]
     public class JobUpdateOrchestratorTests

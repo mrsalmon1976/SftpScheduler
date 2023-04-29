@@ -13,6 +13,6 @@ namespace SftpScheduler.BLL.Data
 
         public const string Success = "Success";
 
-        public const string Failure = "Failure";
+        public const string Failed = "Failed";
     }
 }

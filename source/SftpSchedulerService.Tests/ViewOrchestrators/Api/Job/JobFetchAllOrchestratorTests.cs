@@ -28,7 +28,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         public void Execute_OnFetch_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             JobViewModel[] jobViewModels = { ViewModelTestHelper.CreateJobViewModel() };
@@ -52,7 +52,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         public void Execute_JobsFoundAndEnabled_HydratesNextRunTime()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
@@ -86,7 +86,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         public void Execute_JobsFoundAndDisabled_TriggerNotLoaded()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
@@ -108,17 +108,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             scheduler.DidNotReceive().GetTrigger(Arg.Any<TriggerKey>());
 
             Assert.That(jobViewModelResult.NextRunTime, Is.Null);
-        }
-
-        private static IMapper CreateMapper()
-        {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<JobEntity, JobViewModel>();
-                cfg.CreateMap<JobViewModel, JobEntity>();
-            });
-            return config.CreateMapper();
-
         }
 
 

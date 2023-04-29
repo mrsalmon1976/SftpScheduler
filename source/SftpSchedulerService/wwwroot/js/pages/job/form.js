@@ -32,7 +32,7 @@
             return UiHelpers.formatDateTime(dt);
         },
         getLogClass(log) {
-            if (log.status == 'Failure') {
+            if (log.status == 'Failed') {
                 return 'bg-danger';
             }
             else if (log.status == 'Success') {

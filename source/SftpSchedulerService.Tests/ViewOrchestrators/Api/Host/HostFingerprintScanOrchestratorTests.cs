@@ -111,17 +111,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         {
             sessionWrapperFactory = (sessionWrapperFactory == null ? Substitute.For<ISessionWrapperFactory>() : sessionWrapperFactory);
             
-            mapper = (mapper == null ? CreateMapper() : mapper);
+            mapper = (mapper == null ? AutoMapperTestHelper.CreateMapper() : mapper);
             
             ILogger<HostFingerprintScanOrchestrator> logger = Substitute.For<ILogger<HostFingerprintScanOrchestrator>>();
             return new HostFingerprintScanOrchestrator(logger, sessionWrapperFactory, mapper, hostValidator);
-        }
-
-        private IMapper CreateMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<HostViewModel, HostEntity>());
-            return config.CreateMapper();
-
         }
 
 

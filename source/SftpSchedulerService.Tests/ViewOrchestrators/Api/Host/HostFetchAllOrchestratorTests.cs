@@ -27,7 +27,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         public void Execute_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             HostRepository hostRepo = Substitute.For<HostRepository>();
 
             HostViewModel[] hostViewModels = { ViewModelTestHelper.CreateHostViewModel() };
@@ -53,7 +53,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             HostRepository hostRepo = Substitute.For<HostRepository>();
-            IMapper mapper = CreateMapper();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
 
             HostEntity hostEntity1 = EntityTestHelper.CreateHostEntity(111);
             HostEntity hostEntity2 = EntityTestHelper.CreateHostEntity(222);
@@ -77,13 +77,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 
             Assert.That(hostViewModelResult.Single(x => x.Id == hostEntity1.Id).JobCount, Is.EqualTo(hostJobCountEntity1.JobCount));
             Assert.That(hostViewModelResult.Single(x => x.Id == hostEntity2.Id).JobCount, Is.EqualTo(hostJobCountEntity2.JobCount));
-        }
-
-        private static IMapper CreateMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<HostEntity, HostViewModel>());
-            return config.CreateMapper();
-
         }
 
     }
