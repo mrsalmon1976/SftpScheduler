@@ -59,6 +59,7 @@ namespace SftpSchedulerService.Controllers.Api
             return await _hostFetchOneOrchestrator.Execute(id);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         //[Route("api/auth/login")]
         public async Task<IActionResult> Post([FromBody] HostViewModel model)
@@ -66,6 +67,7 @@ namespace SftpSchedulerService.Controllers.Api
             return await _hostCreateOrchestrator.Execute(model);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [Route("{id}")]
         public async Task<IActionResult> Post([FromBody] HostViewModel model, [FromRoute]string id)
@@ -74,18 +76,13 @@ namespace SftpSchedulerService.Controllers.Api
             return await _hostUpdateOrchestrator.Execute(model);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("scanfingerprint")]
         //[Route("api/hosts/scanfingerprint")]
         public async Task<IActionResult> ScanFingerprint([FromBody] HostViewModel model)
         {
             return await _hostFingerprintScanOrchestrator.Execute(model);
         }
-
-        //// PUT api/<ApiAuthController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]

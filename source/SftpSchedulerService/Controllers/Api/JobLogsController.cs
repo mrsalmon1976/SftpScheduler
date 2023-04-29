@@ -9,6 +9,7 @@ namespace SftpSchedulerService.Controllers.Api
 {
     [Route("api/jobs/{jobId}/logs")]
     [ApiController]
+    [Authorize]
     public class JobLogsController : ControllerBase
     {
         private readonly JobLogFetchAllOrchestrator _jobLogFetchAllOrchestrator;

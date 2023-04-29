@@ -11,6 +11,7 @@ namespace SftpSchedulerService.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class JobsController : ControllerBase
     {
         private readonly JobCreateOrchestrator _jobCreateOrchestrator;
