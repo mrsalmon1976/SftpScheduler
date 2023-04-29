@@ -139,6 +139,7 @@
 
 	<ItemGroup>
 	  <None Include="bundleconfig.json" />
+	  <None Include="wwwroot\favicon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
