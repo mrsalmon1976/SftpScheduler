@@ -168,6 +168,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
+            IScheduler scheduler = Substitute.For<IScheduler>();
+            schedulerFactory.GetScheduler().Returns(scheduler);
 
             var jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.IsEnabled = false;
@@ -179,7 +181,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
 
             // assert
-            schedulerFactory.DidNotReceive().GetScheduler();
+            schedulerFactory.Received(1).GetScheduler();
+            scheduler.DidNotReceive().ScheduleJob(Arg.Any<IJobDetail>(), Arg.Any<ITrigger>());
         }
 
 
@@ -200,7 +203,6 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                 Assert.That(trigger.Key.Group, Is.EqualTo($"{TransferJob.DefaultGroup}"));
                 Assert.That(trigger.Key.Name, Is.EqualTo($"Trigger.{jobEntity.Id}"));
             });
-
 
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 

@@ -38,6 +38,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddTransient<IUpdateHostCommand, UpdateHostCommand>();
 
             services.AddTransient<CreateJobCommand>();
+            services.AddTransient<IExecuteJobCommand, ExecuteJobCommand>();
             services.AddTransient<IUpdateJobCommand, UpdateJobCommand>();
             services.AddTransient<ICreateJobLogCommand, CreateJobLogCommand>();
 
@@ -131,6 +132,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddTransient<HostUpdateOrchestrator>();
 
             services.AddTransient<JobCreateOrchestrator>();
+            services.AddTransient<JobExecuteOrchestrator>();
             services.AddTransient<JobUpdateOrchestrator>();
             services.AddTransient<JobDeleteOneOrchestrator>();
             services.AddTransient<JobFetchAllOrchestrator>();

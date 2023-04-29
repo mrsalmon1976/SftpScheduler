@@ -42,7 +42,12 @@ namespace SftpScheduler.BLL.Jobs
 
         public static int GetJobIdFromKeyName(string keyName)
         {
-            return Convert.ToInt32(keyName.Replace("Job.", ""));
+            string[] tokens = (keyName ?? String.Empty).Split('.');
+            if (tokens.Length <= 1)
+            {
+                throw new InvalidOperationException($"Invalid key name '{keyName}'");
+            }
+            return Convert.ToInt32(tokens[tokens.Length - 1]);
         }
 
         public static string GetTriggerKeyName(int jobId)

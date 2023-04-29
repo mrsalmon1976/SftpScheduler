@@ -18,18 +18,21 @@ namespace SftpSchedulerService.Controllers.Api
         private readonly JobFetchAllOrchestrator _jobFetchAllOrchestrator;
         private readonly JobFetchOneOrchestrator _jobFetchOneOrchestrator;
         private readonly JobUpdateOrchestrator _jobUpdateOrchestrator;
+        private readonly JobExecuteOrchestrator _jobExecuteOrchestrator;
 
         public JobsController(JobCreateOrchestrator jobCreateOrchestrator
             , JobDeleteOneOrchestrator jobDeleteOneOrchestrator
             , JobFetchAllOrchestrator jobFetchAllOrchestrator
             , JobFetchOneOrchestrator jobFetchOneOrchestrator
-            , JobUpdateOrchestrator jobUpdateOrchestrator)
+            , JobUpdateOrchestrator jobUpdateOrchestrator
+            , JobExecuteOrchestrator jobExecuteOrchestrator)
         {
             _jobCreateOrchestrator = jobCreateOrchestrator;
             _jobDeleteOneOrchestrator = jobDeleteOneOrchestrator;
             _jobFetchAllOrchestrator = jobFetchAllOrchestrator;
             _jobFetchOneOrchestrator = jobFetchOneOrchestrator;
             _jobUpdateOrchestrator = jobUpdateOrchestrator;
+            _jobExecuteOrchestrator = jobExecuteOrchestrator;
         }
 
         //// GET: api/jobs
@@ -63,7 +66,14 @@ namespace SftpSchedulerService.Controllers.Api
             return await _jobUpdateOrchestrator.Execute(model);
         }
 
-        // DELETE api/<ApiAuthController>/5
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPost]
+        [Route("{id}/run")]
+        public async Task<IActionResult> Post([FromRoute] string id)
+        {
+            return await _jobExecuteOrchestrator.Execute(id);
+        }
+
         [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)

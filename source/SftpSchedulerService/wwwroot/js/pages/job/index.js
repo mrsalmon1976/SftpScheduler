@@ -34,7 +34,12 @@
                     UiHelpers.showSuccessToast('Run Job', '', 'Job ' + job.name + ' has been scheduled for execution');
                 })
                 .catch(err => {
-                    UiHelpers.showErrorToast('Error', '', err.message);
+                    if (err.response && err.response.status == 400) {
+                        UiHelpers.showWarningToast('Error', '', err.response.data)
+                    }
+                    else {
+                        UiHelpers.showErrorToast('Error', '', err.message);
+                    }
                 });
 
         },
