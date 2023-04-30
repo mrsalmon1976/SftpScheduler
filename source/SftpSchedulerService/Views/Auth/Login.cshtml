@@ -1,5 +1,4 @@
-﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 @{
     var title = $"SftpScheduler v{ViewBag.Version}";
 }
@@ -15,17 +14,8 @@
     <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!-- Theme style -->
-    @if (environment.IsDevelopment())
-    {
-        <link rel="stylesheet" href="~/css/adminlte/adminlte.css">
-        <link rel="stylesheet" href="~/css/custom.css?v=@ViewBag.Version">
-    }
-    else
-    {
-        <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
-        <link rel="stylesheet" href="~/css/custom.min.css?v=@ViewBag.Version">
-    }
+    <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
+    <environment-style href="~/css/custom.css" />
 </head>
 <body class="hold-transition login-page">
 <div id="app-login" class="login-box">
@@ -56,7 +46,7 @@
         </div>
         <div class="row">
           <div class="col-8">
-                <a href="forgot-password.html">I forgot my password</a>
+                <a href="forgot-password.html" style="display:none;">I forgot my password</a>
             </div>
           <!-- /.col -->
           <div class="col-4">
@@ -72,24 +62,12 @@
 </div>
 <!-- /.login-box -->
 
-<!-- jQuery -->
 <script src="~/plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
 <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/plugins/axios/axios.min.js"></script>
-@if (environment.IsDevelopment())
-{
-    <script src="~/plugins/vue/vue.global.js"></script>
-    <script src="~/js/adminlte/adminlte.js"></script>
-    <script src="~/js/common.js?@ViewBag.Version"></script>
-    <script src="~/js/pages/auth/login.js?@ViewBag.Version"></script>
-}
-else
-{
-    <script src="~/plugins/vue/vue.global.prod.js"></script>
-    <script src="~/js/adminlte/adminlte.min.js"></script>
-    <script src="~/js/common.min.js?@ViewBag.Version"></script>
-    <script src="~/js/pages/auth/login.min.js?@ViewBag.Version"></script>
-}
+<environment-script src="~/plugins/vue/vue.global.js" prod-suffix=".prod.js"></environment-script>
+<environment-script src="~/js/adminlte/adminlte.js"></environment-script>
+<environment-script src="~/js/common.js"></environment-script>
+<environment-script src="~/js/pages/auth/login.js"></environment-script>
 </body>
 </html>
