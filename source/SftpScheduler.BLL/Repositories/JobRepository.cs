@@ -29,9 +29,10 @@ namespace SftpScheduler.BLL.Repositories
         public virtual async Task<IEnumerable<JobEntity>> GetAllFailingAsync(IDbContext dbContext)
         {
             const string sql = @"WITH LastJobLog(LastJobLogId, JobId) AS (
-	                select MAX(Id) AS LastJobLogId, JobId
-	                from JobLog 
-	                group by JobId
+	                SELECT MAX(Id) AS LastJobLogId, JobId
+	                FROM JobLog
+                    WHERE Status <> @StatusInProgress
+	                GROUP BY JobId
                 )
                 SELECT j.*
                 from Job j 
@@ -39,7 +40,7 @@ namespace SftpScheduler.BLL.Repositories
                 inner join JobLog jl ON ljl.LastJobLogId = jl.Id
                 WHERE jl.Status = @Status
                 ORDER BY j.Name";
-            return await dbContext.QueryAsync<JobEntity>(sql, new { Status = JobStatus.Failed });
+            return await dbContext.QueryAsync<JobEntity>(sql, new { StatusInProgress = JobStatus.InProgress, Status = JobStatus.Failed });
 
         }
 

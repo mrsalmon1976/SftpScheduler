@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SftpScheduler.BLL.Commands.Job;
@@ -9,6 +10,7 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.BootStrapping;
+using SftpSchedulerService.Caching;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Models.Notification;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
@@ -40,8 +42,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Enumerable.Empty<JobEntity>());
 
             // execute
-            JobNotificationFetchAllOrchestrator orchestrator = new JobNotificationFetchAllOrchestrator(dbContextFactory, jobRepo);
-            var result = orchestrator.Execute().Result as OkObjectResult;
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, Substitute.For<ICacheProvider>(), jobRepo);
+            var result = orchestrator.Execute(false).Result as OkObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -72,8 +74,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Enumerable.Empty<JobEntity>());
 
             // execute
-            JobNotificationFetchAllOrchestrator orchestrator = new JobNotificationFetchAllOrchestrator(dbContextFactory, jobRepo);
-            var result = orchestrator.Execute().Result as OkObjectResult;
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, Substitute.For<ICacheProvider>(), jobRepo);
+            var result = orchestrator.Execute(false).Result as OkObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -82,6 +84,62 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             Assert.That(notifications, Is.Not.Null);
             Assert.That(notifications.Count(), Is.EqualTo(failingJobCount));
         }
+
+        [Test]
+        public void Execute_FailuresInCache_ReturnsListFromCache()
+        {
+            // setup
+            IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
+            ICacheProvider cacheProvider = Substitute.For<ICacheProvider>();
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            dbContextFactory.GetDbContext().Returns(dbContext);
+
+            List<JobNotificationViewModel> notifications = new List<JobNotificationViewModel>();
+            notifications.Add(new JobNotificationViewModel(1, Guid.NewGuid().ToString(), AppConstants.NotificationType.Error));
+            cacheProvider.Get<List<JobNotificationViewModel>>(CacheKeys.JobNotifications).Returns(notifications);
+
+            // execute
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, cacheProvider, jobRepo);
+            var result = orchestrator.Execute(false).Result as OkObjectResult;
+
+            // assert
+            cacheProvider.Received(1).Get<List<JobNotificationViewModel>>(CacheKeys.JobNotifications);
+            jobRepo.DidNotReceive().GetAllFailingAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
+            jobRepo.DidNotReceive().GetAllFailedSinceAsync(Arg.Any<IDbContext>(), Arg.Any<DateTime>()).GetAwaiter().GetResult();
+
+            IEnumerable<JobNotificationViewModel> notificationsResult = result.Value as IEnumerable<JobNotificationViewModel>;
+            Assert.That(notificationsResult, Is.Not.Null);
+            Assert.That(notificationsResult.Count(), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Execute_FailuresInCacheButForceReload_ReturnsListFromDatabase()
+        {
+            // setup
+            IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
+            ICacheProvider cacheProvider = Substitute.For<ICacheProvider>();
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            dbContextFactory.GetDbContext().Returns(dbContext);
+
+            List<JobNotificationViewModel> notifications = new List<JobNotificationViewModel>();
+            notifications.Add(new JobNotificationViewModel(1, Guid.NewGuid().ToString(), AppConstants.NotificationType.Error));
+            cacheProvider.Get<List<JobNotificationViewModel>>(CacheKeys.JobNotifications).Returns(notifications);
+
+            // execute
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, cacheProvider, jobRepo);
+            var result = orchestrator.Execute(true).Result as OkObjectResult;
+
+            // assert
+            cacheProvider.Received(1).Get<List<JobNotificationViewModel>>(CacheKeys.JobNotifications);
+            jobRepo.Received(1).GetAllFailingAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
+            jobRepo.Received(1).GetAllFailedSinceAsync(Arg.Any<IDbContext>(), Arg.Any<DateTime>()).GetAwaiter().GetResult();
+            cacheProvider.Received(1).Set(CacheKeys.JobNotifications, Arg.Any<object>(), Arg.Any<TimeSpan>());
+            }
+
 
         [Test]
         public void Execute_WarningsExist_ReturnsList()
@@ -104,8 +162,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);
 
             // execute
-            JobNotificationFetchAllOrchestrator orchestrator = new JobNotificationFetchAllOrchestrator(dbContextFactory, jobRepo);
-            var result = orchestrator.Execute().Result as OkObjectResult;
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, Substitute.For<ICacheProvider>(), jobRepo);
+            var result = orchestrator.Execute(false).Result as OkObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -145,8 +203,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);
 
             // execute
-            JobNotificationFetchAllOrchestrator orchestrator = new JobNotificationFetchAllOrchestrator(dbContextFactory, jobRepo);
-            var result = orchestrator.Execute().Result as OkObjectResult;
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, Substitute.For<ICacheProvider>(), jobRepo);
+            var result = orchestrator.Execute(false).Result as OkObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -178,8 +236,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);
 
             // execute
-            JobNotificationFetchAllOrchestrator orchestrator = new JobNotificationFetchAllOrchestrator(dbContextFactory, jobRepo);
-            var result = orchestrator.Execute().Result as OkObjectResult;
+            JobNotificationFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, Substitute.For<ICacheProvider>(), jobRepo);
+            var result = orchestrator.Execute(false).Result as OkObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -194,6 +252,11 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             Assert.That(notifications.SingleOrDefault(x => x.JobId == 2 && x.NotificationType == AppConstants.NotificationType.Warning), Is.Null);
             Assert.That(notifications.SingleOrDefault(x => x.JobId == 3 && x.NotificationType == AppConstants.NotificationType.Warning), Is.Not.Null);
 
+        }
+
+        private JobNotificationFetchAllOrchestrator CreateOrchestrator(IDbContextFactory dbContextFactory, ICacheProvider cacheProvider, JobRepository jobRepo)
+        {
+            return new JobNotificationFetchAllOrchestrator(dbContextFactory, cacheProvider, jobRepo);
         }
 
     }

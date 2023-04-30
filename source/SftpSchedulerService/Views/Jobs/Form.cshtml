@@ -127,7 +127,7 @@
                                 <td class="text-sm">{{ log.id }}</td>
                                 <td class="nowrap text-sm">{{ formatDateTime(log.startDate) }}</td>
                                 <td class="nowrap text-sm">{{ formatDateTime(log.endDate) }}</td>
-                                <td class="text-sm"><span class="badge" :class="getLogClass(log)">{{ log.status }}</span></td>
+                                <td class="text-sm"><span class="badge badge-padded" :class="getLogClass(log)">{{ log.status }}</span></td>
                                 <td class="text-sm"><span class="text-danger">{{ log.errorMessage }}</span></td>
                             </tr>
                         </tbody>

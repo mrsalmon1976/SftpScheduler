@@ -83,6 +83,7 @@ class UiHelpers
     };
 };
 
+// header island
 createApp({
     data() {
         return {
@@ -92,12 +93,60 @@ createApp({
     methods: {
     },
     mounted: function () {
-        //emitter.emit(BusMessages.PageHeader, this.pad)
-        //bus.$on(BusMessages.PageHeader, headerText => this.pageHeader = headerText);
         emitter.on(BusMessages.PageHeader, headerText => {
             this.pageHeader = headerText;
         });
     }
 }).mount('#app-header')
 
+
+// menu island
+createApp({
+    data() {
+        return {
+            jobNotificationBadgeClass: 'badge-success',
+            jobNotifications: [],
+        }
+    },
+    methods: {
+        async loadJobNotifications(forceReload) {
+            var url = '/api/notifications/jobs';
+            if (forceReload) {
+                url = url + '?forceReload=true'
+            }
+
+            let result = await axios.get(url)
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    return;
+                });
+
+            this.jobNotifications = this.resetJobNotificationStyles(result.data);
+        },
+        resetJobNotificationStyles(notifications) {
+            var badgeClass = '';
+            for (var i = 0; i < notifications.length; i++) {
+
+                var jn = notifications[i];
+
+                if (jn.notificationType == 'Error') {
+                    if (badgeClass.length == 0) badgeClass = 'badge-danger';
+                    jn.textClass = 'text-danger';
+                    jn.text = '[' + jn.jobName + '] failed on it\'s last execution';
+                }
+                else if (jn.notificationType == 'Warning') {
+                    if (badgeClass.length == 0) badgeClass = 'badge-warning';
+                    jn.textClass = 'text-warning';
+                    jn.text = '[' + jn.jobName + '] failed in the last 24 hours';
+                }
+            }
+            if (badgeClass.length == 0) badgeClass = 'badge-success';
+            this.jobNotificationBadgeClass = badgeClass;
+            return notifications;
+        }
+    },
+    mounted: function () {
+        this.loadJobNotifications(false);
+    }
+}).mount('#app-menu')
 

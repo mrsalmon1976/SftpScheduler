@@ -139,6 +139,8 @@ namespace SftpSchedulerService.BootStrapping
             services.AddTransient<JobFetchOneOrchestrator>();
             services.AddTransient<JobLogFetchAllOrchestrator>();
 
+            services.AddTransient<JobNotificationFetchAllOrchestrator>();
+
             services.AddTransient<LoginPostOrchestrator>();
         }
 

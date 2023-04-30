@@ -1,4 +1,6 @@
-﻿namespace SftpSchedulerService.Models.Notification
+﻿using SftpSchedulerService.Utilities;
+
+namespace SftpSchedulerService.Models.Notification
 {
     public class JobNotificationViewModel
     {
@@ -14,6 +16,14 @@
         }
 
         public int JobId { get; set; }
+
+        public string HashId
+        {
+            get
+            {
+                return UrlUtils.Encode(this.JobId);
+            }
+        }
 
         public string JobName { get; set; }
 
