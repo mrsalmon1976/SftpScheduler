@@ -15,7 +15,7 @@ namespace SftpSchedulerService.Tests.Controllers
         [Test]
         public async Task Login_Integration_ReturnsOk()
         {
-            using (var client = TestFactory.CreateHttpClient())
+            using (var client = HttpClientTestFactory.CreateHttpClient())
             {
 
                 var response = await client.GetAsync("/auth/login");

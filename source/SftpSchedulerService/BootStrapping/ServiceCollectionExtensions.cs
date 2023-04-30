@@ -122,7 +122,7 @@ namespace SftpSchedulerService.BootStrapping
 
         public static void AddControllerOrchestrators(this IServiceCollection services)
         {
-            services.AddTransient<CronGetScheduleOrchestrator>();
+            services.AddTransient<ICronGetScheduleOrchestrator, CronGetScheduleOrchestrator>();
 
             services.AddTransient<HostCreateOrchestrator>();
             services.AddTransient<HostDeleteOneOrchestrator>();
@@ -174,29 +174,15 @@ namespace SftpSchedulerService.BootStrapping
             {
                 // FTP jobs could take forever....we just need to cut our losses if we are shutting down
                 options.WaitForJobsToComplete = false;
+                options.AwaitApplicationStarted = true;
             });
 
-            //var properties = new NameValueCollection();
+            if (appSettings.IsAutomatedTestContext)
+            {
+                Quartz.Logging.LogProvider.IsDisabled = true;
+            }
 
-            //StdSchedulerFactory schedulerFactory = SchedulerBuilder.Create(properties)
-            //    .UseDefaultThreadPool(x => x.MaxConcurrency = 5)
-            //    // this is the default 
-            //    // .WithMisfireThreshold(TimeSpan.FromSeconds(60))
-            //    .UsePersistentStore(x =>
-            //    {
-            //        // force job data map values to be considered as strings
-            //        // prevents nasty surprises if object is accidentally serialized and then 
-            //        // serialization format breaks, defaults to false
-            //        x.UseProperties = true;
-            //        x.UseClustering();
-            //        x.UseSQLite(appSettings.DbConnectionString)
-            //    })
-            //    .Build();
 
-            //IScheduler scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();
-            //scheduler.Start().GetAwaiter().GetResult();
-
-            //
         }
 
         public static void AddValidators(this IServiceCollection services)

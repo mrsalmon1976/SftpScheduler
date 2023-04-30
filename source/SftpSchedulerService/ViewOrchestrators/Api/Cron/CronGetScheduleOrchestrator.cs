@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Quartz.Xml;
 using SftpScheduler.BLL.DataAnnotations;
-using SftpSchedulerService.Controllers.Api;
-using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Cron;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Cron
 {
-    public class CronGetScheduleOrchestrator
+    public interface ICronGetScheduleOrchestrator
+    {
+        Task<IActionResult> Execute(string schedule);
+    }
+
+    public class CronGetScheduleOrchestrator : ICronGetScheduleOrchestrator
     {
         private readonly ILogger<CronGetScheduleOrchestrator> _logger;
 

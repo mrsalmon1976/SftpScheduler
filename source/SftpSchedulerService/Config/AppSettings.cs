@@ -11,10 +11,11 @@ namespace SftpSchedulerService.Config
         private string? _dbPath;
         private string? _dbPathQuartz;
 
-        public AppSettings(IConfiguration configurationManager, string baseDirectory)
+        public AppSettings(IConfiguration configurationManager, string baseDirectory, bool isAutomatedTestContext)
         {
             this._configuration = configurationManager;
             this._baseDirectory = baseDirectory;
+            this.IsAutomatedTestContext = isAutomatedTestContext;
         }
 
         public virtual string DbPath
@@ -62,6 +63,8 @@ namespace SftpSchedulerService.Config
                 return connString.Replace("{AppDir}", _baseDirectory);
             }
         }
+
+        public bool IsAutomatedTestContext { get; set; }
 
         public virtual string JwtSecret
         {

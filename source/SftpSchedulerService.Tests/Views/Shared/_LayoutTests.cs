@@ -32,7 +32,7 @@ namespace Test.SftpSchedulerService.Views.Shared
         public async Task MenuItem_UserIsNotAdmin_UsersMenuItemNotRendered()
         {
             string[] roles = { UserRoles.User };
-            using (var client = TestFactory.CreateAuthenticatedHttpClient(roles))
+            using (var client = HttpClientTestFactory.CreateAuthenticatedHttpClient(roles))
             {
 
                 var response = await client.GetAsync("/test");
@@ -51,7 +51,7 @@ namespace Test.SftpSchedulerService.Views.Shared
         public async Task MenuItem_UserIsAdmin_UsersMenuItemIsRendered()
         {
             string[] roles = { UserRoles.Admin };
-            using (var client = TestFactory.CreateAuthenticatedHttpClient(roles))
+            using (var client = HttpClientTestFactory.CreateAuthenticatedHttpClient(roles))
             {
 
                 var response = await client.GetAsync("/dashboard");

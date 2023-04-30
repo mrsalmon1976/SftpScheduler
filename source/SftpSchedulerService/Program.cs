@@ -35,8 +35,11 @@ var builder = WebApplication.CreateBuilder(args);       // NOTE! Without args, i
 try
 {
     logger.Info("SftpScheduler starting up");
+    bool isAutomatedTestContext = (builder.Configuration["AutomatedTestContext"] == "TRUE");
+    logger.Info("Context: " + (isAutomatedTestContext ? "Automated tests" : "Application"));
+
     // initialise app settings
-    AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory);
+    AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory, isAutomatedTestContext);
 
     // logging
     builder.Logging.ClearProviders();
@@ -67,6 +70,7 @@ try
     builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
     builder.Services.AddTransient<IdentityInitialiser>();
 
+
     // custom stuff
     builder.Services.AddRepositories();
     builder.Services.AddValidators();
@@ -85,7 +89,10 @@ try
     app.UseAuthorization();
     app.UseStaticFiles();
     app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
-    app.InitialiseDatabase(appSettings);
+    if (!appSettings.IsAutomatedTestContext) 
+    {
+        app.InitialiseDatabase(appSettings);
+    }
     app.Run();
 }
 catch (Exception ex)
