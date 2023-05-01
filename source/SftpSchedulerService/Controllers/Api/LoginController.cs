@@ -31,38 +31,12 @@ namespace SftpSchedulerService.Controllers.Api
             _userManager = userManager;
         }
 
-        //// GET: api/<ApiAuthController>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //// GET api/<ApiAuthController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
         [HttpPost]
-        //[Route("api/auth/login")]
         public async Task<IActionResult> Post([FromBody] LoginModel model)
         {
             return await _loginPostOrchestrator.Execute(model, this.HttpContext);
         }
 
-        //// PUT api/<ApiAuthController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        //// DELETE api/<ApiAuthController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
 
     }
 }

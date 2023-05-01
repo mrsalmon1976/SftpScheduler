@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
-using SftpScheduler.BLL.Identity;
-using SftpSchedulerService.Models.Host;
-using SftpSchedulerService.Utilities;
-using SftpSchedulerService.ViewOrchestrators.Api.Host;
 
 namespace SftpSchedulerService.Controllers.Api
 {
