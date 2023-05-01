@@ -19,6 +19,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
         const string UrlGet = "/api/cron?schedule={0}";
 
+        #region Get Tests
 
         [Test]
         public void Get_ExecuteSuccess()
@@ -60,20 +61,12 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.CheckAllRoles<ICronGetScheduleOrchestrator>(orchestrator, url, HttpMethod.Get, null, authorisedRoles);
         }
 
+        #endregion
+
 
         private static string CreateGetUrl(string schedule)
         {
             return String.Format(UrlGet, WebUtility.UrlEncode(schedule));
-        }
-
-        private static Action<IServiceCollection> CreateConfiguration(ICronGetScheduleOrchestrator orchestrator, string schedule)
-        {
-            orchestrator.Execute(schedule).Returns(new OkObjectResult("ok!"));
-            Action<IServiceCollection> configureServices = (cfg) =>
-            {
-                cfg.AddSingleton<ICronGetScheduleOrchestrator>(orchestrator);
-            };
-            return configureServices;
         }
     }
 }
