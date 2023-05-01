@@ -265,11 +265,10 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
             string[] roles = { UserRoles.Admin };
             IHostDeleteOneOrchestrator orchestrator = Substitute.For<IHostDeleteOneOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostDeleteOneOrchestrator>(orchestrator);
 
             // execute
-            ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Delete, hostViewModel, roles, configureServices);
+            ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Delete, null, roles, configureServices);
 
             // assert
             orchestrator.Received(1).Execute(hashId);
@@ -283,11 +282,10 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
             // setup
             IHostDeleteOneOrchestrator orchestrator = Substitute.For<IHostDeleteOneOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostDeleteOneOrchestrator>(orchestrator);
 
             // execute
-            ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Delete, hostViewModel, configureServices);
+            ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Delete, null, configureServices);
 
             // assert
             orchestrator.DidNotReceive().Execute(Arg.Any<string>());
@@ -300,8 +298,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             string url = String.Format(UrlDelete, hashId);
 
             IHostDeleteOneOrchestrator orchestrator = Substitute.For<IHostDeleteOneOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
-            ControllerTestHelper.CheckAllRoles<IHostDeleteOneOrchestrator>(orchestrator, url, HttpMethod.Delete, hostViewModel, authorisedRoles);
+            ControllerTestHelper.CheckAllRoles<IHostDeleteOneOrchestrator>(orchestrator, url, HttpMethod.Delete, null, authorisedRoles);
         }
 
         #endregion
