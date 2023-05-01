@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using NSubstitute;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.ViewOrchestrators;
@@ -8,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Text;
 
 namespace SftpSchedulerService.Tests
 {
@@ -30,25 +33,57 @@ namespace SftpSchedulerService.Tests
             return configureServices;
         }
 
-        public static void ExecuteSuccess(string url, string[] roles, Action<IServiceCollection> configureServices)
+        public static void ExecuteSuccess(string url, HttpMethod method, object? content, string[] roles, Action<IServiceCollection> configureServices)
         {
+            HttpResponseMessage? response = null;
             using (var client = HttpClientTestFactory.CreateAuthenticatedHttpClient(roles, configureServices))
             {
-                var response = client.GetAsync(url).GetAwaiter().GetResult();
-                response.EnsureSuccessStatusCode();
+                if (method == HttpMethod.Get)
+                {
+                    response = client.GetAsync(url).GetAwaiter().GetResult();
+                }
+                else if (method == HttpMethod.Post)
+                {
+                    response = client.PostAsync(url, CreateJsonContent(content)).GetAwaiter().GetResult();
+                }
+                else if (method == HttpMethod.Delete)
+                {
+                    response = client.DeleteAsync(url).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    throw new NotImplementedException($"Method {method} not supported");
+                }
             }
+            response.EnsureSuccessStatusCode();
         }
 
-        public static void ExecuteUnauthorised(string url, Action<IServiceCollection> configureServices)
+        public static void ExecuteUnauthorised(string url, HttpMethod method, object? content, Action<IServiceCollection> configureServices)
         {
+            HttpResponseMessage? response = null;
             using (var client = HttpClientTestFactory.CreateHttpClient(configureServices))
             {
-                var response = client.GetAsync(url).GetAwaiter().GetResult();
-                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+                if (method == HttpMethod.Get)
+                {
+                    response = client.GetAsync(url).GetAwaiter().GetResult();
+                }
+                else if (method == HttpMethod.Post)
+                {
+                    response = client.PostAsync(url, CreateJsonContent(content)).GetAwaiter().GetResult();
+                }
+                else if (method == HttpMethod.Delete)
+                {
+                    response = client.DeleteAsync(url).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    throw new NotImplementedException($"Method {method} not supported");
+                }
             }
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
-        public static void CheckAllRoles<TOrchestrator>(TOrchestrator orchestrator, string url, params string[] authorisedRoles)
+        public static void CheckAllRoles<TOrchestrator>(TOrchestrator orchestrator, string url, HttpMethod method, object? content, params string[] authorisedRoles)
             where TOrchestrator : class, IViewOrchestrator
         {
             foreach (string role in UserRoles.AllRoles)
@@ -58,7 +93,24 @@ namespace SftpSchedulerService.Tests
 
                 using (var client = HttpClientTestFactory.CreateAuthenticatedHttpClient(roles, configureServices))
                 {
-                    var response = client.GetAsync(url).GetAwaiter().GetResult();
+                    HttpResponseMessage? response = null;
+
+                    if (method == HttpMethod.Get)
+                    {
+                        response = client.GetAsync(url).GetAwaiter().GetResult();
+                    }
+                    else if (method == HttpMethod.Post)
+                    {
+                        response = client.PostAsync(url, CreateJsonContent(content)).GetAwaiter().GetResult();
+                    }
+                    else if (method == HttpMethod.Delete)
+                    {
+                        response = client.DeleteAsync(url).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Method {method} not supported");
+                    }
 
                     // check if the role was allowed
                     if (authorisedRoles.Contains(role))
@@ -67,10 +119,21 @@ namespace SftpSchedulerService.Tests
                     }
                     else
                     {
-                        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+                        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
                     }
                 }
             }
+        }
+
+        private static StringContent CreateJsonContent(object? content)
+        {
+            string? json = null;
+            if (content != null)
+            {
+                json = JsonConvert.SerializeObject(content);
+            }
+
+            return new StringContent(json ?? String.Empty, Encoding.UTF8, "application/json");
         }
     }
 }

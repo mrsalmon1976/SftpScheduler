@@ -30,7 +30,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             var url = CreateGetUrl(DefaultCronSchedule);
 
             // execute
-            ControllerTestHelper.ExecuteSuccess(url, roles, configureServices);
+            ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Get, null, roles, configureServices);
 
             // assert
             orchestrator.Received(1).Execute(DefaultCronSchedule);
@@ -45,7 +45,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             var url = CreateGetUrl(DefaultCronSchedule);
 
             // execute
-            ControllerTestHelper.ExecuteUnauthorised(url, configureServices);
+            ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Get, null, configureServices);
 
             // assert
             orchestrator.DidNotReceive().Execute(Arg.Any<String>());
@@ -57,7 +57,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         {
             var url = CreateGetUrl(DefaultCronSchedule);
             ICronGetScheduleOrchestrator orchestrator = Substitute.For<ICronGetScheduleOrchestrator>();
-            ControllerTestHelper.CheckAllRoles<ICronGetScheduleOrchestrator>(orchestrator, url, authorisedRoles);
+            ControllerTestHelper.CheckAllRoles<ICronGetScheduleOrchestrator>(orchestrator, url, HttpMethod.Get, null, authorisedRoles);
         }
 
 

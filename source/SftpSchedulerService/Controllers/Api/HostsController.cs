@@ -77,7 +77,6 @@ namespace SftpSchedulerService.Controllers.Api
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("scanfingerprint")]
-        //[Route("api/hosts/scanfingerprint")]
         public async Task<IActionResult> ScanFingerprint([FromBody] HostViewModel model)
         {
             return await _hostFingerprintScanOrchestrator.Execute(model);
