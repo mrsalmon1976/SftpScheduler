@@ -4,7 +4,7 @@ using SftpSchedulerService.Models.Cron;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Cron
 {
-    public interface ICronGetScheduleOrchestrator
+    public interface ICronGetScheduleOrchestrator : IViewOrchestrator
     {
         Task<IActionResult> Execute(string schedule);
     }

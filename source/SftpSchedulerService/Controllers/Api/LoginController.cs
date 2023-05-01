@@ -19,11 +19,11 @@ namespace SftpSchedulerService.Controllers.Api
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
-        private readonly LoginPostOrchestrator _loginPostOrchestrator;
+        private readonly ILoginPostOrchestrator _loginPostOrchestrator;
         private readonly AppSettings _appSettings;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginController(ILogger<LoginController> logger, LoginPostOrchestrator loginPostOrchestrator, AppSettings appSettings, UserManager<IdentityUser> userManager)
+        public LoginController(ILogger<LoginController> logger, ILoginPostOrchestrator loginPostOrchestrator, AppSettings appSettings, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _loginPostOrchestrator = loginPostOrchestrator;

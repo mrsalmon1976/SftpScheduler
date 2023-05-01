@@ -8,7 +8,12 @@ using SftpSchedulerService.Models.Host;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
-    public class HostUpdateOrchestrator
+    public interface IHostUpdateOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(HostViewModel hostViewModel);
+    }
+
+    public class HostUpdateOrchestrator : IHostUpdateOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;

@@ -5,7 +5,12 @@ using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
-    public class HostDeleteOneOrchestrator
+    public interface IHostDeleteOneOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(string hash);
+    }
+
+    public class HostDeleteOneOrchestrator : IHostDeleteOneOrchestrator
     {
         private readonly ILogger<HostDeleteOneOrchestrator> _logger;
         private readonly IDbContextFactory _dbContextFactory;

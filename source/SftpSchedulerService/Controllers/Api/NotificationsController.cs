@@ -14,9 +14,9 @@ namespace SftpSchedulerService.Controllers.Api
     [Authorize]
     public class NotificationsController : ControllerBase
     {
-        private readonly JobNotificationFetchAllOrchestrator _jobNotificationFetchAllOrchestrator;
+        private readonly IJobNotificationFetchAllOrchestrator _jobNotificationFetchAllOrchestrator;
 
-        public NotificationsController(JobNotificationFetchAllOrchestrator jobNotificationFetchAllOrchestrator)
+        public NotificationsController(IJobNotificationFetchAllOrchestrator jobNotificationFetchAllOrchestrator)
         {
             _jobNotificationFetchAllOrchestrator = jobNotificationFetchAllOrchestrator;
         }

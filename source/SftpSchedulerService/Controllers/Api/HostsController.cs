@@ -22,19 +22,19 @@ namespace SftpSchedulerService.Controllers.Api
     [Authorize]
     public class HostsController : ControllerBase
     {
-        private readonly HostCreateOrchestrator _hostCreateOrchestrator;
-        private readonly HostFetchAllOrchestrator _hostFetchAllOrchestrator;
-        private readonly HostDeleteOneOrchestrator _hostDeleteOneOrchestrator;
-        private readonly HostFingerprintScanOrchestrator _hostFingerprintScanOrchestrator;
-        private readonly HostFetchOneOrchestrator _hostFetchOneOrchestrator;
-        private readonly HostUpdateOrchestrator _hostUpdateOrchestrator;
+        private readonly IHostCreateOrchestrator _hostCreateOrchestrator;
+        private readonly IHostFetchAllOrchestrator _hostFetchAllOrchestrator;
+        private readonly IHostDeleteOneOrchestrator _hostDeleteOneOrchestrator;
+        private readonly IHostFingerprintScanOrchestrator _hostFingerprintScanOrchestrator;
+        private readonly IHostFetchOneOrchestrator _hostFetchOneOrchestrator;
+        private readonly IHostUpdateOrchestrator _hostUpdateOrchestrator;
 
-        public HostsController(HostCreateOrchestrator hostCreateOrchestrator
-            , HostFetchAllOrchestrator hostFetchAllOrchestrator
-            , HostDeleteOneOrchestrator hostDeleteOneOrchestrator
-            , HostFingerprintScanOrchestrator hostFingerprintScanOrchestrator
-            , HostFetchOneOrchestrator hostFetchOneOrchestrator
-            , HostUpdateOrchestrator hostUpdateOrchestrator
+        public HostsController(IHostCreateOrchestrator hostCreateOrchestrator
+            , IHostFetchAllOrchestrator hostFetchAllOrchestrator
+            , IHostDeleteOneOrchestrator hostDeleteOneOrchestrator
+            , IHostFingerprintScanOrchestrator hostFingerprintScanOrchestrator
+            , IHostFetchOneOrchestrator hostFetchOneOrchestrator
+            , IHostUpdateOrchestrator hostUpdateOrchestrator
             )
         {
             _hostCreateOrchestrator = hostCreateOrchestrator;
@@ -45,7 +45,6 @@ namespace SftpSchedulerService.Controllers.Api
             _hostUpdateOrchestrator = hostUpdateOrchestrator;
         }
 
-        //// GET: api/<ApiAuthController>
         [HttpGet]
         public async Task<IActionResult> Get()
         {

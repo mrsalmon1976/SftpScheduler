@@ -8,7 +8,12 @@ using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.JobLog
 {
-    public class JobLogFetchAllOrchestrator
+    public interface IJobLogFetchAllOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(string jobHash, int? maxLogId);
+    }
+
+    public class JobLogFetchAllOrchestrator : IJobLogFetchAllOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;

@@ -14,19 +14,19 @@ namespace SftpSchedulerService.Controllers.Api
     [Authorize]
     public class JobsController : ControllerBase
     {
-        private readonly JobCreateOrchestrator _jobCreateOrchestrator;
-        private readonly JobDeleteOneOrchestrator _jobDeleteOneOrchestrator;
-        private readonly JobFetchAllOrchestrator _jobFetchAllOrchestrator;
-        private readonly JobFetchOneOrchestrator _jobFetchOneOrchestrator;
-        private readonly JobUpdateOrchestrator _jobUpdateOrchestrator;
-        private readonly JobExecuteOrchestrator _jobExecuteOrchestrator;
+        private readonly IJobCreateOrchestrator _jobCreateOrchestrator;
+        private readonly IJobDeleteOneOrchestrator _jobDeleteOneOrchestrator;
+        private readonly IJobFetchAllOrchestrator _jobFetchAllOrchestrator;
+        private readonly IJobFetchOneOrchestrator _jobFetchOneOrchestrator;
+        private readonly IJobUpdateOrchestrator _jobUpdateOrchestrator;
+        private readonly IJobExecuteOrchestrator _jobExecuteOrchestrator;
 
-        public JobsController(JobCreateOrchestrator jobCreateOrchestrator
-            , JobDeleteOneOrchestrator jobDeleteOneOrchestrator
-            , JobFetchAllOrchestrator jobFetchAllOrchestrator
-            , JobFetchOneOrchestrator jobFetchOneOrchestrator
-            , JobUpdateOrchestrator jobUpdateOrchestrator
-            , JobExecuteOrchestrator jobExecuteOrchestrator)
+        public JobsController(IJobCreateOrchestrator jobCreateOrchestrator
+            , IJobDeleteOneOrchestrator jobDeleteOneOrchestrator
+            , IJobFetchAllOrchestrator jobFetchAllOrchestrator
+            , IJobFetchOneOrchestrator jobFetchOneOrchestrator
+            , IJobUpdateOrchestrator jobUpdateOrchestrator
+            , IJobExecuteOrchestrator jobExecuteOrchestrator)
         {
             _jobCreateOrchestrator = jobCreateOrchestrator;
             _jobDeleteOneOrchestrator = jobDeleteOneOrchestrator;

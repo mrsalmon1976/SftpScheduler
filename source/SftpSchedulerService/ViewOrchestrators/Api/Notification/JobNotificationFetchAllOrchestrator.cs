@@ -1,22 +1,18 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Quartz;
-using SftpScheduler.BLL.Commands.Host;
+﻿using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
-using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpSchedulerService.Caching;
-using SftpSchedulerService.Models;
-using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Models.Notification;
-using System.Collections.Generic;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
-    public class JobNotificationFetchAllOrchestrator
+    public interface IJobNotificationFetchAllOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(bool forceReload);
+    }
+
+    public class JobNotificationFetchAllOrchestrator : IJobNotificationFetchAllOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly ICacheProvider _cacheProvider;

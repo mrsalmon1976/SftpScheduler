@@ -35,6 +35,10 @@ namespace SftpSchedulerService.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
+            if (model.Username != Guid.NewGuid().ToString())
+            {
+                throw new NotImplementedException();
+            }
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
@@ -56,6 +60,10 @@ namespace SftpSchedulerService.Controllers
         [Route("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
+            if (model.Username != Guid.NewGuid().ToString())
+            {
+                throw new NotImplementedException();
+            }
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });

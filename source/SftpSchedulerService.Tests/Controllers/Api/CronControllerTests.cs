@@ -1,100 +1,69 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.FlowAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using Quartz.Impl.Triggers;
+using Quartz;
 using SftpScheduler.BLL.Identity;
-using SftpSchedulerService.Caching;
 using SftpSchedulerService.ViewOrchestrators.Api.Cron;
+using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Tests.Controllers.Api
 {
     [TestFixture]
     public class CronControllerTests
     {
-        const string DefaultSchedule = "0 0/1 * ? * * *";
+        const string DefaultCronSchedule = "0 0/1 * ? * * *";
+
+        const string UrlGet = "/api/cron?schedule={0}";
 
 
         [Test]
-        public void  Get_ValidateExecution()
+        public void Get_ExecuteSuccess()
         {
+            // setup
             string[] roles = { UserRoles.Admin };
             ICronGetScheduleOrchestrator orchestrator = Substitute.For<ICronGetScheduleOrchestrator>();
-            Action<IServiceCollection> configureServices = CreateConfiguration(orchestrator, DefaultSchedule);
+            var configureServices = ControllerTestHelper.CreateConfiguration<ICronGetScheduleOrchestrator>(orchestrator);
+            var url = CreateGetUrl(DefaultCronSchedule);
 
             // execute
-            using (var client = HttpClientTestFactory.CreateAuthenticatedHttpClient(roles, configureServices))
-            {
-                var url = GetUrl(DefaultSchedule);
-                var response = client.GetAsync(url).GetAwaiter().GetResult();
-                response.EnsureSuccessStatusCode();
-            }
+            ControllerTestHelper.ExecuteSuccess(url, roles, configureServices);
 
             // assert
-            orchestrator.Received(1).Execute(DefaultSchedule);
+            orchestrator.Received(1).Execute(DefaultCronSchedule);
         }
 
         [Test]
-        public void Get_Unauthenticated_ReturnsUnauthorised()
+        public void Get_ExecuteUnauthorised()
         {
-            string[] roles = { UserRoles.Admin };
+            // setup
             ICronGetScheduleOrchestrator orchestrator = Substitute.For<ICronGetScheduleOrchestrator>();
-            Action<IServiceCollection> configureServices = CreateConfiguration(orchestrator, DefaultSchedule);
+            var configureServices = ControllerTestHelper.CreateConfiguration<ICronGetScheduleOrchestrator>(orchestrator);
+            var url = CreateGetUrl(DefaultCronSchedule);
 
             // execute
-            using (var client = HttpClientTestFactory.CreateHttpClient(configureServices))
-            {
-                var url = GetUrl(DefaultSchedule);
-                var response = client.GetAsync(url).GetAwaiter().GetResult();
+            ControllerTestHelper.ExecuteUnauthorised(url, configureServices);
 
-                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-
-            }
+            // assert
+            orchestrator.DidNotReceive().Execute(Arg.Any<String>());
 
         }
 
         [TestCase(UserRoles.Admin, UserRoles.User)]
-        public void Get_RoleHasPermission_ReturnsOk(params string[] authorisedRoles)
+        public void Get_CheckAllRoles(params string[] authorisedRoles)
         {
-            foreach (string role in UserRoles.AllRoles) 
-            {
-                ICronGetScheduleOrchestrator orchestrator = Substitute.For<ICronGetScheduleOrchestrator>();
-                Action<IServiceCollection> configureServices = CreateConfiguration(orchestrator, DefaultSchedule);
-                string[] roles = { role };
-
-                using (var client = HttpClientTestFactory.CreateAuthenticatedHttpClient(roles, configureServices))
-                {
-                    var url = GetUrl(DefaultSchedule);
-                    var response = client.GetAsync(url).GetAwaiter().GetResult();
-
-                    // check if the role was allowed
-                    if (authorisedRoles.Contains(role))
-                    {
-                        response.EnsureSuccessStatusCode();
-                        orchestrator.Received(1).Execute(DefaultSchedule);
-                    }
-                    else
-                    {
-                        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-                        orchestrator.DidNotReceive().Execute(Arg.Any<string>());
-                    }
-
-
-                }
-
-            }
+            var url = CreateGetUrl(DefaultCronSchedule);
+            ICronGetScheduleOrchestrator orchestrator = Substitute.For<ICronGetScheduleOrchestrator>();
+            ControllerTestHelper.CheckAllRoles<ICronGetScheduleOrchestrator>(orchestrator, url, authorisedRoles);
         }
 
 
-        private static string GetUrl(string schedule)
+        private static string CreateGetUrl(string schedule)
         {
-            return $"/api/cron?schedule={WebUtility.UrlEncode(schedule)}";
+            return String.Format(UrlGet, WebUtility.UrlEncode(schedule));
         }
 
         private static Action<IServiceCollection> CreateConfiguration(ICronGetScheduleOrchestrator orchestrator, string schedule)

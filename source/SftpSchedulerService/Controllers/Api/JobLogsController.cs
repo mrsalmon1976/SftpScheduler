@@ -12,9 +12,9 @@ namespace SftpSchedulerService.Controllers.Api
     [Authorize]
     public class JobLogsController : ControllerBase
     {
-        private readonly JobLogFetchAllOrchestrator _jobLogFetchAllOrchestrator;
+        private readonly IJobLogFetchAllOrchestrator _jobLogFetchAllOrchestrator;
 
-        public JobLogsController(JobLogFetchAllOrchestrator jobLogFetchAllOrchestrator)
+        public JobLogsController(IJobLogFetchAllOrchestrator jobLogFetchAllOrchestrator)
         {
             _jobLogFetchAllOrchestrator = jobLogFetchAllOrchestrator;
         }

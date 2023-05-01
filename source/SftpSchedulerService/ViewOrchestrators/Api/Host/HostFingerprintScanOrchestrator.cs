@@ -7,7 +7,12 @@ using SftpSchedulerService.Models.Host;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
-    public class HostFingerprintScanOrchestrator
+    public interface IHostFingerprintScanOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(HostViewModel hostViewModel);
+    }
+
+    public class HostFingerprintScanOrchestrator : IHostFingerprintScanOrchestrator
     {
         private readonly ILogger<HostFingerprintScanOrchestrator> _logger;
         private readonly ISessionWrapperFactory _sessionWrapperFactory;

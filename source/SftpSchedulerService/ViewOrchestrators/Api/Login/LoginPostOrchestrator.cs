@@ -11,7 +11,12 @@ using System.Text;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Login
 {
-    public class LoginPostOrchestrator
+    public interface ILoginPostOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(LoginModel model, HttpContext httpContext);
+    }
+
+    public class LoginPostOrchestrator : ILoginPostOrchestrator
     {
         private readonly ILogger<LoginPostOrchestrator> _logger;
         private readonly AppSettings _appSettings;

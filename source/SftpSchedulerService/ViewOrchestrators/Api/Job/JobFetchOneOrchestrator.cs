@@ -1,17 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
-    public class JobFetchOneOrchestrator
+    public interface IJobFetchOneOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(string hash);
+    }
+
+    public class JobFetchOneOrchestrator : IJobFetchOneOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;

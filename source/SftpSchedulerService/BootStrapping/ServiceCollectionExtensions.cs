@@ -124,24 +124,24 @@ namespace SftpSchedulerService.BootStrapping
         {
             services.AddTransient<ICronGetScheduleOrchestrator, CronGetScheduleOrchestrator>();
 
-            services.AddTransient<HostCreateOrchestrator>();
-            services.AddTransient<HostDeleteOneOrchestrator>();
-            services.AddTransient<HostFetchAllOrchestrator>();
-            services.AddTransient<HostFetchOneOrchestrator>();
-            services.AddTransient<HostFingerprintScanOrchestrator>();
-            services.AddTransient<HostUpdateOrchestrator>();
+            services.AddTransient<IHostCreateOrchestrator, HostCreateOrchestrator>();
+            services.AddTransient<IHostDeleteOneOrchestrator, HostDeleteOneOrchestrator>();
+            services.AddTransient<IHostFetchAllOrchestrator, HostFetchAllOrchestrator>();
+            services.AddTransient<IHostFetchOneOrchestrator, HostFetchOneOrchestrator>();
+            services.AddTransient<IHostFingerprintScanOrchestrator, HostFingerprintScanOrchestrator>();
+            services.AddTransient<IHostUpdateOrchestrator, HostUpdateOrchestrator>();
 
-            services.AddTransient<JobCreateOrchestrator>();
-            services.AddTransient<JobExecuteOrchestrator>();
-            services.AddTransient<JobUpdateOrchestrator>();
-            services.AddTransient<JobDeleteOneOrchestrator>();
-            services.AddTransient<JobFetchAllOrchestrator>();
-            services.AddTransient<JobFetchOneOrchestrator>();
-            services.AddTransient<JobLogFetchAllOrchestrator>();
+            services.AddTransient<IJobCreateOrchestrator, JobCreateOrchestrator>();
+            services.AddTransient<IJobExecuteOrchestrator, JobExecuteOrchestrator>();
+            services.AddTransient<IJobUpdateOrchestrator, JobUpdateOrchestrator>();
+            services.AddTransient<IJobDeleteOneOrchestrator, JobDeleteOneOrchestrator>();
+            services.AddTransient<IJobFetchAllOrchestrator, JobFetchAllOrchestrator>();
+            services.AddTransient<IJobFetchOneOrchestrator, JobFetchOneOrchestrator>();
+            services.AddTransient<IJobLogFetchAllOrchestrator, JobLogFetchAllOrchestrator>();
 
-            services.AddTransient<JobNotificationFetchAllOrchestrator>();
+            services.AddTransient<IJobNotificationFetchAllOrchestrator, JobNotificationFetchAllOrchestrator>();
 
-            services.AddTransient<LoginPostOrchestrator>();
+            services.AddTransient<ILoginPostOrchestrator, LoginPostOrchestrator>();
         }
 
         public static void AddRepositories(this IServiceCollection services)

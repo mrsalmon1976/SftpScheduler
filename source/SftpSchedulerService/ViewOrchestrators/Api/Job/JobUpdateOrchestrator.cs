@@ -4,13 +4,16 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Job;
-using System.Data;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
-    public class JobUpdateOrchestrator
+    public interface IJobUpdateOrchestrator : IViewOrchestrator
+    {
+        Task<IActionResult> Execute(JobViewModel jobViewModel);
+    }
+
+    public class JobUpdateOrchestrator : IJobUpdateOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
