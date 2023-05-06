@@ -15,7 +15,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
     public class JobRepositoryTests
     {
 
-        #region GetAll Tests
+        #region GetAllAsync Tests
 
         [Test]
         public void GetAllAsync_OnExecute_PerformsQuery()

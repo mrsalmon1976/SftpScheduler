@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using static Dapper.SqlMapper;
 using SftpSchedulerService.Models;
+using SftpScheduler.BLL.Models;
 
 namespace SftpSchedulerService.Controllers
 {
@@ -17,12 +18,12 @@ namespace SftpSchedulerService.Controllers
     //[ApiController]
     public class AuthenticateController : CustomBaseController//Base
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
         public AuthenticateController(
-            UserManager<IdentityUser> userManager,
+            UserManager<UserEntity> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration)
         {
@@ -43,7 +44,7 @@ namespace SftpSchedulerService.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new()
+            UserEntity user = new()
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -68,7 +69,7 @@ namespace SftpSchedulerService.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new()
+            UserEntity user = new()
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),

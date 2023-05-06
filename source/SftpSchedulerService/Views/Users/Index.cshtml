@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Users";
+}
+@section Scripts {
+    <environment-script src="~/js/models/user.js"></environment-script>
+    <environment-script src="~/js/pages/user/index.js"></environment-script>
+}
+@section PageActionMenu {
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item active"><a href="/users/create" class="btn btn-primary bg-gradient-primary">Add User</a></li>
+    </ol>
+}
+<div id="app-user" v-cloak>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="user in users">
+                        <td><a :href="'/users/' + user.id">{{ user.userName }}</a></td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <a href="#" v-on:click="showDisableDialog(user)" title="Disable user"><i class="fa fa-trash-can"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="modal-disable-user" tabindex="-1" role="dialog" aria-labelledby="modal-disable-user-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-warning">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-disable-user-label">Confirm : Disable '{{ selectedUser.userName }}'</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to disable this user? 
+                    <br /><br />
+                    The user account will remain, but they will no longer be able to log in.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-dark" v-on:click="disableUser(selectedUser.id)">Disable</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

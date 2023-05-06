@@ -12,6 +12,7 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Jobs;
+using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Config;
@@ -20,8 +21,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
 using SftpSchedulerService.ViewOrchestrators.Api.Login;
-using System.Collections.Specialized;
-using System.Runtime.CompilerServices;
+using SftpSchedulerService.ViewOrchestrators.Api.User;
 using System.Text;
 
 namespace SftpSchedulerService.BootStrapping
@@ -33,28 +33,28 @@ namespace SftpSchedulerService.BootStrapping
 
         public static void AddCommands(this IServiceCollection services)
         {
-            services.AddTransient<ICreateHostCommand, CreateHostCommand>();
-            services.AddTransient<IDeleteHostCommand, DeleteHostCommand>();
-            services.AddTransient<IUpdateHostCommand, UpdateHostCommand>();
+            services.AddScoped<ICreateHostCommand, CreateHostCommand>();
+            services.AddScoped<IDeleteHostCommand, DeleteHostCommand>();
+            services.AddScoped<IUpdateHostCommand, UpdateHostCommand>();
 
-            services.AddTransient<CreateJobCommand>();
-            services.AddTransient<IExecuteJobCommand, ExecuteJobCommand>();
-            services.AddTransient<IUpdateJobCommand, UpdateJobCommand>();
-            services.AddTransient<ICreateJobLogCommand, CreateJobLogCommand>();
+            services.AddScoped<CreateJobCommand>();
+            services.AddScoped<IExecuteJobCommand, ExecuteJobCommand>();
+            services.AddScoped<IUpdateJobCommand, UpdateJobCommand>();
+            services.AddScoped<ICreateJobLogCommand, CreateJobLogCommand>();
 
-            services.AddTransient<CreateUserCommand>();
-            services.AddTransient<IDeleteJobCommand, DeleteJobCommand>();
+            services.AddScoped<CreateUserCommand>();
+            services.AddScoped<IDeleteJobCommand, DeleteJobCommand>();
 
-            services.AddTransient<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
+            services.AddScoped<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
 
-            services.AddTransient<ITransferCommand, TransferCommand>();
+            services.AddScoped<ITransferCommand, TransferCommand>();
         }
 
         public static void AddIdentity(this IServiceCollection services, AppSettings appSettings)
         {
 
             services.AddDbContext<SftpSchedulerIdentityDbContext>(options => options.UseSqlite(appSettings.DbConnectionString));
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<UserEntity, IdentityRole>()
                 .AddEntityFrameworkStores<SftpSchedulerIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -122,33 +122,35 @@ namespace SftpSchedulerService.BootStrapping
 
         public static void AddControllerOrchestrators(this IServiceCollection services)
         {
-            services.AddTransient<ICronGetScheduleOrchestrator, CronGetScheduleOrchestrator>();
+            services.AddScoped<ICronGetScheduleOrchestrator, CronGetScheduleOrchestrator>();
 
-            services.AddTransient<IHostCreateOrchestrator, HostCreateOrchestrator>();
-            services.AddTransient<IHostDeleteOneOrchestrator, HostDeleteOneOrchestrator>();
-            services.AddTransient<IHostFetchAllOrchestrator, HostFetchAllOrchestrator>();
-            services.AddTransient<IHostFetchOneOrchestrator, HostFetchOneOrchestrator>();
-            services.AddTransient<IHostFingerprintScanOrchestrator, HostFingerprintScanOrchestrator>();
-            services.AddTransient<IHostUpdateOrchestrator, HostUpdateOrchestrator>();
+            services.AddScoped<IHostCreateOrchestrator, HostCreateOrchestrator>();
+            services.AddScoped<IHostDeleteOneOrchestrator, HostDeleteOneOrchestrator>();
+            services.AddScoped<IHostFetchAllOrchestrator, HostFetchAllOrchestrator>();
+            services.AddScoped<IHostFetchOneOrchestrator, HostFetchOneOrchestrator>();
+            services.AddScoped<IHostFingerprintScanOrchestrator, HostFingerprintScanOrchestrator>();
+            services.AddScoped<IHostUpdateOrchestrator, HostUpdateOrchestrator>();
 
-            services.AddTransient<IJobCreateOrchestrator, JobCreateOrchestrator>();
-            services.AddTransient<IJobExecuteOrchestrator, JobExecuteOrchestrator>();
-            services.AddTransient<IJobUpdateOrchestrator, JobUpdateOrchestrator>();
-            services.AddTransient<IJobDeleteOneOrchestrator, JobDeleteOneOrchestrator>();
-            services.AddTransient<IJobFetchAllOrchestrator, JobFetchAllOrchestrator>();
-            services.AddTransient<IJobFetchOneOrchestrator, JobFetchOneOrchestrator>();
-            services.AddTransient<IJobLogFetchAllOrchestrator, JobLogFetchAllOrchestrator>();
+            services.AddScoped<IJobCreateOrchestrator, JobCreateOrchestrator>();
+            services.AddScoped<IJobExecuteOrchestrator, JobExecuteOrchestrator>();
+            services.AddScoped<IJobUpdateOrchestrator, JobUpdateOrchestrator>();
+            services.AddScoped<IJobDeleteOneOrchestrator, JobDeleteOneOrchestrator>();
+            services.AddScoped<IJobFetchAllOrchestrator, JobFetchAllOrchestrator>();
+            services.AddScoped<IJobFetchOneOrchestrator, JobFetchOneOrchestrator>();
+            services.AddScoped<IJobLogFetchAllOrchestrator, JobLogFetchAllOrchestrator>();
 
-            services.AddTransient<IJobNotificationFetchAllOrchestrator, JobNotificationFetchAllOrchestrator>();
+            services.AddScoped<IJobNotificationFetchAllOrchestrator, JobNotificationFetchAllOrchestrator>();
 
-            services.AddTransient<ILoginPostOrchestrator, LoginPostOrchestrator>();
+            services.AddScoped<ILoginPostOrchestrator, LoginPostOrchestrator>();
+
+            services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();
         }
 
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddTransient<HostRepository>();
-            services.AddTransient<JobRepository>();
-            services.AddTransient<JobLogRepository>();
+            services.AddScoped<HostRepository>();
+            services.AddScoped<JobRepository>();
+            services.AddScoped<JobLogRepository>();
         }
 
         public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings)

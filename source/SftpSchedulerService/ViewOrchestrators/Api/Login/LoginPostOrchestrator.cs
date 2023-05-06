@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using SftpSchedulerService.Config;
 using System.Text;
+using SftpScheduler.BLL.Models;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Login
 {
@@ -20,9 +21,9 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Login
     {
         private readonly ILogger<LoginPostOrchestrator> _logger;
         private readonly AppSettings _appSettings;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
 
-        public LoginPostOrchestrator(ILogger<LoginPostOrchestrator> logger, AppSettings appSettings, UserManager<IdentityUser> userManager)
+        public LoginPostOrchestrator(ILogger<LoginPostOrchestrator> logger, AppSettings appSettings, UserManager<UserEntity> userManager)
         {
             _logger = logger;
             _appSettings = appSettings;

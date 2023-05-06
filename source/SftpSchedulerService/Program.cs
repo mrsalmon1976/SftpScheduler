@@ -3,34 +3,16 @@ using SftpSchedulerService;
 using SftpScheduler.BLL.Utility;
 using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Config;
-using SftpScheduler.BLL.Commands.Host;
-using SftpScheduler.BLL.Validators;
-using SftpScheduler.BLL.Repositories;
 using NLog.Web;
 using NLog;
-using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Identity;
-using SftpSchedulerService.ViewOrchestrators.Api.Host;
-using SftpSchedulerService.ViewOrchestrators.Api.Login;
-using SftpSchedulerService.ViewOrchestrators.Api.Cron;
-using SftpSchedulerService.ViewOrchestrators.Api.Job;
-using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Utility.IO;
-using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
 using SftpScheduler.BLL.Security;
 using SftpSchedulerService.Caching;
 
-//var webApplicationOptions = new WebApplicationOptions() { 
-//    ContentRootPath = AppContext.BaseDirectory, 
-//    Args = args, 
-//    ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
-//};
 var logger = NLog.LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 var builder = WebApplication.CreateBuilder(args);       // NOTE! Without args, integration tests don't work!?
-//builder.Environment.ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
-//builder.Environment.ContentRootPath = AppContext.BaseDirectory;
-//builder.Configuration.con
 
 try
 {
@@ -57,14 +39,15 @@ try
 
     builder.Services.AddSingleton<AppSettings>(appSettings);
     builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
+    builder.Services.AddScoped<IDbContext>((sp) => new SQLiteDbContext(appSettings.DbPath));
     builder.Services.AddSingleton<ResourceUtils>();
 
-    builder.Services.AddTransient<IDirectoryWrap, DirectoryWrap>();
-    builder.Services.AddTransient<IFileWrap, FileWrap>();
-    builder.Services.AddTransient<IFileTransferService, FileTransferService>();
-    builder.Services.AddTransient<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
-    builder.Services.AddTransient<ISessionWrapperFactory, SessionWrapperFactory>();
-    builder.Services.AddTransient<ICacheProvider,  CacheProvider>();
+    builder.Services.AddScoped<IDirectoryWrap, DirectoryWrap>();
+    builder.Services.AddScoped<IFileWrap, FileWrap>();
+    builder.Services.AddScoped<IFileTransferService, FileTransferService>();
+    builder.Services.AddScoped<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
+    builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();
+    builder.Services.AddScoped<ICacheProvider,  CacheProvider>();
 
 
     builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();

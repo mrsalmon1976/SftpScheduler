@@ -3,6 +3,7 @@ using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Models.Notification;
+using SftpSchedulerService.Models.User;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -20,6 +21,9 @@ namespace SftpSchedulerService.BootStrapping
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate == null ? (DateTime?)null : src.EndDate.Value.ToLocalTime()));
 
             cfg.CreateMap<JobLogViewModel, JobLogEntity>();
+
+            cfg.CreateMap<UserViewModel, UserEntity>();
+            cfg.CreateMap<UserEntity, UserViewModel>();
         }
 
     }

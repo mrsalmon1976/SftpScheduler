@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
+using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,20 +15,17 @@ namespace SftpScheduler.BLL.Tests
 {
     internal class IdentityTestHelper
     {
-        public static UserManager<IdentityUser> CreateUserManagerMock()
+        public static UserManager<UserEntity> CreateUserManagerMock()
         {
-            IUserStore<IdentityUser> userStore = Substitute.For<IUserStore<IdentityUser>>();
+            IUserStore<UserEntity> userStore = Substitute.For<IUserStore<UserEntity>>();
             IOptions<IdentityOptions> options = Substitute.For<IOptions<IdentityOptions>>();
-            IPasswordHasher<IdentityUser> passwordHasher = Substitute.For<IPasswordHasher<IdentityUser>>();
+            IPasswordHasher<UserEntity> passwordHasher = Substitute.For<IPasswordHasher<UserEntity>>();
             IdentityErrorDescriber errorDescriber = new IdentityErrorDescriber();
             ILookupNormalizer lookupNormalizer = Substitute.For<ILookupNormalizer>();
             IServiceProvider serviceProvider = Substitute.For<IServiceProvider>();
-            ILogger<UserManager<IdentityUser>> logger = Substitute.For<ILogger<UserManager<IdentityUser>>>();
+            ILogger<UserManager<UserEntity>> logger = Substitute.For<ILogger<UserManager<UserEntity>>>();
 
-
-            //new UserManager<IdentityUser>(userStore, options, passwordHasher, Enumerable.Empty<IUserValidator<IdentityUser>>(), Enumerable.Empty<IPasswordValidator<IdentityUser>>()
-            //    , lookupNormalizer, errorDescriber, serviceProvider, logger);
-            return Substitute.For<UserManager<IdentityUser>>(userStore, options, passwordHasher, Enumerable.Empty<IUserValidator<IdentityUser>>(), Enumerable.Empty<IPasswordValidator<IdentityUser>>()
+            return Substitute.For<UserManager<UserEntity>>(userStore, options, passwordHasher, Enumerable.Empty<IUserValidator<UserEntity>>(), Enumerable.Empty<IPasswordValidator<UserEntity>>()
                 , lookupNormalizer, errorDescriber, serviceProvider, logger);
 
         }
@@ -39,7 +37,6 @@ namespace SftpScheduler.BLL.Tests
             ILookupNormalizer lookupNormalizer = Substitute.For<ILookupNormalizer>();
             ILogger<RoleManager<IdentityRole>> logger = Substitute.For<ILogger<RoleManager<IdentityRole>>>();
 
-            //new RoleManager<IdentityRole>(roleStore, Enumerable.Empty<IRoleValidator<IdentityRole>>(), lookupNormalizer, errorDescriber, logger);
             return Substitute.For<RoleManager<IdentityRole>>(roleStore, Enumerable.Empty<IRoleValidator<IdentityRole>>(), lookupNormalizer, errorDescriber, logger);
 
         }

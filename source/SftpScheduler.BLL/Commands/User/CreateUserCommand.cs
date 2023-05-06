@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SftpScheduler.BLL.Exceptions;
+using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,9 @@ namespace SftpScheduler.BLL.Commands.User
     public class CreateUserCommand
     {
 
-        public virtual async Task<IdentityUser> ExecuteAsync(UserManager<IdentityUser> userManager, string userName, string password, IEnumerable<string> roles)
+        public virtual async Task<UserEntity> ExecuteAsync(UserManager<UserEntity> userManager, string userName, string password, IEnumerable<string> roles)
         {
-            var user = new IdentityUser
+            var user = new UserEntity
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = userName

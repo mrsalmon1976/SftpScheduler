@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
+using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,13 @@ namespace SftpScheduler.BLL.Identity
     public class IdentityInitialiser
     {
         private readonly ILogger<IdentityInitialiser> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly CreateUserCommand _createUserCommand;
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAdminUserPassword = "admin";
 
-        public IdentityInitialiser(ILogger<IdentityInitialiser> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, CreateUserCommand createUserCommand)
+        public IdentityInitialiser(ILogger<IdentityInitialiser> logger, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, CreateUserCommand createUserCommand)
         {
             _logger = logger;
             _userManager = userManager;

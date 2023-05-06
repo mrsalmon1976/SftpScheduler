@@ -9,6 +9,7 @@ using System.Text;
 using SftpSchedulerService.Config;
 using SftpScheduler.BLL.Identity.Models;
 using SftpSchedulerService.ViewOrchestrators.Api.Login;
+using SftpScheduler.BLL.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,15 +21,11 @@ namespace SftpSchedulerService.Controllers.Api
     {
         private readonly ILogger<LoginController> _logger;
         private readonly ILoginPostOrchestrator _loginPostOrchestrator;
-        private readonly AppSettings _appSettings;
-        private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginController(ILogger<LoginController> logger, ILoginPostOrchestrator loginPostOrchestrator, AppSettings appSettings, UserManager<IdentityUser> userManager)
+        public LoginController(ILogger<LoginController> logger, ILoginPostOrchestrator loginPostOrchestrator)
         {
             _logger = logger;
             _loginPostOrchestrator = loginPostOrchestrator;
-            _appSettings = appSettings;
-            _userManager = userManager;
         }
 
         [HttpPost]

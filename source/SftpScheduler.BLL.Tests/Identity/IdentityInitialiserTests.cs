@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Identity;
+using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_RoleExists_DoesNotRecreate(string roleName)
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<IdentityUser> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
             CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
 
@@ -44,7 +45,7 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_RoleDoesNotExist_IsCreated(string roleName)
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<IdentityUser> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
             CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
 
@@ -62,7 +63,7 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_RoleFailsToCreate_ThrowsDataValidationException()
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<IdentityUser> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
             CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
 
@@ -85,12 +86,12 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_AdminUserDoesNotExist_IsCreated()
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<IdentityUser> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
             CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
-            userManager.FindByNameAsync(IdentityInitialiser.DefaultAdminUserName).Returns(Task.FromResult<IdentityUser>(null));
+            userManager.FindByNameAsync(IdentityInitialiser.DefaultAdminUserName).Returns(Task.FromResult<UserEntity>(null));
 
             IdentityInitialiser identityInitialiser = new IdentityInitialiser(logger, userManager, roleManager, createUserCommand);
             identityInitialiser.Seed();
@@ -107,11 +108,11 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_AdminUserExists_IsNotRecreated()
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<IdentityUser> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
             CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
 
-            IdentityUser user = new IdentityUser();
+            UserEntity user = new UserEntity();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
             userManager.FindByNameAsync(IdentityInitialiser.DefaultAdminUserName).Returns(Task.FromResult(user));
@@ -121,7 +122,7 @@ namespace SftpScheduler.BLL.Tests.Identity
 
             userManager.Received(1).FindByNameAsync(IdentityInitialiser.DefaultAdminUserName);
 
-            createUserCommand.DidNotReceive().ExecuteAsync(Arg.Any<UserManager<IdentityUser>>()
+            createUserCommand.DidNotReceive().ExecuteAsync(Arg.Any<UserManager<UserEntity>>()
                 , Arg.Any<string>()
                 , Arg.Any<string>()
                 , Arg.Any<IEnumerable<string>>()).GetAwaiter().GetResult();
