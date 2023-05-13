@@ -1,7 +1,7 @@
 ﻿using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.IO;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Utility.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,9 +19,9 @@ namespace SftpScheduler.BLL.Validators
     public class JobValidator : IJobValidator
     {
         private readonly HostRepository _hostRepository;
-        private readonly IDirectoryWrap _directoryWrap;
+        private readonly IDirectoryUtility _directoryWrap;
 
-        public JobValidator(HostRepository hostRepository, IDirectoryWrap directoryWrap) 
+        public JobValidator(HostRepository hostRepository, IDirectoryUtility directoryWrap) 
         {
             _hostRepository = hostRepository;
             _directoryWrap = directoryWrap;

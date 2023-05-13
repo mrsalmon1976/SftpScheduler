@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.IO;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Utility.IO;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             HostRepository hostRepository = Substitute.For<HostRepository>();
             hostRepository.GetByIdAsync(dbContext, jobEntity.HostId).Returns(Task.FromResult(hostEntity));
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.Exists(jobEntity.LocalPath).Returns(true);
 
             JobValidator jobValidator = CreateJobValidator(hostRepository, directoryWrap);
@@ -75,7 +74,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             HostEntity hostEntity = null;
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            var directoryWrap = Substitute.For<IDirectoryWrap>();
+            var directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.Exists(Arg.Any<string>()).Returns(true);
 
 
@@ -133,7 +132,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             IDbContext dbContext = Substitute.For<IDbContext>();
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.Exists(Arg.Any<string>()).Returns(false);
             JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);
@@ -178,7 +177,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";
 
-            IDirectoryWrap dirWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
             dirWrap.Exists(jobEntity.LocalPath).Returns(true);
             dirWrap.Exists("C:\\Temp\\Folder1").Returns(true);
             dirWrap.Exists("C:\\Temp\\Folder2").Returns(true);
@@ -198,7 +197,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";
 
-            IDirectoryWrap dirWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
             dirWrap.Exists(jobEntity.LocalPath).Returns(true);
             dirWrap.Exists("C:\\Temp\\Folder1").Returns(false);
             dirWrap.Exists("C:\\Temp\\Folder2").Returns(false);
@@ -231,7 +230,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             HostRepository hostRepository = Substitute.For<HostRepository>();
             hostRepository.GetByIdAsync(Arg.Any<IDbContext>(), Arg.Any<int>()).Returns(Task.FromResult(new HostEntity()));
 
-            IDirectoryWrap dirWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
             dirWrap.Exists(Arg.Any<string>()).Returns(true);
 
 
@@ -239,7 +238,7 @@ namespace SftpScheduler.BLL.Tests.Validators
 
         }
 
-        private JobValidator CreateJobValidator(HostRepository hostRepository, IDirectoryWrap directoryWrap)
+        private JobValidator CreateJobValidator(HostRepository hostRepository, IDirectoryUtility directoryWrap)
         {
             return new JobValidator(hostRepository, directoryWrap);
 

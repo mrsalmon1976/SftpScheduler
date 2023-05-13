@@ -17,23 +17,44 @@ namespace SftpSchedulerService.AutoUpdater
         private readonly AppSettings _appSettings;
         private readonly UpdateLocationInfo _updateLocationInfo;
         private readonly IVersionComparisonService _versionComparisonService;
+        private readonly IUpdateFileService _updateFileService;
 
         public UpdateOrchestrator(ILogger<UpdateOrchestrator> logger,
             AppSettings appSettings,
             UpdateLocationInfo updateLocationInfo,
-            IVersionComparisonService versionComparisonService)
+            IVersionComparisonService versionComparisonService,
+            IUpdateFileService updateFileService)
         {
             _logger = logger;
             _appSettings = appSettings;
             _updateLocationInfo = updateLocationInfo;
             _versionComparisonService = versionComparisonService;
+            _updateFileService = updateFileService;
         }
 
         public async Task<bool> Run()
         {
             _logger.LogInformation("Checking for new version (Application path: {0})", _updateLocationInfo.ApplicationFolder);
             VersionComparisonResult versionComparisonResult = await _versionComparisonService.CheckIfNewVersionAvailable(_appSettings.LatestVersionUrl, _updateLocationInfo.ApplicationFolder);
-            return true;
+            bool updated = false;
+
+            ApplicationVersionInfo latestVersionInfo = versionComparisonResult.LatestReleaseVersionInfo!;
+
+            if (versionComparisonResult.IsNewVersionAvailable)
+            {
+                _logger.LogInformation("New version available: {0}", latestVersionInfo.VersionNumber);
+                updated = true;
+
+                _logger.LogInformation("Creating temporary update folder {0}", _updateLocationInfo.UpdateTempFolder);
+                _updateFileService.EnsureEmptyUpdateTempFolderExists(_updateLocationInfo.UpdateTempFolder);
+
+            }
+            else 
+            {
+                _logger.LogInformation("Latest version already installed ({0})", latestVersionInfo.VersionNumber);
+            }
+
+            return updated;
         }
     }
 }

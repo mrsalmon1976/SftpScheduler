@@ -7,9 +7,9 @@ using NLog.Web;
 using NLog;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Commands.Transfer;
-using SftpScheduler.BLL.Utility.IO;
 using SftpScheduler.BLL.Security;
 using SftpSchedulerService.Caching;
+using SftpScheduler.BLL.IO;
 
 var logger = NLog.LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 var builder = WebApplication.CreateBuilder(args);       // NOTE! Without args, integration tests don't work!?
@@ -42,8 +42,8 @@ try
     builder.Services.AddScoped<IDbContext>((sp) => new SQLiteDbContext(appSettings.DbPath));
     builder.Services.AddSingleton<ResourceUtils>();
 
-    builder.Services.AddScoped<IDirectoryWrap, DirectoryWrap>();
-    builder.Services.AddScoped<IFileWrap, FileWrap>();
+    builder.Services.AddScoped<IDirectoryUtility, DirectoryUtility>();
+    builder.Services.AddScoped<IFileUtility, FileUtility>();
     builder.Services.AddScoped<IFileTransferService, FileTransferService>();
     builder.Services.AddScoped<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();

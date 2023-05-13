@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility.IO;
+using SftpScheduler.BLL.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +21,12 @@ namespace SftpScheduler.BLL.Commands.Transfer
     public class FileTransferService : IFileTransferService
     {
         private readonly ILogger<FileTransferService> _logger;
-        private readonly IDirectoryWrap _directoryWrap;
-        private readonly IFileWrap _fileWrap;
+        private readonly IDirectoryUtility _directoryWrap;
+        private readonly IFileUtility _fileWrap;
 
         public const string UploadNamePattern = "^*.uploaded_?\\d?\\d?\\d?$";
 
-        public FileTransferService(ILogger<FileTransferService> logger, IDirectoryWrap directoryWrap, IFileWrap fileWrap)
+        public FileTransferService(ILogger<FileTransferService> logger, IDirectoryUtility directoryWrap, IFileUtility fileWrap)
         {
             _logger = logger;
             _directoryWrap = directoryWrap;

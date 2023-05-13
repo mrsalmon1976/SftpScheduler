@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Utility.IO
+namespace SftpScheduler.BLL.IO
 {
-    public interface IFileWrap
+    public interface IFileUtility
     {
         void Copy(string sourceFileName, string destFileName);
 
@@ -16,7 +16,7 @@ namespace SftpScheduler.BLL.Utility.IO
 
     }
 
-    public class FileWrap : IFileWrap
+    public class FileUtility : IFileUtility
     {
 
         public void Copy(string sourceFileName, string destFileName)

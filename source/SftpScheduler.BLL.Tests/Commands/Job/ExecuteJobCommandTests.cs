@@ -2,20 +2,12 @@
 using NUnit.Framework;
 using Quartz;
 using SftpScheduler.BLL.Commands.Job;
-using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
-using SftpScheduler.BLL.Jobs;
-using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Utility.IO;
-using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
-using WinSCP;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {

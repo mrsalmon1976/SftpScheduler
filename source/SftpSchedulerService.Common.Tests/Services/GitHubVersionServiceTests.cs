@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace SftpSchedulerService.Common.Tests.Services
 {
     [TestFixture]
-    public class GitHubVersionServiceTest
+    public class GitHubVersionServiceTests
     {
 
         private const string GitHubLatestReleaseUrl = "https://api.github.com/repos/mrsalmon1976/SftpScheduler/releases/latest";
@@ -25,7 +25,7 @@ namespace SftpSchedulerService.Common.Tests.Services
         public void GetVersionInfo_OnRequest_BindResponseValuesCorrectly()
         {
             // setup
-            IHttpClientFactory httpClientFactory = Substitute.For<IHttpClientFactory>();
+            Web.IHttpClientFactory httpClientFactory = Substitute.For<Web.IHttpClientFactory>();
 
             string response = GetSampleGitHubReleaseJson();
             MockHttpMessageHandler httpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, response);

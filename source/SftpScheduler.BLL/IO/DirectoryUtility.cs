@@ -4,19 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Utility.IO
+namespace SftpScheduler.BLL.IO
 {
     // should be using SystemWrapper library but that targets framework,  not .NET 6
-    public interface IDirectoryWrap
+    public interface IDirectoryUtility
     {
+
+        void Create(string path);
+
+        void Delete(string path, bool recursive);
 
         IEnumerable<string> EnumerateFiles(string path);
 
         bool Exists(string path);
     }
 
-    public class DirectoryWrap : IDirectoryWrap
+    public class DirectoryUtility : IDirectoryUtility
     {
+
+        public void Create(string path)
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        public void Delete(string path, bool recursive)
+        {
+            Directory.Delete(path, recursive);
+        }
+
         public IEnumerable<string> EnumerateFiles(string path)
         {
             return Directory.EnumerateFiles(path);

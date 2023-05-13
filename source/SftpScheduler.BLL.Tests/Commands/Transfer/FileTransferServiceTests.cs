@@ -1,10 +1,9 @@
-﻿using Castle.Core.Logging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
+using SftpScheduler.BLL.IO;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Utility.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,7 +144,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
 
             // execute
-            IFileWrap fileWrap = Substitute.For<IFileWrap>();
+            IFileUtility fileWrap = Substitute.For<IFileUtility>();
             IFileTransferService fileTransferService = CreateFileTransferService(fileWrap: fileWrap);
             fileTransferService.DownloadFiles(sessionWrapper, options);
 
@@ -174,7 +173,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(localPath).Returns(files);
 
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
@@ -191,7 +190,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(localPath).Returns(files);
 
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
@@ -211,7 +210,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(localPath).Returns(allFiles);
 
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
@@ -238,10 +237,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
             string remotePath = $"/{Path.GetRandomFileName()}/";
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(localPath).Returns(newFiles);
 
-            IFileWrap fileWrap = Substitute.For<IFileWrap>();
+            IFileUtility fileWrap = Substitute.For<IFileUtility>();
 
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
             fileTransferService.UploadFiles(sessionWrapper, newFiles, remotePath);
@@ -266,10 +265,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
             string remotePath = $"/{Path.GetRandomFileName()}/";
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(localPath).Returns(newFiles);
 
-            IFileWrap fileWrap = Substitute.For<IFileWrap>();
+            IFileUtility fileWrap = Substitute.For<IFileUtility>();
 
             string expectedRename1 = localFileName.Replace(localFileExt, $".uploaded{localFileExt}");
             string expectedRename2 = localFileName.Replace(localFileExt, $".uploaded_1{localFileExt}");
@@ -295,10 +294,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string localPath = AppDomain.CurrentDomain.BaseDirectory;
             string remotePath = $"/{Path.GetRandomFileName()}/";
 
-            IDirectoryWrap directoryWrap = Substitute.For<IDirectoryWrap>();
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(localPath).Returns(newFiles);
 
-            IFileWrap fileWrap = Substitute.For<IFileWrap>();
+            IFileUtility fileWrap = Substitute.For<IFileUtility>();
 
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
@@ -362,11 +361,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         }
 
 
-        private IFileTransferService CreateFileTransferService(ILogger<FileTransferService>? logger = null, IDirectoryWrap? directoryWrap = null, IFileWrap? fileWrap = null)
+        private IFileTransferService CreateFileTransferService(ILogger<FileTransferService>? logger = null, IDirectoryUtility? directoryWrap = null, IFileUtility? fileWrap = null)
         {
             return new FileTransferService(logger ?? Substitute.For<ILogger<FileTransferService>>()
-                , directoryWrap ?? Substitute.For<IDirectoryWrap>()
-                , fileWrap ?? Substitute.For<IFileWrap>()
+                , directoryWrap ?? Substitute.For<IDirectoryUtility>()
+                , fileWrap ?? Substitute.For<IFileUtility>()
                 );
         }
 

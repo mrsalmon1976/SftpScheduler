@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SftpScheduler.BLL\SftpScheduler.BLL.csproj" />
     <ProjectReference Include="..\SftpSchedulerService.Common\SftpSchedulerService.Common.csproj" />
   </ItemGroup>
 

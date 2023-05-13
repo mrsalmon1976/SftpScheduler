@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
+using SftpScheduler.BLL.IO;
 using SftpSchedulerService.AutoUpdater.Config;
 using SftpSchedulerService.AutoUpdater.Services;
 using SftpSchedulerService.Common.Services;
@@ -33,6 +34,9 @@ namespace SftpSchedulerService.AutoUpdater
                         .AddSingleton<AppSettings>()
                         .AddSingleton<UpdateLocationInfo>()
                         .AddSingleton<IApplicationVersionService, ApplicationVersionService>()
+                        .AddSingleton<IDirectoryUtility, DirectoryUtility>()
+                        .AddSingleton<IFileUtility, FileUtility>()
+                        .AddSingleton<IUpdateFileService, UpdateFileService>()
                         .AddSingleton<IGitHubVersionService, GitHubVersionService>()
                         .AddSingleton<Common.Web.IHttpClientFactory, HttpClientFactory>()
                         .AddSingleton<UpdateOrchestrator, UpdateOrchestrator>()

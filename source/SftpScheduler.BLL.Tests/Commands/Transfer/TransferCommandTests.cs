@@ -6,7 +6,6 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Utility.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -4,10 +4,10 @@ using Quartz;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
+using SftpScheduler.BLL.IO;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Utility.IO;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
-using WinSCP;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
@@ -270,7 +269,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
-                    UpdateJobCommand updateJobCommand = new UpdateJobCommand(new JobValidator(new HostRepository(), new DirectoryWrap()), Substitute.For<ISchedulerFactory>());
+                    UpdateJobCommand updateJobCommand = new UpdateJobCommand(new JobValidator(new HostRepository(), new DirectoryUtility()), Substitute.For<ISchedulerFactory>());
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
                     DateTime dtBefore = DateTime.UtcNow;
