@@ -350,3 +350,4 @@ MigrationBackup/
 .ionide/
 
 deployment/build/**
+deployment/*.zip
