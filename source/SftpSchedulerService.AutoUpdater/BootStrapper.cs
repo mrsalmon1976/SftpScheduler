@@ -36,6 +36,8 @@ namespace SftpSchedulerService.AutoUpdater
                         .AddSingleton<IApplicationVersionService, ApplicationVersionService>()
                         .AddSingleton<IDirectoryUtility, DirectoryUtility>()
                         .AddSingleton<IFileUtility, FileUtility>()
+                        .AddSingleton<IInstallationService, InstallationService>()
+                        .AddSingleton<IUpdateDownloadService, UpdateDownloadService>()
                         .AddSingleton<IUpdateFileService, UpdateFileService>()
                         .AddSingleton<IGitHubVersionService, GitHubVersionService>()
                         .AddSingleton<Common.Web.IHttpClientFactory, HttpClientFactory>()

@@ -177,6 +177,7 @@ namespace SftpSchedulerService.BootStrapping
                 // FTP jobs could take forever....we just need to cut our losses if we are shutting down
                 options.WaitForJobsToComplete = false;
                 options.AwaitApplicationStarted = true;
+                options.StartDelay = TimeSpan.FromSeconds(5);
             });
 
             if (appSettings.IsAutomatedTestContext)

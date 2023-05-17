@@ -10,9 +10,19 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Security;
 using SftpSchedulerService.Caching;
 using SftpScheduler.BLL.IO;
+using System.Diagnostics;
 
-var logger = NLog.LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
-var builder = WebApplication.CreateBuilder(args);       // NOTE! Without args, integration tests don't work!?
+var logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
+
+var webApplicationOptions = new WebApplicationOptions()
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory,
+    //WebRootPath = AppContext.BaseDirectory
+    //ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
+};
+var builder = WebApplication.CreateBuilder(webApplicationOptions);
+builder.Host.UseWindowsService();
 
 try
 {
@@ -21,6 +31,7 @@ try
     logger.Info("Context: " + (isAutomatedTestContext ? "Automated tests" : "Application"));
 
     // initialise app settings
+    logger.Debug("Application base directory: {baseDirectory}", AppContext.BaseDirectory);
     AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory, isAutomatedTestContext);
 
     // logging
@@ -64,18 +75,24 @@ try
 
     // set up 
     var app = builder.Build();
-    //app.Environment.ApplicationName = 
-    //var config = builder.Configuration;
     var serviceProvider = app.Services;
 
     app.UseAuthentication();
     app.UseAuthorization();
+
+    if (!appSettings.IsAutomatedTestContext && !Debugger.IsAttached)
+    {
+        app.Urls.Add($"http://0.0.0.0:8743");
+        //app.Urls.Add($"https://0.0.0.0:8744");
+    }
     app.UseStaticFiles();
+
     app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
     if (!appSettings.IsAutomatedTestContext) 
     {
         app.InitialiseDatabase(appSettings);
     }
+
     app.Run();
 }
 catch (Exception ex)

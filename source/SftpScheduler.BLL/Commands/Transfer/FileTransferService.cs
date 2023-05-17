@@ -104,7 +104,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 sessionWrapper.PutFiles(file, remotePath);
 
                 string destFilePath = GetUniqueFileName(folder, fileName, ".uploaded", extension);
-                _fileWrap.Move(file, destFilePath);
+                _fileWrap.Move(file, destFilePath, false);
                 _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", file, destFilePath);
             }
         }

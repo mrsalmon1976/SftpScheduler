@@ -52,5 +52,23 @@
     "inputFiles": [
       "wwwroot/plugins/moment/moment.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/custom.min.css",
+    "inputFiles": [
+      "wwwroot/css/custom.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/adminlte/adminlte.min.js",
+    "inputFiles": [
+      "wwwroot/js/adminlte/adminlte.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/dashboard/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/dashboard/index.js"
+    ]
   }
 ]

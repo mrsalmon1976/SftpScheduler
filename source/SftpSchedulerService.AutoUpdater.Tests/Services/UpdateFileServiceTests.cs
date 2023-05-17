@@ -11,54 +11,54 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Tests.Services
+namespace SftpSchedulerService.AutoUpdater.Tests.Services
 {
     [TestFixture]
     public class UpdateFileServiceTest
     {
 
+        #region Backup Tests
 
-        //[Test]
-        //public void Backup_OnExecute_DeletesAndCopiesRecursively()
-        //{
-        //    // setup
-        //    string backupFolder = GetFakePath("Backup");
-        //    string applicationFolder = GetFakePath("AppFolder");
-        //    _updateLocationService.BackupFolder.Returns(backupFolder);
-        //    _updateLocationService.ApplicationFolder.Returns(applicationFolder);
+        [Test]
+        public void Backup_OnExecute_DeletesAndCopiesRecursively()
+        {
+            // setup
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
+            UpdateLocationInfo updateLocationInfo = new UpdateLocationInfo();
 
-        //    // execute
-        //    _updateFileService.Backup().Wait();
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
+            updateFileService.Backup(updateLocationInfo).Wait();
 
-        //    // assert
-        //    _fileUtility.Received(1).DeleteDirectoryRecursive(backupFolder);
-        //    _fileUtility.Received(1).CopyRecursive(applicationFolder, backupFolder, Arg.Any<IEnumerable<string>>());
-        //}
+            // assert
+            dirUtility.Received(1).Delete(updateLocationInfo.BackupFolder, UpdateFileService.MaxDeleteRetryCount);
+            dirUtility.Received(1).CopyRecursive(updateLocationInfo.ApplicationFolder, updateLocationInfo.BackupFolder, Arg.Any<IEnumerable<string>>());
+        }
 
-        //[Test]
-        //public void Backup_OnExecute_ExcludesBackupAndTempFolder()
-        //{
-        //    // setup
-        //    string backupFolder = GetFakePath("Backup");
-        //    string applicationFolder = GetFakePath("AppFolder");
-        //    string updateTempFolder = GetFakePath("UpdateTemp");
-        //    _updateLocationService.BackupFolder.Returns(backupFolder);
-        //    _updateLocationService.ApplicationFolder.Returns(applicationFolder);
-        //    _updateLocationService.UpdateTempFolder.Returns(updateTempFolder);
+        [Test]
+        public void Backup_OnExecute_ExcludesBackupAndTempFolder()
+        {
+            // setup
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
+            UpdateLocationInfo updateLocationInfo = new UpdateLocationInfo();
 
 
-        //    IEnumerable<string> receivedExclusions = null;
-        //    _fileUtility.CopyRecursive(Arg.Any<string>(), Arg.Any<string>(), Arg.Do<IEnumerable<string>>(x => receivedExclusions = x));
+            IEnumerable<string>? receivedExclusions = null;
+            dirUtility.CopyRecursive(Arg.Any<string>(), Arg.Any<string>(), Arg.Do<IEnumerable<string>>(x => receivedExclusions = x));
 
-        //    // execute
-        //    _updateFileService.Backup().Wait();
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
+            updateFileService.Backup(updateLocationInfo).Wait();
 
-        //    // assert
-        //    _fileUtility.Received(1).CopyRecursive(applicationFolder, backupFolder, Arg.Any<IEnumerable<string>>());
-        //    Assert.IsTrue(receivedExclusions.Contains(backupFolder));
-        //    Assert.IsTrue(receivedExclusions.Contains(updateTempFolder));
+            // assert
+            dirUtility.Received(1).CopyRecursive(updateLocationInfo.ApplicationFolder, updateLocationInfo.BackupFolder, Arg.Any<IEnumerable<string>>());
+            Assert.That(receivedExclusions, Is.Not.Null);
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.BackupFolder));
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.UpdateTempFolder));
 
-        //}
+        }
+
+        #endregion
 
         //[Test]
         //public void CopyNewVersionFiles_OnExecute_CopiesFilesFromTempFolderToInstallationFolder()
@@ -140,7 +140,7 @@ namespace SftpSchedulerService.Common.Tests.Services
             updateFileService.EnsureEmptyUpdateTempFolderExists(updateTempFolder);
 
             // assert
-            dirUtility.DidNotReceive().Delete(Arg.Any<string>(), Arg.Any<bool>());
+            dirUtility.DidNotReceive().Delete(Arg.Any<string>(), Arg.Any<int>());
             dirUtility.Received(1).Create(updateTempFolder);
         }
 
@@ -157,69 +157,80 @@ namespace SftpSchedulerService.Common.Tests.Services
             updateFileService.EnsureEmptyUpdateTempFolderExists(updateTempFolder);
 
             // assert
-            dirUtility.Received(1).Delete(updateTempFolder, true);
+            dirUtility.Received(1).Delete(updateTempFolder, UpdateFileService.MaxDeleteRetryCount);
             dirUtility.Received(1).Create(updateTempFolder);
 
         }
 
         #endregion
 
-        //[Test]
-        //public void ExtractReleasePackage_OnExecute_ExtractsZipFile()
-        //{
-        //    // setup
-        //    string zipFilePath = GetFakePath("Release.zip");
-        //    string extractFolder = GetFakePath("ExtractFolder");
+        #region ExtractReleasePackage Tests
 
-        //    // execute
-        //    _updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
+        [Test]
+        public void ExtractReleasePackage_OnExecute_ExtractsZipFile()
+        {
+            // setup
+            string zipFilePath = GetFakePath("Release.zip");
+            string extractFolder = GetFakePath("ExtractFolder");
+            IFileUtility fileUtility = Substitute.For<IFileUtility>();
 
-        //    // assert
-        //    _fileUtility.Received(1).ExtractZipFile(zipFilePath, extractFolder);
-        //}
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(fileUtility: fileUtility);
+            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
 
-        //[Test]
-        //public void ExtractReleasePackage_OnExecute_RenamesAutoUpdaterFilesWithTempExtension()
-        //{
-        //    // setup
-        //    string zipFilePath = GetFakePath("Release.zip");
-        //    string extractFolder = GetFakePath("ExtractFolder");
-        //    string autoUpdateFolder = Path.Combine(extractFolder, UpdateConstants.AutoUpdaterFolderName);
+            // assert
+            fileUtility.Received(1).ExtractZipFile(zipFilePath, extractFolder);
+        }
 
-        //    string file1 = Path.Combine(autoUpdateFolder, "file1.txt");
-        //    string file2 = Path.Combine(autoUpdateFolder, "file2.txt");
-        //    string[] autoUpdaterFiles = { file1, file2 };
-        //    _fileUtility.DirectoryExists(autoUpdateFolder).Returns(true);
-        //    _fileUtility.GetFiles(autoUpdateFolder, SearchOption.AllDirectories).Returns(autoUpdaterFiles);
+        [Test]
+        public void ExtractReleasePackage_OnExecute_RenamesAutoUpdaterFilesWithTempExtension()
+        {
+            // setup
+            string zipFilePath = GetFakePath("Release.zip");
+            string extractFolder = GetFakePath("ExtractFolder");
+            string autoUpdateFolder = Path.Combine(extractFolder, UpdateConstants.AutoUpdaterFolderName);
+            IFileUtility fileUtility = Substitute.For<IFileUtility>();
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
 
-        //    // execute
-        //    _updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
+            string file1 = Path.Combine(autoUpdateFolder, "file1.txt");
+            string file2 = Path.Combine(autoUpdateFolder, "file2.txt");
+            string[] autoUpdaterFiles = { file1, file2 };
+            dirUtility.Exists(autoUpdateFolder).Returns(true);
+            dirUtility.GetFiles(autoUpdateFolder, SearchOption.AllDirectories).Returns(autoUpdaterFiles);
 
-        //    // assert
-        //    _fileUtility.Received(1).DirectoryExists(autoUpdateFolder);
-        //    _fileUtility.Received(1).GetFiles(autoUpdateFolder, SearchOption.AllDirectories);
-        //    _fileUtility.Received(1).MoveFile(file1, $"{file1}{UpdateConstants.AutoUpdaterNewFileExtension}", true);
-        //    _fileUtility.Received(1).MoveFile(file2, $"{file2}{UpdateConstants.AutoUpdaterNewFileExtension}", true);
-        //}
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(fileUtility, dirUtility);
+            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
 
-        //[Test]
-        //public void ExtractReleasePackage_OnExecute_DeletesZipFile()
-        //{
-        //    // setup
-        //    string zipFilePath = GetFakePath("Release.zip");
-        //    string extractFolder = GetFakePath("ExtractFolder");
+            // assert
+            dirUtility.Received(1).Exists(autoUpdateFolder);
+            dirUtility.Received(1).GetFiles(autoUpdateFolder, SearchOption.AllDirectories);
+            fileUtility.Received(1).Move(file1, $"{file1}{UpdateConstants.AutoUpdaterNewFileExtension}", true);
+            fileUtility.Received(1).Move(file2, $"{file2}{UpdateConstants.AutoUpdaterNewFileExtension}", true);
+        }
 
-        //    // execute
-        //    _updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
+        [Test]
+        public void ExtractReleasePackage_OnExecute_DeletesZipFile()
+        {
+            // setup
+            string zipFilePath = GetFakePath("Release.zip");
+            string extractFolder = GetFakePath("ExtractFolder");
+            IFileUtility fileUtility = Substitute.For<IFileUtility>();
 
-        //    // assert
-        //    _fileUtility.Received(1).DeleteFile(zipFilePath);
-        //}
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(fileUtility);
+            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
 
-        //private string GetFakePath(string fileOrFolderName)
-        //{
-        //    return Path.Combine(Assembly.GetExecutingAssembly().Location, fileOrFolderName);
-        //}
+            // assert
+            fileUtility.Received(1).Delete(zipFilePath);
+        }
+
+        #endregion
+
+        private string GetFakePath(string fileOrFolderName)
+        {
+            return Path.Combine(Assembly.GetExecutingAssembly().Location, fileOrFolderName);
+        }
 
         private IUpdateFileService CreateUpdateFileService(IFileUtility? fileUtility = null, IDirectoryUtility? dirUtility = null)
         {

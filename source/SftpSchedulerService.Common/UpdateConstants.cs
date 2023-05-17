@@ -26,6 +26,8 @@ namespace SftpSchedulerService.Common
 
         public const string StartInfoVerb = "runas";
 
+        public const string ServiceName = "SftpScheduler";
+
 
     }
 }

@@ -1,5 +1,7 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using SftpSchedulerService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,7 @@ namespace SftpSchedulerService.Tests.Controllers
         [Test]
         public async Task Login_Integration_ReturnsOk()
         {
+
             using (var client = HttpClientTestFactory.CreateHttpClient())
             {
 

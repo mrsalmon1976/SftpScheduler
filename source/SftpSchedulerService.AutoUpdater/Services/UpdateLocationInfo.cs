@@ -10,12 +10,11 @@ using System.Threading.Tasks;
 
 namespace SftpSchedulerService.AutoUpdater.Services
 {
-    internal class UpdateLocationInfo
+    public class UpdateLocationInfo
     {
-        private readonly AppSettings _appSettings;
         private string _applicationFolder = String.Empty;
 
-        public UpdateLocationInfo(AppSettings appSettings)
+        public UpdateLocationInfo()
         {
             DirectoryInfo di = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             if (Debugger.IsAttached)
@@ -24,7 +23,6 @@ namespace SftpSchedulerService.AutoUpdater.Services
                 di =  new DirectoryInfo(debugAppFolder);
             }
             this.ApplicationFolder = di.FullName;
-            _appSettings = appSettings;
         }
 
         public string BackupFolder { get; private set; } = String.Empty;
@@ -52,27 +50,19 @@ namespace SftpSchedulerService.AutoUpdater.Services
 
         public string AutoUpdaterFolder { get; private set; } = String.Empty;
 
-        public string LatestVersionUrl
-        {
-            get
-            {
-                return _appSettings.LatestVersionUrl;
-            }
-        }
+        //public void DeleteUpdateTempFolder()
+        //{
+        //    if (Directory.Exists(this.UpdateTempFolder))
+        //    {
+        //        Directory.Delete(this.UpdateTempFolder, true);
+        //    }
+        //}
 
-        public void DeleteUpdateTempFolder()
-        {
-            if (Directory.Exists(this.UpdateTempFolder))
-            {
-                Directory.Delete(this.UpdateTempFolder, true);
-            }
-        }
-
-        public void EnsureEmptyUpdateTempFolderExists()
-        {
-            this.DeleteUpdateTempFolder();
-            Directory.CreateDirectory(this.UpdateTempFolder);
-        }
+        //public void EnsureEmptyUpdateTempFolderExists()
+        //{
+        //    this.DeleteUpdateTempFolder();
+        //    Directory.CreateDirectory(this.UpdateTempFolder);
+        //}
     }
 
     

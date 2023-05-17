@@ -246,10 +246,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             fileTransferService.UploadFiles(sessionWrapper, newFiles, remotePath);
 
 
-            fileWrap.Received(newFiles.Count).Move(Arg.Any<string>(), Arg.Any<string>());
+            fileWrap.Received(newFiles.Count).Move(Arg.Any<string>(), Arg.Any<string>(), false);
             foreach (string file in newFiles)
             {
-                fileWrap.Received(1).Move(file, Arg.Any<string>());
+                fileWrap.Received(1).Move(file, Arg.Any<string>(), false);
             }
         }
 
@@ -281,7 +281,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // assert
             fileWrap.Received(1).Exists(expectedRename1);
-            fileWrap.Received(1).Move(localFileName, expectedRename2);
+            fileWrap.Received(1).Move(localFileName, expectedRename2, false);
         }
 
 
