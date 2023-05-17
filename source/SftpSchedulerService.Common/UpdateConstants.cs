@@ -18,7 +18,7 @@ namespace SftpSchedulerService.Common
 
         public const string AutoUpdaterNewFileExtension = ".new";
 
-        //public const string UpdateEventLogFileName = "UpdateLog.log";
+        public const string LogFolderName = "logs";
 
         public const string AutoUpdaterExeFileName = "SftpSchedulerService.AutoUpdater.exe";
 

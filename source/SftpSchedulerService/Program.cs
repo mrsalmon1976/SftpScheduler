@@ -75,7 +75,6 @@ try
 
     // set up 
     var app = builder.Build();
-    var serviceProvider = app.Services;
 
     app.UseAuthentication();
     app.UseAuthorization();

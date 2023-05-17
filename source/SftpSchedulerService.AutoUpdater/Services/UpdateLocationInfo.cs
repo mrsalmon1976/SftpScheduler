@@ -39,12 +39,15 @@ namespace SftpSchedulerService.AutoUpdater.Services
 
                 this.BackupFolder = Path.Combine(this._applicationFolder, UpdateConstants.BackupFolderName);
                 this.DataFolder = Path.Combine(this._applicationFolder, UpdateConstants.DataFolderName);
+                this.LogFolder = Path.Combine(this._applicationFolder, UpdateConstants.LogFolderName);
                 this.UpdateTempFolder = Path.Combine(this._applicationFolder, UpdateConstants.UpdateTempFolderName);
                 this.AutoUpdaterFolder = Path.Combine(this._applicationFolder, UpdateConstants.AutoUpdaterFolderName);
             }
         }
 
         public string DataFolder { get; private set; } = String.Empty;
+
+        public string LogFolder { get; private set; } = String.Empty;
 
         public string UpdateTempFolder { get; private set; } = String.Empty;
 

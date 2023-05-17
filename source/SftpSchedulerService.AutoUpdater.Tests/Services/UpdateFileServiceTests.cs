@@ -60,70 +60,70 @@ namespace SftpSchedulerService.AutoUpdater.Tests.Services
 
         #endregion
 
-        //[Test]
-        //public void CopyNewVersionFiles_OnExecute_CopiesFilesFromTempFolderToInstallationFolder()
-        //{
-        //    string newVersionFileName = Path.GetRandomFileName() + ".zip";
-        //    string applicationFolder = GetFakePath("AppFolder");
-        //    string updateTempFolder = GetFakePath("UpdateTemp");
-        //    _updateLocationService.ApplicationFolder.Returns(applicationFolder);
-        //    _updateLocationService.UpdateTempFolder.Returns(updateTempFolder);
+        #region CopyNewVersionFiles
 
-        //    // execute
-        //    _updateFileService.CopyNewVersionFiles(newVersionFileName).Wait();
+        [Test]
+        public void CopyNewVersionFiles_OnExecute_CopiesFilesFromTempFolderToInstallationFolder()
+        {
+            // setup
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
+            UpdateLocationInfo updateLocationInfo = new UpdateLocationInfo();
 
-        //    // assert
-        //    _fileUtility.Received(1).CopyRecursive(updateTempFolder, applicationFolder, Arg.Any<string[]>());
-        //}
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
+            updateFileService.CopyNewVersionFiles(updateLocationInfo).Wait();
 
-        //[Test]
-        //public void DeleteCurrentVersionFiles_OnExecute_DeletesContentsOfApplicationFolder()
-        //{
-        //    // setup
-        //    string applicationFolder = GetFakePath("AppFolder");
-        //    _updateLocationService.ApplicationFolder.Returns(applicationFolder);
+            // assert
+            dirUtility.Received(1).CopyRecursive(updateLocationInfo.UpdateTempFolder, updateLocationInfo.ApplicationFolder, Arg.Any<string[]>());
+        }
 
-        //    // execute
-        //    _updateFileService.DeleteCurrentVersionFiles().Wait();
+        #endregion 
 
-        //    // assert
-        //    _fileUtility.Received(1).DeleteContents(applicationFolder, Arg.Any<IEnumerable<string>>());
-        //}
+        #region DeleteCurrentVersionFiles Tests
 
-        //[Test]
-        //public void DeleteCurrentVersionFiles_OnExecute_ExcludesTemporaryAndDataFolders()
-        //{
-        //    // setup
-        //    string backupFolder = GetFakePath("Backup");
-        //    string applicationFolder = GetFakePath("AppFolder");
-        //    string updateTempFolder = GetFakePath("UpdateTemp");
-        //    string dataFolder = GetFakePath("DataVault");
-        //    string updateEventLogFilePath = GetFakePath("Update.log");
-        //    string autoUpdaterFolder = GetFakePath("AutoUpdater");
-        //    _updateLocationService.BackupFolder.Returns(backupFolder);
-        //    _updateLocationService.ApplicationFolder.Returns(applicationFolder);
-        //    _updateLocationService.UpdateTempFolder.Returns(updateTempFolder);
-        //    _updateLocationService.DataFolder.Returns(dataFolder);
-        //    _updateLocationService.UpdateEventLogFilePath.Returns(updateEventLogFilePath);
-        //    _updateLocationService.AutoUpdaterFolder.Returns(autoUpdaterFolder);
+        [Test]
+        public void DeleteCurrentVersionFiles_OnExecute_DeletesContentsOfApplicationFolder()
+        {
+            // setup
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
+            UpdateLocationInfo updateLocationInfo = new UpdateLocationInfo();
+
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
+            updateFileService.DeleteCurrentVersionFiles(updateLocationInfo).Wait();
+
+            // assert
+            dirUtility.Received(1).DeleteContents(updateLocationInfo.ApplicationFolder, Arg.Any<IEnumerable<string>>());
+        }
+
+        [Test]
+        public void DeleteCurrentVersionFiles_OnExecute_ExcludesTemporaryAndDataFolders()
+        {
+            // setup
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
+            UpdateLocationInfo updateLocationInfo = new UpdateLocationInfo();
 
 
-        //    IEnumerable<string> receivedExclusions = null;
-        //    _fileUtility.DeleteContents(Arg.Any<string>(), Arg.Do<IEnumerable<string>>(x => receivedExclusions = x));
+            IEnumerable<string>? receivedExclusions = null;
+            dirUtility.DeleteContents(Arg.Any<string>(), Arg.Do<IEnumerable<string>>(x => receivedExclusions = x));
 
-        //    // execute
-        //    _updateFileService.DeleteCurrentVersionFiles().Wait();
+            // execute
+            IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
+            updateFileService.DeleteCurrentVersionFiles(updateLocationInfo).Wait();
 
-        //    // assert
-        //    _fileUtility.Received(1).DeleteContents(applicationFolder, Arg.Any<IEnumerable<string>>());
-        //    Assert.IsTrue(receivedExclusions.Contains(backupFolder));
-        //    Assert.IsTrue(receivedExclusions.Contains(updateTempFolder));
-        //    Assert.IsTrue(receivedExclusions.Contains(dataFolder));
-        //    Assert.IsTrue(receivedExclusions.Contains(updateEventLogFilePath));
-        //    Assert.IsTrue(receivedExclusions.Contains(autoUpdaterFolder));
-        //    Assert.AreEqual(5, receivedExclusions.Count());
+            // assert
+            dirUtility.Received(1).DeleteContents(updateLocationInfo.ApplicationFolder, Arg.Any<IEnumerable<string>>());
+            Assert.That(receivedExclusions, Is.Not.Null);
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.BackupFolder));
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.UpdateTempFolder));
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.DataFolder));
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.LogFolder));
+            Assert.IsTrue(receivedExclusions!.Contains(updateLocationInfo.AutoUpdaterFolder));
+            Assert.AreEqual(5, receivedExclusions!.Count());
 
-        //}
+        }
+
+        #endregion
 
         #region EnsureEmptyUpdateTempFolderExists Tests
 

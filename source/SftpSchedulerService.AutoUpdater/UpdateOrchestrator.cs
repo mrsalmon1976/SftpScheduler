@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NLog;
 using SftpSchedulerService.AutoUpdater.Config;
 using SftpSchedulerService.AutoUpdater.Services;
 using SftpSchedulerService.Common;
@@ -50,54 +51,50 @@ namespace SftpSchedulerService.AutoUpdater
 
             if (versionComparisonResult.IsNewVersionAvailable)
             {
-                _logger.LogInformation("New version available: {0}", latestVersionInfo.VersionNumber);
+                _logger.LogInformation("New version available: {versionNumber}", latestVersionInfo.VersionNumber);
                 updated = true;
 
-                _logger.LogInformation("Creating temporary update folder {0}", _updateLocationInfo.UpdateTempFolder);
-                //_updateFileService.EnsureEmptyUpdateTempFolderExists(_updateLocationInfo.UpdateTempFolder);
+                _logger.LogInformation("Creating temporary update folder {updateTempFolder}", _updateLocationInfo.UpdateTempFolder);
+                _updateFileService.EnsureEmptyUpdateTempFolderExists(_updateLocationInfo.UpdateTempFolder);
 
-                _logger.LogInformation("Downloading file from {0}", latestVersionInfo.DownloadUrl);
+                _logger.LogInformation("Downloading file from {downloadUrl}", latestVersionInfo.DownloadUrl);
                 string downloadPath = Path.Combine(_updateLocationInfo.UpdateTempFolder, latestVersionInfo.FileName!);
-                //await _updateDownloadService.DownloadFile(latestVersionInfo.DownloadUrl!, downloadPath);
+                await _updateDownloadService.DownloadFile(latestVersionInfo.DownloadUrl!, downloadPath);
 
-                _logger.LogInformation("Extracting release contents to {0}", _updateLocationInfo.UpdateTempFolder);
-                //await _updateFileService.ExtractReleasePackage(downloadPath, _updateLocationInfo.UpdateTempFolder);
+                _logger.LogInformation("Extracting release contents to {updateTempFolder}", _updateLocationInfo.UpdateTempFolder);
+                await _updateFileService.ExtractReleasePackage(downloadPath, _updateLocationInfo.UpdateTempFolder);
 
                 if (_installationService.IsServiceInstalled())
                 {
-                    _logger.LogInformation("Stopping {0} service", UpdateConstants.ServiceName);
+                    _logger.LogInformation("Stopping {serviceName} service", UpdateConstants.ServiceName);
                     _installationService.StopService();
 
-                    _logger.LogInformation("Uninstalling {0} service", UpdateConstants.ServiceName);
+                    _logger.LogInformation("Uninstalling {serviceName} service", UpdateConstants.ServiceName);
                     _installationService.UninstallService();
                 }
 
                 _logger.LogInformation("Backing up current service files.");
                 await _updateFileService.Backup(_updateLocationInfo);
 
-                //_updateEventLogger.Log("Deleting current service files...");
-                //await _updateFileService.DeleteCurrentVersionFiles();
-                //_updateEventLogger.LogLine("done.");
+                _logger.LogInformation("Deleting current service files.");
+                await _updateFileService.DeleteCurrentVersionFiles(_updateLocationInfo);
 
-                //_updateEventLogger.Log("Copying new service files...");
-                //await _updateFileService.CopyNewVersionFiles(latestVersionInfo.FileName);
-                //_updateEventLogger.LogLine("done.");
+                _logger.LogInformation("Copying new service files...");
+                await _updateFileService.CopyNewVersionFiles(_updateLocationInfo);
 
-                _logger.LogInformation("Installing {0} service", UpdateConstants.ServiceName);
+                _logger.LogInformation("Installing {serviceName} service", UpdateConstants.ServiceName);
                 _installationService.InstallService(_updateLocationInfo.ApplicationFolder);
 
-                _logger.LogInformation("Starting {0} service", UpdateConstants.ServiceName);
+                _logger.LogInformation("Starting {serviceName} service", UpdateConstants.ServiceName);
                 _installationService.StartService();
 
-                //// cleanup!
-                //_updateEventLogger.Log($"Cleaning up temp update folder {_updateLocationService.UpdateTempFolder}...");
-                //_updateLocationService.DeleteUpdateTempFolder();
-                //_updateEventLogger.LogLine("done.");
+                _logger.LogInformation("Cleaning up temp update folder {updateTempFolder}.", _updateLocationInfo.UpdateTempFolder);
+                _updateFileService.DeleteUpdateTempFolder(_updateLocationInfo.UpdateTempFolder);
 
             }
             else 
             {
-                _logger.LogInformation("Latest version already installed ({0})", latestVersionInfo.VersionNumber);
+                _logger.LogInformation("Latest version already installed ({versionNumber})", latestVersionInfo.VersionNumber);
             }
 
             return updated;

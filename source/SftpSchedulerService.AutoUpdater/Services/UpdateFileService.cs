@@ -14,9 +14,9 @@ namespace SftpSchedulerService.AutoUpdater.Services
     {
         Task Backup(UpdateLocationInfo updateLocationInfo);
 
-        //Task CopyNewVersionFiles(string newVersionZipFileName);
+        Task CopyNewVersionFiles(UpdateLocationInfo updateLocationInfo);
 
-        //Task DeleteCurrentVersionFiles();
+        Task DeleteCurrentVersionFiles(UpdateLocationInfo updateLocationInfo);
 
         void DeleteUpdateTempFolder(string updateTempFolder);
 
@@ -50,27 +50,28 @@ namespace SftpSchedulerService.AutoUpdater.Services
             });
         }
 
-        //public async Task CopyNewVersionFiles(string newVersionZipFileName)
-        //{
-        //    await Task.Run(() => {
-        //        _fileUtility.CopyRecursive(_updateLocationService.UpdateTempFolder, _updateLocationService.ApplicationFolder);
-        //    });
-        //}
+        public async Task CopyNewVersionFiles(UpdateLocationInfo updateLocationInfo)
+        {
+            await Task.Run(() =>
+            {
+                _dirUtility.CopyRecursive(updateLocationInfo.UpdateTempFolder, updateLocationInfo.ApplicationFolder);
+            });
+        }
 
-        //public async Task DeleteCurrentVersionFiles()
-        //{
-        //    await Task.Run(() => {
-
-        //        string[] exclusions = {
-        //            _updateLocationService.BackupFolder
-        //            , _updateLocationService.UpdateTempFolder
-        //            , _updateLocationService.DataFolder
-        //            , _updateLocationService.UpdateEventLogFilePath
-        //            , _updateLocationService.AutoUpdaterFolder
-        //        };
-        //        _fileUtility.DeleteContents(_updateLocationService.ApplicationFolder, exclusions);
-        //    });
-        //}
+        public async Task DeleteCurrentVersionFiles(UpdateLocationInfo updateLocationInfo)
+        {
+            await Task.Run(() =>
+            {
+                string[] exclusions = {
+                    updateLocationInfo.BackupFolder
+                    , updateLocationInfo.UpdateTempFolder
+                    , updateLocationInfo.DataFolder
+                    , updateLocationInfo.LogFolder
+                    , updateLocationInfo.AutoUpdaterFolder
+                };
+                _dirUtility.DeleteContents(updateLocationInfo.ApplicationFolder, exclusions);
+            });
+        }
 
         public void DeleteUpdateTempFolder(string updateTempFolder)
         {
