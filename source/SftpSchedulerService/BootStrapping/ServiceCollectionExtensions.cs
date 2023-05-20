@@ -21,6 +21,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
 using SftpSchedulerService.ViewOrchestrators.Api.Login;
+using SftpSchedulerService.ViewOrchestrators.Api.Update;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
 using System.Text;
 
@@ -142,6 +143,8 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IJobNotificationFetchAllOrchestrator, JobNotificationFetchAllOrchestrator>();
 
             services.AddScoped<ILoginPostOrchestrator, LoginPostOrchestrator>();
+
+            services.AddScoped<IUpdateCheckOrchestrator, UpdateCheckOrchestrator>();
 
             services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();
         }

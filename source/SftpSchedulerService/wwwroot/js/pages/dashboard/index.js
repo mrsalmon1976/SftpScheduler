@@ -1,10 +1,21 @@
 ﻿createApp({
     data() {
         return {
-            isLoading: true
+            isLoading: true,
+            isNewVersionAvailable: false,
+            latestVersion: '0.0'
         }
     },
     methods: {
+        async checkVersion() {
+            let result = await axios.get('/api/update/check')
+                .catch(err => {
+                    console.log(err.message);
+                });
+
+            this.isNewVersionAvailable = result.data.isNewVersionAvailable;
+            this.latestVersion = result.data.latestReleaseVersionNumber;
+        },
         async loadStats() {
             this.isLoading = true;
 
@@ -22,5 +33,6 @@
         UiHelpers.setPageHeader('Dashboard')
         this.isLoading = false;
         this.loadStats();
+        this.checkVersion();
     }
 }).mount('#app-dashboard')

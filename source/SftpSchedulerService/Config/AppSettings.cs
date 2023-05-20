@@ -6,17 +6,26 @@ namespace SftpSchedulerService.Config
     public class AppSettings
     {
         private readonly IConfiguration _configuration;
-        private readonly string _baseDirectory;
 
         private string? _dbPath;
         private string? _dbPathQuartz;
+        
+        public AppSettings()
+        {
+            // this constructor for testing only
+            this._configuration = null!;
+            this.BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            this.IsAutomatedTestContext = true;
+        }
 
         public AppSettings(IConfiguration configurationManager, string baseDirectory, bool isAutomatedTestContext)
         {
             this._configuration = configurationManager;
-            this._baseDirectory = baseDirectory;
+            this.BaseDirectory = baseDirectory;
             this.IsAutomatedTestContext = isAutomatedTestContext;
         }
+
+        public virtual string BaseDirectory { get; private set; }
 
         public virtual string DbPath
         {
@@ -51,7 +60,7 @@ namespace SftpSchedulerService.Config
             get
             {
                 string connString = _configuration.GetConnectionString("Default");
-                return connString.Replace("{AppDir}", _baseDirectory);
+                return connString.Replace("{AppDir}", BaseDirectory);
             }
         }
 
@@ -60,7 +69,7 @@ namespace SftpSchedulerService.Config
             get
             {
                 string connString = _configuration.GetConnectionString("Quartz");
-                return connString.Replace("{AppDir}", _baseDirectory);
+                return connString.Replace("{AppDir}", BaseDirectory);
             }
         }
 
@@ -90,6 +99,14 @@ namespace SftpSchedulerService.Config
             }
         }
 
+        public virtual string LatestVersionUrl
+        {
+            get
+            {
+                return _configuration["AppSettings:LatestVersionUrl"];
+            }
+        }
+
         public virtual int MaxConcurrentJobs
         {
             get
@@ -103,6 +120,14 @@ namespace SftpSchedulerService.Config
             get
             {
                 return _configuration["AppSettings:SecretKey"];
+            }
+        }
+
+        public virtual int UpdateCheckIntervalInMinutes
+        {
+            get
+            {
+                return Convert.ToInt32(_configuration["AppSettings:UpdateCheckIntervalInMinutes"]);
             }
         }
 

@@ -11,6 +11,8 @@ using SftpScheduler.BLL.Security;
 using SftpSchedulerService.Caching;
 using SftpScheduler.BLL.IO;
 using System.Diagnostics;
+using SftpSchedulerService.Common.Services;
+using SftpSchedulerService.Common.Web;
 
 var logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 
@@ -59,7 +61,11 @@ try
     builder.Services.AddScoped<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();
     builder.Services.AddScoped<ICacheProvider,  CacheProvider>();
+    builder.Services.AddSingleton<SftpSchedulerService.Common.Web.IHttpClientFactory, SftpSchedulerService.Common.Web.HttpClientFactory>();
 
+    builder.Services.AddScoped<IApplicationVersionService, ApplicationVersionService>();
+    builder.Services.AddScoped<IGitHubVersionService, GitHubVersionService>();
+    builder.Services.AddScoped<IVersionComparisonService, VersionComparisonService>();
 
     builder.Services.AddTransient<IDbMigrator, SQLiteDbMigrator>();
     builder.Services.AddTransient<IdentityInitialiser>();
