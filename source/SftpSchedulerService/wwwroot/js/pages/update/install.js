@@ -25,10 +25,18 @@
                 
             }, 5000);
 
+        },
+        initiateInstall() {
+            axios.post('/api/update/install')
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                });
         }
     },
     mounted: function () {
         UiHelpers.setPageHeader('Updating SftpScheduler')
+        this.initiateInstall();
         this.checkVersion();
+
     }
 }).mount('#app-update')

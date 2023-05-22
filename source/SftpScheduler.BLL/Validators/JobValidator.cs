@@ -1,7 +1,7 @@
 ﻿using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.IO;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.Common.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

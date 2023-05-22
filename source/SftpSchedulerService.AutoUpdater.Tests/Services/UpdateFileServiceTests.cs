@@ -1,8 +1,8 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using SftpSchedulerService.AutoUpdater.Services;
-using SftpSchedulerService.Common;
+using SftpScheduler.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,7 +93,7 @@ namespace SftpSchedulerService.AutoUpdater.Tests.Services
             updateFileService.DeleteCurrentVersionFiles(updateLocationInfo).Wait();
 
             // assert
-            dirUtility.Received(1).DeleteContents(updateLocationInfo.ApplicationFolder, Arg.Any<IEnumerable<string>>());
+            dirUtility.Received(1).DeleteContents(updateLocationInfo.ApplicationFolder, Arg.Any<IEnumerable<string>>(), UpdateFileService.MaxDeleteRetryCount);
         }
 
         [Test]

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpSchedulerService.Caching;
-using SftpSchedulerService.Common.Models;
-using SftpSchedulerService.Common.Services;
+using SftpScheduler.Common.Models;
+using SftpScheduler.Common.Services;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Models.Update;
 using SftpSchedulerService.ViewOrchestrators.Api.Update;

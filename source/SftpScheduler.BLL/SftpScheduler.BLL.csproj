@@ -31,5 +31,9 @@
 		<InternalsVisibleTo Include="SftpSchedulerService.Tests" />
 	</ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SftpScheduler.Common\SftpScheduler.Common.csproj" />
+    </ItemGroup>
+
 
 </Project>

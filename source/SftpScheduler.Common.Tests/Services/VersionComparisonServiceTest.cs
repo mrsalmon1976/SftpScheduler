@@ -1,7 +1,7 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SftpSchedulerService.Common.Models;
-using SftpSchedulerService.Common.Services;
+using SftpScheduler.Common.Models;
+using SftpScheduler.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Tests.Services
+namespace SftpScheduler.Common.Tests.Services
 {
     [TestFixture]
     public class VersionComparisonServiceTest

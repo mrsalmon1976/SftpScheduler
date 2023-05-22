@@ -1,8 +1,8 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SftpSchedulerService.Common.Services;
-using SftpSchedulerService.Common.Tests.MockUtils.Web;
-using SftpSchedulerService.Common.Web;
+using SftpScheduler.Common.Services;
+using SftpScheduler.Common.Tests.MockUtils.Web;
+using SftpScheduler.Common.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Tests.Services
+namespace SftpScheduler.Common.Tests.Services
 {
     [TestFixture]
     public class GitHubVersionServiceTests
@@ -46,7 +46,7 @@ namespace SftpSchedulerService.Common.Tests.Services
         {
             IGitHubVersionService gitHubVersionService = new GitHubVersionService(new HttpClientFactory());
             var result = gitHubVersionService.GetVersionInfo(GitHubLatestReleaseUrl).GetAwaiter().GetResult();
-            string versionNumber = result.VersionNumber;
+            string versionNumber = result.VersionNumber!;
             System.Version version = System.Version.Parse(versionNumber);
             Assert.GreaterOrEqual(version.Major, 0);
         }
@@ -56,7 +56,7 @@ namespace SftpSchedulerService.Common.Tests.Services
             // Determine path
             var assembly = Assembly.GetExecutingAssembly();
 
-            using (Stream stream = assembly.GetManifestResourceStream("SftpSchedulerService.Common.Tests.Resources.GitHubLatestVersionSample.json"))
+            using (Stream stream = assembly.GetManifestResourceStream("SftpScheduler.Common.Tests.Resources.GitHubLatestVersionSample.json")!)
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {

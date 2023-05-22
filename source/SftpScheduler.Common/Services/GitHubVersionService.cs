@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
-using SftpSchedulerService.Common.Models;
-using SftpSchedulerService.Common.Web;
+using SftpScheduler.Common.Models;
+using SftpScheduler.Common.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Services
+namespace SftpScheduler.Common.Services
 {
     public interface IGitHubVersionService
     {

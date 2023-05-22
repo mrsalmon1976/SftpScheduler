@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.BLL.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.AutoUpdater", "SftpSchedulerService.AutoUpdater\SftpSchedulerService.AutoUpdater.csproj", "{35156C26-DD6A-455D-8323-24474BDFF6F9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.Common", "SftpSchedulerService.Common\SftpSchedulerService.Common.csproj", "{681B680C-0EFD-4864-8F6D-BC7D99032E94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common", "SftpScheduler.Common\SftpScheduler.Common.csproj", "{681B680C-0EFD-4864-8F6D-BC7D99032E94}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.Common.Tests", "SftpSchedulerService.Common.Tests\SftpSchedulerService.Common.Tests.csproj", "{25DC1F5F-B55A-40D6-AF63-696B649D87C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common.Tests", "SftpScheduler.Common.Tests\SftpScheduler.Common.Tests.csproj", "{25DC1F5F-B55A-40D6-AF63-696B649D87C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.AutoUpdater.Tests", "SftpSchedulerService.AutoUpdater.Tests\SftpSchedulerService.AutoUpdater.Tests.csproj", "{20604B22-08C8-43B9-B531-7E7A834B8E1B}"
 EndProject

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Models
+namespace SftpScheduler.Common.Models
 {
     public class GitHubReleaseResponse
     {

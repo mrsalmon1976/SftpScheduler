@@ -1,5 +1,5 @@
 ﻿using SftpSchedulerService.AutoUpdater.Config;
-using SftpSchedulerService.Common;
+using SftpScheduler.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

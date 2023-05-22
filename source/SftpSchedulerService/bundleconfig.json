@@ -70,5 +70,11 @@
     "inputFiles": [
       "wwwroot/js/pages/dashboard/index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/update/install.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/update/install.js"
+    ]
   }
 ]

@@ -2,12 +2,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using SftpSchedulerService.AutoUpdater.Config;
 using SftpSchedulerService.AutoUpdater.Services;
-using SftpSchedulerService.Common.Diagnostics;
-using SftpSchedulerService.Common.Services;
-using SftpSchedulerService.Common.Web;
+using SftpScheduler.Common.Diagnostics;
+using SftpScheduler.Common.Services;
+using SftpScheduler.Common.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace SftpSchedulerService.AutoUpdater
                         .AddSingleton<IUpdateDownloadService, UpdateDownloadService>()
                         .AddSingleton<IUpdateFileService, UpdateFileService>()
                         .AddSingleton<IGitHubVersionService, GitHubVersionService>()
-                        .AddSingleton<Common.Web.IHttpClientFactory, HttpClientFactory>()
+                        .AddSingleton<SftpScheduler.Common.Web.IHttpClientFactory, HttpClientFactory>()
                         .AddSingleton<IProcessWrapperFactory, ProcessWrapperFactory>()
                         .AddSingleton<UpdateOrchestrator, UpdateOrchestrator>()
                         );

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Tests.MockUtils.Web
+namespace SftpScheduler.Common.Tests.MockUtils.Web
 {
     public class MockHttpMessageHandler : HttpMessageHandler
     {

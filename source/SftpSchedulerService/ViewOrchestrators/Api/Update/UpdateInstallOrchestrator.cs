@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SftpSchedulerService.Common.Diagnostics;
-using SftpSchedulerService.Common;
+using SftpScheduler.Common.Diagnostics;
+using SftpScheduler.Common;
 using SftpSchedulerService.Config;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Update
@@ -30,6 +30,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Update
 
             using (IProcessWrapper process = _processWrapperFactory.CreateProcess())
             {
+                process.StartInfo.UseShellExecute = true;
                 process.StartInfo.WorkingDirectory = autoUpdaterFolder;
                 process.StartInfo.FileName = UpdateConstants.AutoUpdaterExeFileName;
                 process.StartInfo.Verb = UpdateConstants.StartInfoVerb;

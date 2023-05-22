@@ -1,5 +1,5 @@
-﻿using SftpScheduler.BLL.IO;
-using SftpSchedulerService.Common;
+﻿using SftpScheduler.Common.IO;
+using SftpScheduler.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,7 +69,7 @@ namespace SftpSchedulerService.AutoUpdater.Services
                     , updateLocationInfo.LogFolder
                     , updateLocationInfo.AutoUpdaterFolder
                 };
-                _dirUtility.DeleteContents(updateLocationInfo.ApplicationFolder, exclusions);
+                _dirUtility.DeleteContents(updateLocationInfo.ApplicationFolder, exclusions, MaxDeleteRetryCount);
             });
         }
 

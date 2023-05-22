@@ -145,6 +145,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<ILoginPostOrchestrator, LoginPostOrchestrator>();
 
             services.AddScoped<IUpdateCheckOrchestrator, UpdateCheckOrchestrator>();
+            services.AddScoped<IUpdateInstallOrchestrator, UpdateInstallOrchestrator>();
 
             services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();
         }

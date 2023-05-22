@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SftpSchedulerService.Common;
+using SftpScheduler.Common;
 
 namespace SftpSchedulerService.AutoUpdater.Services
 {
@@ -16,9 +16,9 @@ namespace SftpSchedulerService.AutoUpdater.Services
 
     public class UpdateDownloadService : IUpdateDownloadService
     {
-        private readonly Common.Web.IHttpClientFactory _httpClientFactory;
+        private readonly SftpScheduler.Common.Web.IHttpClientFactory _httpClientFactory;
 
-        public UpdateDownloadService(Common.Web.IHttpClientFactory httpClientFactory)
+        public UpdateDownloadService(SftpScheduler.Common.Web.IHttpClientFactory httpClientFactory)
         {
             this._httpClientFactory = httpClientFactory;
         }

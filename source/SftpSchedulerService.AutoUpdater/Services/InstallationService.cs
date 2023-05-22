@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CA1416
 using Microsoft.Extensions.Logging;
-using SftpSchedulerService.Common;
-using SftpSchedulerService.Common.Diagnostics;
+using SftpScheduler.Common;
+using SftpScheduler.Common.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.ServiceProcess;
@@ -42,7 +42,7 @@ namespace SftpSchedulerService.AutoUpdater.Services
         {
             string servicePath = Path.Combine(applicationFolder, UpdateConstants.ApplicationExeFileName);
             servicePath = String.Format("\"{0}\"", servicePath);
-            _logger.LogDebug("Service path for installation: {0}", servicePath);
+            _logger.LogDebug("Service path for installation: {ServicePath}", servicePath);
             this.RunProcess(applicationFolder
                 , "create", UpdateConstants.ServiceName
                 , "binpath=", servicePath

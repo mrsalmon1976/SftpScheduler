@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Diagnostics
+namespace SftpScheduler.Common.Diagnostics
 {
     public interface IProcessWrapperFactory
     {

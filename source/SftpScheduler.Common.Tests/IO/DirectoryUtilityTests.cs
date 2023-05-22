@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.Tests.IO
+namespace SftpScheduler.Common.Tests.IO
 {
     [TestFixture]
     public class DirectoryUtilityTests

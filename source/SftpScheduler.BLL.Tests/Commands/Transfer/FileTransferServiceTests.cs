@@ -2,7 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;

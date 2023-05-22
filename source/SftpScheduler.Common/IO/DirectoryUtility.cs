@@ -1,4 +1,4 @@
-﻿namespace SftpScheduler.BLL.IO
+﻿namespace SftpScheduler.Common.IO
 {
     // should be using SystemWrapper library but that targets framework,  not .NET 6
     public interface IDirectoryUtility

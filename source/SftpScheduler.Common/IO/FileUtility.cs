@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpScheduler.BLL.IO
+namespace SftpScheduler.Common.IO
 {
     public interface IFileUtility
     {

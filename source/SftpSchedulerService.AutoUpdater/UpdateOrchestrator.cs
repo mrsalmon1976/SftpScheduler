@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using NLog;
 using SftpSchedulerService.AutoUpdater.Config;
 using SftpSchedulerService.AutoUpdater.Services;
-using SftpSchedulerService.Common;
-using SftpSchedulerService.Common.Models;
-using SftpSchedulerService.Common.Services;
+using SftpScheduler.Common;
+using SftpScheduler.Common.Models;
+using SftpScheduler.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

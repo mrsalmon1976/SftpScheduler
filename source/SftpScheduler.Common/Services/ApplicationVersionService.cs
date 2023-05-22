@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Services
+namespace SftpScheduler.Common.Services
 {
     public interface IApplicationVersionService
     {

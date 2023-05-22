@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using SftpSchedulerService.AutoUpdater.Services;
-using SftpSchedulerService.Common.Web;
+using SftpScheduler.Common.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,11 +1,11 @@
-﻿using SftpSchedulerService.Common.Models;
+﻿using SftpScheduler.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Common.Services
+namespace SftpScheduler.Common.Services
 {
     public interface IVersionComparisonService
     {

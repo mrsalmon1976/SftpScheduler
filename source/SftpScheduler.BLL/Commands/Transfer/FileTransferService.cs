@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

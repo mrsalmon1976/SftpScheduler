@@ -1,7 +1,7 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Validators;

@@ -4,7 +4,7 @@ using Quartz;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
-using SftpScheduler.BLL.IO;
+using SftpScheduler.Common.IO;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;

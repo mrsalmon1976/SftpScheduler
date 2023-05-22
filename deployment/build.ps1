@@ -1,6 +1,36 @@
 $ErrorActionPreference = "Stop"
 Clear-Host
 
+function RemoveRedundantFiles
+{
+	param([string]$buildPath)
+
+	Remove-Item -Path "$buildPath\appsettings.Development.json" -Force
+	Remove-Item -Path "$buildPath\da" -Force -Recurse 
+	Remove-Item -Path "$buildPath\de" -Force -Recurse 
+	Remove-Item -Path "$buildPath\es" -Force -Recurse 
+	Remove-Item -Path "$buildPath\es-MX" -Force -Recurse 
+	Remove-Item -Path "$buildPath\fa" -Force -Recurse 
+	Remove-Item -Path "$buildPath\fi" -Force -Recurse 
+	Remove-Item -Path "$buildPath\fr" -Force -Recurse 
+	Remove-Item -Path "$buildPath\he-IL" -Force -Recurse 
+	Remove-Item -Path "$buildPath\it" -Force -Recurse 
+	Remove-Item -Path "$buildPath\ja" -Force -Recurse 
+	Remove-Item -Path "$buildPath\ko" -Force -Recurse 
+	Remove-Item -Path "$buildPath\nb" -Force -Recurse 
+	Remove-Item -Path "$buildPath\nl" -Force -Recurse 
+	Remove-Item -Path "$buildPath\pl" -Force -Recurse 
+	Remove-Item -Path "$buildPath\pt" -Force -Recurse 
+	Remove-Item -Path "$buildPath\ro" -Force -Recurse 
+	Remove-Item -Path "$buildPath\ru" -Force -Recurse 
+	Remove-Item -Path "$buildPath\sl" -Force -Recurse 
+	Remove-Item -Path "$buildPath\sv" -Force -Recurse 
+	Remove-Item -Path "$buildPath\tr" -Force -Recurse 
+	Remove-Item -Path "$buildPath\uk" -Force -Recurse 
+	Remove-Item -Path "$buildPath\zh-Hans" -Force -Recurse 
+	Remove-Item -Path "$buildPath\zh-Hant" -Force -Recurse 
+}
+
 function UpdateProjectVersion
 {
 	param([string]$filePath, [string]$version)
@@ -56,45 +86,24 @@ $sourcePath = $rootPath.Replace("deployment", "") + "source"
 $buildPath = "$rootPath\build"
 $version = Read-Host -Prompt "What version are we building? [e.g. 2.3.0]"
 
-# ensure the build folder exists
-New-Item -ItemType Directory -Force -Path $buildPath
-
+# ensure the build folder exists and is empty
 Write-Host "Removing previous build files"
+Remove-Item -Force -Recurse -Path $buildPath 
+New-Item -ItemType Directory -Force -Path $buildPath
 
 Write-Host "Updating project files for version $version"
 UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerService\SftpSchedulerService.csproj" -version $version
+UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerService.AutoUpdater\SftpSchedulerService.AutoUpdater.csproj" -version $version
 
 Write-Host "Building version $version"
 & dotnet publish $sourcePath\SftpSchedulerService\SftpSchedulerService.csproj /p:EnvironmentName=Production /p:Configuration=Release --output $buildPath
+& dotnet publish $sourcePath\SftpSchedulerService.AutoUpdater\SftpSchedulerService.AutoUpdater.csproj /p:EnvironmentName=Production /p:Configuration=Release --output "$buildPath\AutoUpdater"
 
 Write-Host "Removing redundant files"
-Remove-Item -Path "$buildPath\appsettings.Development.json" -Force
-Remove-Item -Path "$buildPath\da" -Force -Recurse 
-Remove-Item -Path "$buildPath\de" -Force -Recurse 
-Remove-Item -Path "$buildPath\es" -Force -Recurse 
-Remove-Item -Path "$buildPath\es-MX" -Force -Recurse 
-Remove-Item -Path "$buildPath\fa" -Force -Recurse 
-Remove-Item -Path "$buildPath\fi" -Force -Recurse 
-Remove-Item -Path "$buildPath\fr" -Force -Recurse 
-Remove-Item -Path "$buildPath\he-IL" -Force -Recurse 
-Remove-Item -Path "$buildPath\it" -Force -Recurse 
-Remove-Item -Path "$buildPath\ja" -Force -Recurse 
-Remove-Item -Path "$buildPath\ko" -Force -Recurse 
-Remove-Item -Path "$buildPath\nb" -Force -Recurse 
-Remove-Item -Path "$buildPath\nl" -Force -Recurse 
-Remove-Item -Path "$buildPath\pl" -Force -Recurse 
-Remove-Item -Path "$buildPath\pt" -Force -Recurse 
-Remove-Item -Path "$buildPath\ro" -Force -Recurse 
-Remove-Item -Path "$buildPath\ru" -Force -Recurse 
-Remove-Item -Path "$buildPath\sl" -Force -Recurse 
-Remove-Item -Path "$buildPath\sv" -Force -Recurse 
-Remove-Item -Path "$buildPath\tr" -Force -Recurse 
-Remove-Item -Path "$buildPath\uk" -Force -Recurse 
-Remove-Item -Path "$buildPath\zh-Hans" -Force -Recurse 
-Remove-Item -Path "$buildPath\zh-Hant" -Force -Recurse 
+RemoveRedundantFiles -buildPath $buildPath
 
 # package it up 
-$zipPath = "$root\SftpScheduler_v$version.zip"
+$zipPath = "$rootPath\SftpScheduler_v$version.zip"
 Write-Host "Packaging SftpScheduler version $version into $zipPath"
 Remove-Item -Path $zipPath -Force -ErrorAction Ignore
 ZipFile -sourcefile "$buildPath\*.*" -zipfile $zipPath 
