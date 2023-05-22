@@ -12,7 +12,7 @@ using SftpSchedulerService.Caching;
 using SftpScheduler.BLL.IO;
 using System.Diagnostics;
 using SftpSchedulerService.Common.Services;
-using SftpSchedulerService.Common.Web;
+using SftpSchedulerService.Common.Diagnostics;
 
 var logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 
@@ -62,6 +62,7 @@ try
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();
     builder.Services.AddScoped<ICacheProvider,  CacheProvider>();
     builder.Services.AddSingleton<SftpSchedulerService.Common.Web.IHttpClientFactory, SftpSchedulerService.Common.Web.HttpClientFactory>();
+    builder.Services.AddSingleton<IProcessWrapperFactory, ProcessWrapperFactory>();
 
     builder.Services.AddScoped<IApplicationVersionService, ApplicationVersionService>();
     builder.Services.AddScoped<IGitHubVersionService, GitHubVersionService>();

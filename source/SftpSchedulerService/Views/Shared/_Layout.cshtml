@@ -10,13 +10,15 @@
             return;
         }
         string activeClass = "";
-        if (httpContext.Request.Path.ToString().StartsWith(url)) {
+        string requestPath = httpContext.Request.Path.ToString();
+        if (requestPath.StartsWith(url) || (requestPath == "/" && url == "/dashboard"))
+        {
             activeClass = "active";
         }
         <li id="@elementId" class="nav-item">
             <a href="@url" class="nav-link @activeClass">
                 <i class="nav-icon fas @icon"></i>
-                <p>@text</p>
+                <p>@text</p> 
             </a>
         </li>
     }

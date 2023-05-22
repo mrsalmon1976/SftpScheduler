@@ -1,13 +1,10 @@
 ﻿#pragma warning disable CA1416
 using Microsoft.Extensions.Logging;
 using SftpSchedulerService.Common;
+using SftpSchedulerService.Common.Diagnostics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.AutoUpdater.Services
 {
@@ -27,10 +24,12 @@ namespace SftpSchedulerService.AutoUpdater.Services
     public class InstallationService : IInstallationService
     {
         private readonly ILogger<InstallationService> _logger;
+        private readonly IProcessWrapperFactory _processWrapperFactory;
 
-        public InstallationService(ILogger<InstallationService> logger)
+        public InstallationService(ILogger<InstallationService> logger, IProcessWrapperFactory processWrapperFactory)
         {
             _logger = logger;
+            _processWrapperFactory = processWrapperFactory;
         }
 
         private ServiceController? GetInstalledService()
@@ -90,7 +89,7 @@ namespace SftpSchedulerService.AutoUpdater.Services
 
             _logger.LogDebug("RunProcess called with workingDir [{workingDir}], arguments [{args}]", workingDir, args);
 
-            using (Process cmd = new Process())
+            using (IProcessWrapper cmd = _processWrapperFactory.CreateProcess())
             {
                 cmd.StartInfo.WorkingDirectory = workingDir;
                 cmd.StartInfo.FileName = "sc.exe";

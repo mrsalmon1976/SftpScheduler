@@ -5,6 +5,7 @@ using NLog.Web;
 using SftpScheduler.BLL.IO;
 using SftpSchedulerService.AutoUpdater.Config;
 using SftpSchedulerService.AutoUpdater.Services;
+using SftpSchedulerService.Common.Diagnostics;
 using SftpSchedulerService.Common.Services;
 using SftpSchedulerService.Common.Web;
 using System;
@@ -41,6 +42,7 @@ namespace SftpSchedulerService.AutoUpdater
                         .AddSingleton<IUpdateFileService, UpdateFileService>()
                         .AddSingleton<IGitHubVersionService, GitHubVersionService>()
                         .AddSingleton<Common.Web.IHttpClientFactory, HttpClientFactory>()
+                        .AddSingleton<IProcessWrapperFactory, ProcessWrapperFactory>()
                         .AddSingleton<UpdateOrchestrator, UpdateOrchestrator>()
                         );
         }

@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Update";
+}
+@section PageActionMenu {
+}
+@section Scripts {
+    <environment-script src="~/js/pages/update/install.js"></environment-script>
+}
+
+<div id="app-update" class="row">
+
+    <div class="alert alert-warning col-11">
+        <h5><i class="icon fas fa-exclamation-triangle"></i> Update in Progress</h5>
+        <p>
+            An update to SftpScheduler is being installed. The update process will:
+        </p>
+        <ul>
+            <li>Download the latest version of SftpScheduler</li>
+            <li>Back up the current version into a "Backup" folder</li>
+            <li>Install the new version, keeping existing database and log files</li>
+            <li>Start the new service and apply any data upgrades</li>
+        </ul>
+        <p>
+            If this page does not show success within a few minutes, you may need to complete the installation manually on the server.  This is 
+            <a href="https://github.com/mrsalmon1976/SftpScheduler">documented here</a> - please register an issue and include any relevant lines
+            from the application log file.
+        </p>
+    </div>
+    @*
+    <div class="progress-group col-11">
+        Checking the status of the SftpScheduler service
+        <span class="float-right"><b>0</b>/10</span>
+        <div class="progress progress-sm">
+            <div class="progress-bar bg-primary" style="width: 0%"></div>
+        </div>
+    </div>
+    *@
+</div>

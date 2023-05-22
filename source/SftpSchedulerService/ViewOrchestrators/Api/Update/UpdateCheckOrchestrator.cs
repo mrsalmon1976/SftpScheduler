@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SftpSchedulerService.Caching;
 using SftpSchedulerService.Common.Models;
 using SftpSchedulerService.Common.Services;
