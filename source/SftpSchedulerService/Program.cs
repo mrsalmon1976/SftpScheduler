@@ -88,8 +88,7 @@ try
 
     if (!appSettings.IsAutomatedTestContext && !Debugger.IsAttached)
     {
-        app.Urls.Add($"http://0.0.0.0:8743");
-        //app.Urls.Add($"https://0.0.0.0:8744");
+        app.Urls.Add($"http://0.0.0.0:{appSettings.Port}");
     }
     app.UseStaticFiles();
 

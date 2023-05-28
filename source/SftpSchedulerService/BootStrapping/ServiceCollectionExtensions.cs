@@ -20,7 +20,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Cron;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
-using SftpSchedulerService.ViewOrchestrators.Api.Login;
+using SftpSchedulerService.ViewOrchestrators.Api.Auth;
 using SftpSchedulerService.ViewOrchestrators.Api.Update;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
 using System.Text;
@@ -42,9 +42,10 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IExecuteJobCommand, ExecuteJobCommand>();
             services.AddScoped<IUpdateJobCommand, UpdateJobCommand>();
             services.AddScoped<ICreateJobLogCommand, CreateJobLogCommand>();
+            services.AddScoped<IDeleteJobCommand, DeleteJobCommand>();
 
             services.AddScoped<CreateUserCommand>();
-            services.AddScoped<IDeleteJobCommand, DeleteJobCommand>();
+            services.AddScoped<IChangePasswordCommand, ChangePasswordCommand>();
 
             services.AddScoped<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
 
@@ -147,6 +148,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IUpdateCheckOrchestrator, UpdateCheckOrchestrator>();
             services.AddScoped<IUpdateInstallOrchestrator, UpdateInstallOrchestrator>();
 
+            services.AddScoped<IChangePasswordPostOrchestrator, ChangePasswordPostOrchestrator>();
             services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();
         }
 

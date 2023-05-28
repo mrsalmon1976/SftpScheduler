@@ -18,7 +18,7 @@
             this.isLoading = true;
             let payload = { userName: this.userName, password: this.password };
 
-            let res = await axios.post('/api/login', payload)
+            let res = await axios.post('/api/auth/login', payload)
                 .then(function (response) {
                     window.location.href = '/dashboard';
                 })

@@ -8,7 +8,7 @@ using NSubstitute.ReturnsExtensions;
 using SftpScheduler.BLL.Identity.Models;
 using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.ViewOrchestrators.Api.Login;
+using SftpSchedulerService.ViewOrchestrators.Api.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 #pragma warning disable CS8625
 
-namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Login
+namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
 {
     [TestFixture]
     public class LoginPostOrchestratorTests

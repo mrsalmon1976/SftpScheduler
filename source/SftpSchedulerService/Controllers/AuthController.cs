@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,13 @@ namespace SftpSchedulerService.Controllers
         public ViewResult Login()
         {
             return this.View("Login");
+        }
+
+        [Authorize]
+        [HttpGet("auth/change-password")]
+        public ViewResult ChangePassword()
+        {
+            return this.View("ChangePassword");
         }
 
         [HttpGet]

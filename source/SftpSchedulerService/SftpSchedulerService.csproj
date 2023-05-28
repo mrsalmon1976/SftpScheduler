@@ -4,11 +4,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-SftpSchedulerService-5BD1E8D5-9AAF-44D2-BD4B-C45E755BBECE</UserSecretsId>
-    <AssemblyVersion>0.0.3</AssemblyVersion>
-    <FileVersion>0.0.3</FileVersion>
+    <AssemblyVersion>0.0.5</AssemblyVersion>
+    <FileVersion>0.0.5</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="wwwroot\js\pages\auth\change-password.js" />
+    <Content Remove="wwwroot\js\pages\auth\login - Copy.min.js" />
     <Content Remove="wwwroot\js\pages\update\index.min.js" />
     <Content Remove="wwwroot\js\pages\update\install.js" />
   </ItemGroup>

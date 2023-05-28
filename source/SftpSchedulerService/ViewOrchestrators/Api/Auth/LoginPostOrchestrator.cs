@@ -10,7 +10,7 @@ using SftpSchedulerService.Config;
 using System.Text;
 using SftpScheduler.BLL.Models;
 
-namespace SftpSchedulerService.ViewOrchestrators.Api.Login
+namespace SftpSchedulerService.ViewOrchestrators.Api.Auth
 {
     public interface ILoginPostOrchestrator : IViewOrchestrator
     {
@@ -53,7 +53,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Login
             var authClaims = new List<Claim>
             {
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
