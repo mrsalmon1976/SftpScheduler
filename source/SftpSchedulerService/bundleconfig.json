@@ -76,5 +76,11 @@
     "inputFiles": [
       "wwwroot/js/pages/update/install.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/auth/change-password.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/auth/change-password.js"
+    ]
   }
 ]
