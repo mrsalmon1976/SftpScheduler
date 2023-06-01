@@ -15,7 +15,7 @@ namespace SftpSchedulerService.Controllers
         [HttpGet]
         public ViewResult Index()
         {
-            return this.View();
+            return this.View(new { CurrentUserName = this.User?.Identity?.Name });
         }
 
         [HttpGet("users/create")]

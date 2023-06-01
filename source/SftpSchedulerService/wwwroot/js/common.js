@@ -39,12 +39,15 @@ class UiHelpers
         emitter.emit(BusMessages.PageHeader, headerText);
     };
 
-    static showErrorToast(title, subtitle, message) {
+    static showErrorToast(title, subtitle, message, delayInMilliseconds = 0) {
+        var autoHide = (delayInMilliseconds > 0);
         $(document).Toasts('create', {
             class: 'bg-danger',
             title: title,
             subtitle: subtitle,
-            body: message
+            body: message,
+            autohide: autoHide,
+            delay: delayInMilliseconds
         });
     };
 

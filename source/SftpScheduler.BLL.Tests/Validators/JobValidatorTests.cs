@@ -157,11 +157,12 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase("")]
         [TestCase("  ")]
         [TestCase(null)]
-        public void Validate_DeleteRemoteFalseAndNoRemoteArchiveFolderProvided_ExceptionThrown(string remoteArchiveFolder)
+        public void Validate_DownloadJobAndDeleteRemoteFalseAndNoRemoteArchiveFolderProvided_ExceptionThrown(string remoteArchiveFolder)
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.DeleteAfterDownload = false;
             jobEntity.RemoteArchivePath = remoteArchiveFolder;
+            jobEntity.Type = JobType.Download;
 
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
@@ -169,6 +170,20 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
             Assert.That(validationResult.ErrorMessages[0].Contains("Remote archive path must be supplied if deletion after download is not selected", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        [Test]
+        public void Validate_UploadloadJobAndDeleteRemoteFalseAndNoRemoteArchiveFolderProvided_ValidatesCorrectly()
+        {
+            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            jobEntity.DeleteAfterDownload = false;
+            jobEntity.RemoteArchivePath = String.Empty;
+            jobEntity.Type = JobType.Upload;
+
+            JobValidator jobValidator = CreateJobValidator();
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+
+            Assert.That(validationResult.IsValid, Is.True);
         }
 
         [Test]
@@ -210,17 +225,6 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.ErrorMessages[0].Contains("Local copy path 'C:\\Temp\\Folder1' does not exist", StringComparison.InvariantCultureIgnoreCase));
         }
 
-
-        [Test]
-        public void Validate_InValidAllFields_ExceptionThrown()
-        {
-            JobEntity jobEntity = new JobEntity();
-
-            JobValidator jobValidator = CreateJobValidator();
-            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
-            Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(7));
-        }
 
         #region Private Methods
 

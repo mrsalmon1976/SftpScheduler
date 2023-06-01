@@ -98,6 +98,7 @@
             // make sure all is valid
             if (!this.job.validate()) {
                 this.isLoading = false;
+                UiHelpers.showErrorToast('Validation Failure', '', 'Job properties missing or incorrect.', 10000);
                 return;
             }
 

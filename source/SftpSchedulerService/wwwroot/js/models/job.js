@@ -83,7 +83,7 @@
     }
 
     validateRemoteArchivePath = function () {
-        if (this.deleteAfterDownload) {
+        if (this.type == JobTypes.Upload || this.deleteAfterDownload) {
             this.isRemoteArchivePathValid = true;
         }
         else {

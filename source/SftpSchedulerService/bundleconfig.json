@@ -82,5 +82,11 @@
     "inputFiles": [
       "wwwroot/js/pages/auth/change-password.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/user/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/user/index.js"
+    ]
   }
 ]

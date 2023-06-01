@@ -1,13 +1,14 @@
 ﻿createApp({
     data() {
         return {
+            currentUserName: '',
             users: [],
             isLoading: true,
             selectedUser: new UserModel()
         }
     },
     methods: {
-        async disableUser(userId) {
+        async disableUser(user) {
             alert('Sorry, this functionality is still missing #sadface')
             //var that = this;
             //this.isLoading = true;
@@ -42,13 +43,21 @@
                 });
         },
         showDisableDialog(user) {
+
+            if (user.userName == this.currentUserName) {
+                alert('You cannot disable the current user');
+                return;
+            }
+
             this.selectedUser = user;
+
             $('#modal-disable-user').modal();
 
         }
     },
     mounted: function () {
         this.isLoading = false;
+        this.currentUserName = this.$el.parentElement.getAttribute('data-current-user-name');
         UiHelpers.setPageHeader('Users');
         this.loadUsers();
     }
