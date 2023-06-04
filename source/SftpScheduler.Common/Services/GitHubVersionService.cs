@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SftpScheduler.Common.Models;
 using SftpScheduler.Common.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.Common.Services
 {
@@ -30,11 +25,15 @@ namespace SftpScheduler.Common.Services
             var result = await client.GetAsync(latestVersionUrl);
             result.EnsureSuccessStatusCode();
             var body = await result.Content.ReadAsStringAsync();
-            GitHubReleaseResponse releaseData = JsonConvert.DeserializeObject<GitHubReleaseResponse>(body);
+            GitHubReleaseResponse releaseData = JsonConvert.DeserializeObject<GitHubReleaseResponse>(body)!;
             ApplicationVersionInfo versionInfo = new ApplicationVersionInfo();
             versionInfo.VersionNumber = releaseData.TagName.TrimStart('v');
 
-            GitHubAsset asset = releaseData.GetApplicationAsset();
+            GitHubAsset? asset = releaseData.GetApplicationAsset();
+            if (asset == null)
+            {
+                throw new ApplicationException("No asset information found on GitHub release");
+            }
             versionInfo.FileName = asset.Name;
             versionInfo.DownloadUrl = asset.DownloadUrl;
             versionInfo.Length = asset.Size;

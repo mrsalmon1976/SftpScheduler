@@ -3,11 +3,6 @@ using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Validators
 {
@@ -21,7 +16,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             UserEntity userEntity = EntityTestHelper.CreateUserEntity();
 
-            UserEntity existingUserEntity = null;
+            UserEntity existingUserEntity = null!;
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity!);
 
             // execute
@@ -80,7 +75,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             UserEntity userEntity = EntityTestHelper.CreateUserEntity();
 
-            UserEntity existingUserEntity = null;
+            UserEntity existingUserEntity = null!;
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity!);
 
             IEmailValidator emailValidator = Substitute.For<IEmailValidator>();

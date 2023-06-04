@@ -1,8 +1,5 @@
 ﻿using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SftpScheduler.BLL.Repositories
 {

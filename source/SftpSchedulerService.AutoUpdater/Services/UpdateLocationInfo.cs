@@ -1,12 +1,6 @@
-﻿using SftpSchedulerService.AutoUpdater.Config;
-using SftpScheduler.Common;
-using System;
-using System.Collections.Generic;
+﻿using SftpScheduler.Common;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.AutoUpdater.Services
 {
@@ -16,10 +10,11 @@ namespace SftpSchedulerService.AutoUpdater.Services
 
         public UpdateLocationInfo()
         {
-            DirectoryInfo di = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            string assemblyPath = Assembly.GetExecutingAssembly().Location;
+            DirectoryInfo di = Directory.GetParent(Path.GetDirectoryName(assemblyPath!)!)!;
             if (Debugger.IsAttached)
             {
-                string debugAppFolder = Path.Combine(di?.Parent?.Parent?.Parent?.FullName, "SftpSchedulerService\\bin\\Debug\\net6.0");
+                string debugAppFolder = Path.Combine(di?.Parent?.Parent?.Parent?.FullName!, "SftpSchedulerService\\bin\\Debug\\net6.0");
                 di =  new DirectoryInfo(debugAppFolder);
             }
             this.ApplicationFolder = di.FullName;

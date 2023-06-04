@@ -6,6 +6,7 @@ function RemoveRedundantFiles
 	param([string]$buildPath)
 
 	Remove-Item -Path "$buildPath\appsettings.Development.json" -Force
+	Remove-Item -Path "$buildPath\AutoUpdater\appsettings.Development.json" -Force
 	Remove-Item -Path "$buildPath\da" -Force -Recurse 
 	Remove-Item -Path "$buildPath\de" -Force -Recurse 
 	Remove-Item -Path "$buildPath\es" -Force -Recurse 

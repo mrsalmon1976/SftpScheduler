@@ -1,11 +1,8 @@
 ﻿using NUnit.Framework;
 using SftpScheduler.Common.IO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
+#pragma warning disable CS8604 // Possible null reference
 
 namespace SftpScheduler.Common.Tests.IO
 {
@@ -249,7 +246,7 @@ namespace SftpScheduler.Common.Tests.IO
             foreach (string file in files)
             {
                 string filePath = Path.Combine(rootFolder, file);
-                string directoryPath = Path.GetDirectoryName(filePath);
+                string directoryPath = Path.GetDirectoryName(filePath)!;
                 Directory.CreateDirectory(directoryPath);
                 File.WriteAllText(filePath, Guid.NewGuid().ToString());
             }

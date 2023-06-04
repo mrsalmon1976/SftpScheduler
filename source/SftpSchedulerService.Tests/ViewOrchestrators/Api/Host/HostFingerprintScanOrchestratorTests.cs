@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -8,13 +7,7 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Host;
-using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 {
@@ -36,10 +29,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             // assert
             hostValidator.Received(1).Validate(Arg.Any<HostEntity>());
 
-            BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+            BadRequestObjectResult badRequestResult = (result as BadRequestObjectResult)!;
             Assert.That(badRequestResult, Is.Not.Null);
 
-            ValidationResult validation = badRequestResult.Value as ValidationResult;
+            ValidationResult validation = (badRequestResult.Value as ValidationResult)!;
             Assert.That(validation, Is.Not.Null);
             Assert.That(validation.IsValid, Is.False);
             Assert.That(validation.ErrorMessages.Count, Is.EqualTo(1));
@@ -66,7 +59,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             sessionWrapperFactory.Received(1).CreateSession(Arg.Any<HostEntity>());
             sessionWrapper.Received().ScanFingerprint(Arg.Any<string>());
 
-            BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+            BadRequestObjectResult badRequestResult = (result as BadRequestObjectResult)!;
             Assert.That(badRequestResult, Is.Not.Null);
         }
 
@@ -95,10 +88,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             sessionWrapper.Received(1).ScanFingerprint(SessionWrapper.AlgorithmSha256);
             sessionWrapper.Received(1).ScanFingerprint(SessionWrapper.AlgorithmMd5);
 
-            OkObjectResult okResult = result as OkObjectResult;
+            OkObjectResult okResult = (result as OkObjectResult)!;
             Assert.That(okResult, Is.Not.Null);
 
-            List<HostKeyFingerprintViewModel> fingerprints = okResult.Value as List<HostKeyFingerprintViewModel>;
+            List<HostKeyFingerprintViewModel> fingerprints = (okResult.Value as List<HostKeyFingerprintViewModel>)!;
             Assert.That(fingerprints, Is.Not.Null);
             Assert.That(fingerprints.Single(x => x.Algorithm == SessionWrapper.AlgorithmSha256 && x.KeyFingerprint == sha256Fingerprint), Is.Not.Null);
             Assert.That(fingerprints.Single(x => x.Algorithm == SessionWrapper.AlgorithmMd5 && x.KeyFingerprint == md5Fingerprint), Is.Not.Null);
@@ -107,11 +100,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 
         }
 
-        private HostFingerprintScanOrchestrator CreateOrchestrator(HostValidator hostValidator, ISessionWrapperFactory sessionWrapperFactory = null, IMapper mapper = null)
+        private HostFingerprintScanOrchestrator CreateOrchestrator(HostValidator hostValidator, ISessionWrapperFactory? sessionWrapperFactory = null, IMapper? mapper = null)
         {
-            sessionWrapperFactory = (sessionWrapperFactory == null ? Substitute.For<ISessionWrapperFactory>() : sessionWrapperFactory);
-            
-            mapper = (mapper == null ? AutoMapperTestHelper.CreateMapper() : mapper);
+            sessionWrapperFactory ??= Substitute.For<ISessionWrapperFactory>();
+            mapper ??= AutoMapperTestHelper.CreateMapper();
             
             ILogger<HostFingerprintScanOrchestrator> logger = Substitute.For<ILogger<HostFingerprintScanOrchestrator>>();
             return new HostFingerprintScanOrchestrator(logger, sessionWrapperFactory, mapper, hostValidator);

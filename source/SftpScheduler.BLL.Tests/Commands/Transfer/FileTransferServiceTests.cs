@@ -179,7 +179,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
             IEnumerable<string> availableFiles = fileTransferService.UploadFilesAvailable(localPath);
 
-            Assert.That(0, Is.EqualTo(availableFiles.Count()));
+            Assert.That(availableFiles.Count(), Is.EqualTo(0));
         }
 
         [Test]
@@ -196,7 +196,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
             IEnumerable<string> availableFiles = fileTransferService.UploadFilesAvailable(localPath);
 
-            Assert.That(fileCount, Is.EqualTo(availableFiles.Count()));
+            Assert.That(availableFiles.Count(), Is.EqualTo(fileCount));
         }
 
 

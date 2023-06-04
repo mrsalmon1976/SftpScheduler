@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Security
 {
@@ -51,7 +47,9 @@ namespace SftpScheduler.BLL.Security
             else
             {
                 byte[] secret = Convert.FromBase64String(encryptedString);
+#pragma warning disable CA1416 // Validate platform compatibility
                 byte[] plain = ProtectedData.Unprotect(secret, this.GetSecretKeyAsBytes(), DataProtectionScope.LocalMachine);
+#pragma warning restore CA1416 // Validate platform compatibility
                 var encoding = new UTF8Encoding();
                 return encoding.GetString(plain);
             }
@@ -67,7 +65,9 @@ namespace SftpScheduler.BLL.Security
             {
                 var encoding = new UTF8Encoding();
                 byte[] plain = encoding.GetBytes(plainTextString);
+#pragma warning disable CA1416 // Validate platform compatibility
                 byte[] secret = ProtectedData.Protect(plain, this.GetSecretKeyAsBytes(), DataProtectionScope.LocalMachine);
+#pragma warning restore CA1416 // Validate platform compatibility
                 return Convert.ToBase64String(secret);
             }
         }

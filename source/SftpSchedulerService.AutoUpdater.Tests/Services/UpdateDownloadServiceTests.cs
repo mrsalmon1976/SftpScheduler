@@ -1,13 +1,9 @@
 ﻿using NUnit.Framework;
 using SftpSchedulerService.AutoUpdater.Services;
 using SftpScheduler.Common.Web;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
+#pragma warning disable CS8604 // Possible null reference
 
 namespace SftpSchedulerService.AutoUpdater.Tests.Services
 {

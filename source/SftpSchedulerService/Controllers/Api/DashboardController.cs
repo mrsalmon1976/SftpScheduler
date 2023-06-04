@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using SftpSchedulerService.ViewOrchestrators.Api.Cron;
 using SftpSchedulerService.ViewOrchestrators.Api.Dashboard;
 
 namespace SftpSchedulerService.Controllers.Api

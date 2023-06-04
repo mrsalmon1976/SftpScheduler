@@ -1,17 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using SftpSchedulerService.Config;
-using SftpScheduler.BLL.Identity.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpScheduler.BLL.Identity;
-using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Utilities;
 

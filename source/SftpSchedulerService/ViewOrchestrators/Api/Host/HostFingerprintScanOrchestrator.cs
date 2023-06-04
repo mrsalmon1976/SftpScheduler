@@ -47,7 +47,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
                 List<HostKeyFingerprintViewModel> result = new List<HostKeyFingerprintViewModel>();
                 result.Add(this.ScanHost(sessionWrapper, SessionWrapper.AlgorithmSha256));
                 result.Add(this.ScanHost(sessionWrapper, SessionWrapper.AlgorithmMd5));
-                return new OkObjectResult(result);
+                return await Task.FromResult(new OkObjectResult(result));
 
             }
             catch (Exception ex)

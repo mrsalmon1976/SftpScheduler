@@ -3,11 +3,6 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -30,7 +25,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             IEnumerable<HostEntity> result = hostQueries.GetAllAsync(dbContext).Result;
 
             dbContext.Received(1).QueryAsync<HostEntity>(Arg.Any<string>());
-            Assert.AreEqual(2, result.Count());
+            Assert.That(result.Count(), Is.EqualTo(2));
 
         }
 

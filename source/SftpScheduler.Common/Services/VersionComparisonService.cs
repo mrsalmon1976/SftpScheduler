@@ -1,9 +1,4 @@
 ﻿using SftpScheduler.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.Common.Services
 {
@@ -27,7 +22,7 @@ namespace SftpScheduler.Common.Services
         {
             string installedVersion = _appVersionService.GetVersion(applicationFolder);
             ApplicationVersionInfo versionInfo = await _gitHubVersionService.GetVersionInfo(latestVersionUrl);
-            string latestReleaseVersion = versionInfo.VersionNumber;
+            string latestReleaseVersion = versionInfo.VersionNumber!;
 
             var vInstalled = Version.Parse(installedVersion);
             var vLatest = Version.Parse(latestReleaseVersion);

@@ -37,8 +37,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Update
                 bool isStarted = process.Start();
                 _logger.LogInformation("Process start result {isStarted}", isStarted);
             }
-
-            return new OkResult();
+            return await Task.FromResult(new OkResult());
         }
     }
 }
