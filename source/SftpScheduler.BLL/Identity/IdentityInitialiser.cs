@@ -17,11 +17,11 @@ namespace SftpScheduler.BLL.Identity
         private readonly ILogger<IdentityInitialiser> _logger;
         private readonly UserManager<UserEntity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly CreateUserCommand _createUserCommand;
+        private readonly ICreateUserCommand _createUserCommand;
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAdminUserPassword = "admin";
 
-        public IdentityInitialiser(ILogger<IdentityInitialiser> logger, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, CreateUserCommand createUserCommand)
+        public IdentityInitialiser(ILogger<IdentityInitialiser> logger, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, ICreateUserCommand createUserCommand)
         {
             _logger = logger;
             _userManager = userManager;
@@ -38,7 +38,11 @@ namespace SftpScheduler.BLL.Identity
             var user = _userManager.FindByNameAsync(DefaultAdminUserName).GetAwaiter().GetResult();
             if (user == null)
             {
-                _createUserCommand.ExecuteAsync(_userManager, DefaultAdminUserName, DefaultAdminUserPassword, new string[] { UserRoles.Admin }).GetAwaiter().GetResult();
+                user = new UserEntity()
+                {
+                    UserName = DefaultAdminUserName
+                };
+                _createUserCommand.ExecuteAsync(_userManager, user, DefaultAdminUserPassword, new string[] { UserRoles.Admin }).GetAwaiter().GetResult();
                 _logger.LogInformation($"User {DefaultAdminUserName} created");
             }
         }

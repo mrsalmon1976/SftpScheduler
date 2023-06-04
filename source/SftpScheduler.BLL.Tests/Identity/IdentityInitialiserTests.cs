@@ -26,7 +26,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
-            CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
+            ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
             roleManager.RoleExistsAsync(roleName).Returns(Task.FromResult(true));
@@ -47,7 +47,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
-            CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
+            ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
             roleManager.RoleExistsAsync(roleName).Returns(Task.FromResult(false));
@@ -65,7 +65,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
-            CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
+            ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(false));
             roleManager.CreateAsync(Arg.Any<IdentityRole>()).Returns(Task.FromResult(IdentityResult.Failed(new IdentityError() {  Code = "test", Description = "test" })));
@@ -88,7 +88,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
-            CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
+            ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
             userManager.FindByNameAsync(IdentityInitialiser.DefaultAdminUserName).Returns(Task.FromResult<UserEntity>(null));
@@ -99,7 +99,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             userManager.Received(1).FindByNameAsync(IdentityInitialiser.DefaultAdminUserName);
 
             createUserCommand.Received(1).ExecuteAsync(userManager
-                , IdentityInitialiser.DefaultAdminUserName
+                , Arg.Any<UserEntity>()
                 , IdentityInitialiser.DefaultAdminUserPassword, Arg.Any<IEnumerable<string>>()).GetAwaiter().GetResult();
 
         }
@@ -110,7 +110,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
             RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
-            CreateUserCommand createUserCommand = Substitute.For<CreateUserCommand>();
+            ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             UserEntity user = new UserEntity();
 
@@ -123,7 +123,7 @@ namespace SftpScheduler.BLL.Tests.Identity
             userManager.Received(1).FindByNameAsync(IdentityInitialiser.DefaultAdminUserName);
 
             createUserCommand.DidNotReceive().ExecuteAsync(Arg.Any<UserManager<UserEntity>>()
-                , Arg.Any<string>()
+                , Arg.Any<UserEntity>()
                 , Arg.Any<string>()
                 , Arg.Any<IEnumerable<string>>()).GetAwaiter().GetResult();
         }

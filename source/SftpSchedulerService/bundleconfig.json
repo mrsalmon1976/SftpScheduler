@@ -88,5 +88,17 @@
     "inputFiles": [
       "wwwroot/js/pages/user/index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/models/user.min.js",
+    "inputFiles": [
+      "wwwroot/js/models/user.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/user/form.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/user/form.js"
+    ]
   }
 ]

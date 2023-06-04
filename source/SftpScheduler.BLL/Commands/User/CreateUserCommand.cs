@@ -10,16 +10,28 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.User
 {
-    public class CreateUserCommand
+    public interface ICreateUserCommand
     {
+        Task<UserEntity> ExecuteAsync(UserManager<UserEntity> userManager, UserEntity user, string password, IEnumerable<string> roles);
 
-        public virtual async Task<UserEntity> ExecuteAsync(UserManager<UserEntity> userManager, string userName, string password, IEnumerable<string> roles)
+    }
+
+    public class CreateUserCommand : ICreateUserCommand
+    {
+        private readonly IUserValidator _userValidator;
+
+        public CreateUserCommand(IUserValidator userValidator)
         {
-            var user = new UserEntity
+            _userValidator = userValidator;
+        }
+
+        public virtual async Task<UserEntity> ExecuteAsync(UserManager<UserEntity> userManager, UserEntity user, string password, IEnumerable<string> roles)
+        {
+            ValidationResult validationResult = await _userValidator.Validate(userManager, user);
+            if (!validationResult.IsValid)
             {
-                Id = Guid.NewGuid().ToString(),
-                UserName = userName
-            };
+                throw new DataValidationException("User details supplied are invalid", validationResult);
+            }
 
             var result = await userManager.CreateAsync(user, password);
             if (!result.Succeeded)

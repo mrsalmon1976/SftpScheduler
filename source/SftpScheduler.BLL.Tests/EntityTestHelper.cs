@@ -48,5 +48,15 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
+        internal static UserEntity CreateUserEntity(string? id = null)
+        {
+            UserEntity userEntity = new UserEntity();
+            userEntity.Id = id ?? Guid.NewGuid().ToString();
+            userEntity.Email = Faker.Internet.Email();
+            return userEntity;
+
+        }
+
+
     }
 }

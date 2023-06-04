@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Models.Notification;
+using SftpSchedulerService.Models.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +54,15 @@ namespace SftpSchedulerService.Tests
             jobLogViewModel.Progress = Faker.RandomNumber.Next(1, 100);
             jobLogViewModel.Status = Faker.Lorem.GetFirstWord();
             return jobLogViewModel;
+        }
+
+        internal static UserViewModel CreateUserViewModel()
+        {
+            UserViewModel userViewModel = new UserViewModel();
+            userViewModel.Id = Guid.NewGuid().ToString();
+            userViewModel.Email = Faker.Internet.Email();
+            userViewModel.Role = UserRoles.User;
+            return userViewModel;
         }
 
     }

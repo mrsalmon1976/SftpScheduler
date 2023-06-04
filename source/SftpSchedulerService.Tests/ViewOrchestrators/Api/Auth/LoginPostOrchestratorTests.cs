@@ -60,6 +60,28 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
 
             Assert.IsInstanceOf(typeof(UnauthorizedResult), result);
             userManager.Received(1).CheckPasswordAsync(Arg.Any<UserEntity>(), loginModel.Password);
+            userManager.DidNotReceive().IsLockedOutAsync(Arg.Any<UserEntity>());
+        }
+
+        [Test]
+        public void Execute_AccountLockedOut_ReturnsUnauthorized()
+        {
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            HttpContext httpContext = Substitute.For<HttpContext>();
+
+            UserEntity user = new UserEntity();
+            LoginModel loginModel = new LoginModel();
+            loginModel.Username = Guid.NewGuid().ToString();
+            loginModel.Password = Guid.NewGuid().ToString();
+            userManager.FindByNameAsync(Arg.Any<string>()).Returns(Task.FromResult(user));
+            userManager.CheckPasswordAsync(Arg.Any<UserEntity>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+            userManager.IsLockedOutAsync(Arg.Any<UserEntity>()).Returns(Task.FromResult(true));
+
+            LoginPostOrchestrator loginPostOrchestrator = CreateLoginPostOrchestrator(userManager);
+            IActionResult result = loginPostOrchestrator.Execute(loginModel, httpContext).GetAwaiter().GetResult();
+
+            Assert.IsInstanceOf(typeof(UnauthorizedResult), result);
+            userManager.Received(1).IsLockedOutAsync(Arg.Any<UserEntity>());
             userManager.DidNotReceive().GetRolesAsync(Arg.Any<UserEntity>());
         }
 

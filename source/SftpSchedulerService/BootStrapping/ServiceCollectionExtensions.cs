@@ -44,7 +44,9 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<ICreateJobLogCommand, CreateJobLogCommand>();
             services.AddScoped<IDeleteJobCommand, DeleteJobCommand>();
 
-            services.AddScoped<CreateUserCommand>();
+            services.AddScoped<ICreateUserCommand, CreateUserCommand>();
+            services.AddScoped<IUpdateUserCommand, UpdateUserCommand>();
+
             services.AddScoped<IChangePasswordCommand, ChangePasswordCommand>();
 
             services.AddScoped<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
@@ -149,7 +151,11 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IUpdateInstallOrchestrator, UpdateInstallOrchestrator>();
 
             services.AddScoped<IChangePasswordPostOrchestrator, ChangePasswordPostOrchestrator>();
+
+            services.AddScoped<IUserCreateOrchestrator, UserCreateOrchestrator>();
             services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();
+            services.AddScoped<IUserFetchOneOrchestrator, UserFetchOneOrchestrator>();
+            services.AddScoped<IUserUpdateOrchestrator, UserUpdateOrchestrator>();
         }
 
         public static void AddRepositories(this IServiceCollection services)
@@ -196,8 +202,10 @@ namespace SftpSchedulerService.BootStrapping
 
         public static void AddValidators(this IServiceCollection services)
         {
+            services.AddTransient<IEmailValidator, EmailValidator>();
             services.AddTransient<HostValidator>();
             services.AddTransient<IJobValidator, JobValidator>();
+            services.AddTransient<IUserValidator, UserValidator>();
         }
     }
 }

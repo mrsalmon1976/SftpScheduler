@@ -16,6 +16,20 @@ Object.defineProperty(JobTypes, "Upload", {
     configurable: false
 });
 
+var UserRoles = {};
+Object.defineProperty(UserRoles, "Admin", {
+    value: "Admin",
+    writable: false,
+    enumerable: true,
+    configurable: false
+});
+Object.defineProperty(UserRoles, "User", {
+    value: "User",
+    writable: false,
+    enumerable: true,
+    configurable: false
+});
+
 var BusMessages = {};
 Object.defineProperty(BusMessages, "PageHeader", {
     value: "PageHeader",

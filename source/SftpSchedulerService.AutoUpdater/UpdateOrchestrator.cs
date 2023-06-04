@@ -63,13 +63,17 @@ namespace SftpSchedulerService.AutoUpdater
                 _logger.LogInformation("Extracting release contents to {updateTempFolder}", _updateLocationInfo.UpdateTempFolder);
                 await _updateFileService.ExtractReleasePackage(downloadPath, _updateLocationInfo.UpdateTempFolder);
 
-                if (_installationService.IsServiceInstalled())
+                bool isServiceInstalled = _installationService.IsServiceInstalled();
+
+                if (isServiceInstalled)
                 {
                     _logger.LogInformation("Stopping {serviceName} service", UpdateConstants.ServiceName);
                     _installationService.StopService();
 
-                    _logger.LogInformation("Uninstalling {serviceName} service", UpdateConstants.ServiceName);
-                    _installationService.UninstallService();
+                    // we don't uninstall completely as we don't want to lose service login details
+                    //_logger.LogInformation("Uninstalling {serviceName} service", UpdateConstants.ServiceName);
+                    //_installationService.UninstallService();
+
                 }
 
                 _logger.LogInformation("Backing up current service files.");
@@ -81,8 +85,12 @@ namespace SftpSchedulerService.AutoUpdater
                 _logger.LogInformation("Copying new service files...");
                 await _updateFileService.CopyNewVersionFiles(_updateLocationInfo);
 
-                _logger.LogInformation("Installing {serviceName} service", UpdateConstants.ServiceName);
-                _installationService.InstallService(_updateLocationInfo.ApplicationFolder);
+                // if the service was not installed, install it now!
+                if (!isServiceInstalled)
+                {
+                    _logger.LogInformation("Installing {serviceName} service", UpdateConstants.ServiceName);
+                    _installationService.InstallService(_updateLocationInfo.ApplicationFolder);
+                }
 
                 _logger.LogInformation("Starting {serviceName} service", UpdateConstants.ServiceName);
                 _installationService.StartService();

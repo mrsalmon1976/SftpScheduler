@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,6 +18,36 @@ namespace SftpScheduler.BLL.Tests.Commands.User
     public class CreateUserCommandTests
     {
         [Test]
+        public void ExecuteAsync_ValidationFails_ThrowsDataValidationException()
+        {
+            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            string userName = Guid.NewGuid().ToString();
+            string password = Guid.NewGuid().ToString();
+
+            UserEntity userEntity = new UserEntity();
+            userEntity.UserName = userName;
+
+            IUserValidator userValidator = Substitute.For<IUserValidator>();
+            userValidator.Validate(userManager, userEntity).Returns(new ValidationResult("failed"));
+
+            ICreateUserCommand createUserCommand = CreateCommand(userValidator);
+
+            try
+            {
+                createUserCommand.ExecuteAsync(userManager, userEntity, password, Enumerable.Empty<string>()).GetAwaiter().GetResult();
+                Assert.Fail("DataValidationException not thrown as expected");
+            }
+            catch (DataValidationException)
+            {
+                // this is expected, yay
+            }
+
+            userManager.DidNotReceive().CreateAsync(Arg.Any<UserEntity>(), Arg.Any<string>());
+            userValidator.Received(1).Validate(userManager, userEntity);
+
+        }
+
+        [Test]
         public void ExecuteAsync_ResultFails_ThrowsDataValidationException()
         {
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
@@ -25,11 +56,14 @@ namespace SftpScheduler.BLL.Tests.Commands.User
 
             userManager.CreateAsync(Arg.Any<UserEntity>(), password).Returns(Task.FromResult(IdentityResult.Failed()));
 
-            CreateUserCommand createUserCommand= new CreateUserCommand();
+            ICreateUserCommand createUserCommand = CreateCommand();
+
+            UserEntity userEntity = new UserEntity();
+            userEntity.UserName = userName;
 
             try
             {
-                createUserCommand.ExecuteAsync(userManager, userName, password, Enumerable.Empty<string>()).GetAwaiter().GetResult();
+                createUserCommand.ExecuteAsync(userManager, userEntity, password, Enumerable.Empty<string>()).GetAwaiter().GetResult();
                 Assert.Fail("DataValidationException not thrown as expected");
             }
             catch (DataValidationException)
@@ -40,7 +74,6 @@ namespace SftpScheduler.BLL.Tests.Commands.User
             userManager.Received(1).CreateAsync(Arg.Any<UserEntity>(), password);
 
         }
-
         [Test]
         public void ExecuteAsync_ResultSucceeds_RolesAdded()
         {
@@ -51,9 +84,12 @@ namespace SftpScheduler.BLL.Tests.Commands.User
 
             userManager.CreateAsync(Arg.Any<UserEntity>(), password).Returns(Task.FromResult(IdentityResult.Success));
 
-            CreateUserCommand createUserCommand = new CreateUserCommand();
+            UserEntity userEntity = new UserEntity();
+            userEntity.UserName = userName;
 
-            createUserCommand.ExecuteAsync(userManager, userName, password, roles).GetAwaiter().GetResult();
+            ICreateUserCommand createUserCommand = CreateCommand();
+
+            createUserCommand.ExecuteAsync(userManager, userEntity, password, roles).GetAwaiter().GetResult();
             userManager.Received(1).AddToRolesAsync(Arg.Any<UserEntity>(), roles);
         }
 
@@ -67,10 +103,23 @@ namespace SftpScheduler.BLL.Tests.Commands.User
 
             userManager.CreateAsync(Arg.Any<UserEntity>(), password).Returns(Task.FromResult(IdentityResult.Success));
 
-            CreateUserCommand createUserCommand = new CreateUserCommand();
+            UserEntity userEntity = new UserEntity();
+            userEntity.UserName = userName;
 
-            UserEntity result = createUserCommand.ExecuteAsync(userManager, userName, password, roles).GetAwaiter().GetResult();
+            ICreateUserCommand createUserCommand = CreateCommand();
+
+            UserEntity result = createUserCommand.ExecuteAsync(userManager, userEntity, password, roles).GetAwaiter().GetResult();
             Assert.That(userName, Is.EqualTo(result.UserName));
+        }
+
+        private ICreateUserCommand CreateCommand(IUserValidator? userValidator = null)
+        {
+            if (userValidator == null)
+            {
+                userValidator = Substitute.For<IUserValidator>();
+                userValidator.Validate(Arg.Any<UserManager<UserEntity>>(), Arg.Any<UserEntity>()).Returns(new ValidationResult());
+            }
+            return new CreateUserCommand(userValidator);
         }
 
     }

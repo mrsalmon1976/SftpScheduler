@@ -48,6 +48,13 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Auth
                 return new UnauthorizedResult();
             }
 
+            bool isLockedOut = await _userManager.IsLockedOutAsync(user);
+            if (isLockedOut)
+            {
+                _logger.LogWarning($"Attempt to log in with locked out account '{model.Username}'");
+                return new UnauthorizedResult();
+            }
+
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>

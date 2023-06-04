@@ -24,5 +24,12 @@ namespace SftpSchedulerService.Controllers
             return this.View("Form", new { UserId = "" });
         }
 
+        [HttpGet("users/{id}")]
+        public ViewResult Update(string id)
+        {
+            return this.View("Form", new { UserId = id });
+        }
+
+
     }
 }

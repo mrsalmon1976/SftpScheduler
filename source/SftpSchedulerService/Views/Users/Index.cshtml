@@ -19,16 +19,16 @@
                     <tr>
                         <th>User Name</th>
                         <th>Email</th>
-                        <th>Actions</th>
+                        <th>Role</th>
+                        <th>Enabled</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="user in users">
+                    <tr v-for="user in users" :class="user.isEnabled ? '' : 'bg-danger disabled'">
                         <td><a :href="'/users/' + user.id">{{ user.userName }}</a></td>
                         <td>{{ user.email }}</td>
-                        <td>
-                            <a href="#" v-on:click="showDisableDialog(user)" title="Disable user"><i class="fa fa-trash-can"></i></a>
-                        </td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.isEnabled ? 'Yes' : 'No' }}</td>
                     </tr>
                 </tbody>
             </table>

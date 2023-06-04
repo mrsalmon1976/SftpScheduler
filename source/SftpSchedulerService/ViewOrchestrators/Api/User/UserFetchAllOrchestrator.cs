@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
-using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Models.User;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.User
@@ -25,8 +25,10 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.User
 
         public async Task<IActionResult> Execute()
         {
-            var users = await Task.Run(() => _userManager.Users.OrderBy(x => x.UserName));
-            var result = _mapper.Map<UserEntity[], UserViewModel[]>(users.ToArray());
+            var users = _userManager.Users.OrderBy(x => x.UserName);
+            var adminUsers = await _userManager.GetUsersInRoleAsync(UserRoles.Admin);
+
+            var result = users.Select(x => UserMapper.MapToViewModel(x, adminUsers.Contains(x)));
             return new OkObjectResult(result);
         }
     }

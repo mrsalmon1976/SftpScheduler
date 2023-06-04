@@ -1,0 +1,69 @@
+﻿@using SftpScheduler.BLL.Identity;
+@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Users";
+   
+}
+@section Scripts {
+    <environment-script src="~/js/models/user.js"></environment-script>
+    <environment-script src="~/js/pages/user/form.js"></environment-script>
+}
+<div id="app-user" data-user-id="@Model.UserId" v-cloak>
+    <div class="card card-info">
+        <!-- form start -->
+        <div class="card-header">
+            <h3 class="card-title">User Details</h3>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal">
+                <div class="form-group row">
+                    <label for="user-name" class="col-sm-2 col-form-label">User Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" v-model="user.userName" @@blur="user.validateUserName()" class="form-control" id="user-name" placeholder="username" :readonly="isEdit">
+                        <span v-if="!user.isUserNameValid" class="error invalid-feedback">Please provide a user name at least 3 characters long</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="user-email" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-4">
+                        <input type="text" v-model="user.email" @@blur="user.validateEmail()" class="form-control" id="user-email" placeholder="your@yours.com">
+                        <span v-if="!user.isEmailValid" class="error invalid-feedback">Please provide a valid email address</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="user-password" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-4">
+                        <input type="password" v-model="user.password" class="form-control" id="user-password" placeholder="">
+                        <span v-if="isEdit" class="feedback">Only enter a new password if it has changed - leaving this blank will not change the existing password</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="job-type" class="col-sm-2 col-form-label">Role</label>
+                    <div class="col-sm-4">
+                        <select v-model="user.role" class="form-control" id="user-role">
+                            <option value="@UserRoles.User">@UserRoles.User</option>
+                            <option value="@UserRoles.Admin">@UserRoles.Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div v-if="isEdit" class="form-group row">
+                    <label for="job-remote-delete" class="col-sm-2 col-form-label">Enabled</label>
+                    <div class="col-sm-4">
+                        <div class="form-check">
+                            <input type="checkbox" v-model="user.isEnabled" class="form-check-input" id="user-is-enabled" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">{{ submitButtonText }}</button>
+                </div>
+                <!-- /.card-footer -->
+            </form>
+        </div>
+        <!-- /.card-body -->
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
+    </div>
+
+</div>

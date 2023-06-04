@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Models.Job;
 using System;
@@ -55,6 +56,15 @@ namespace SftpSchedulerService.Tests
             jobLogEntity.Progress = Faker.RandomNumber.Next(1, 100);
             jobLogEntity.Status = JobStatus.InProgress;
             return jobLogEntity;
+
+        }
+
+        internal static UserEntity CreateUserEntity(string? id = null)
+        {
+            UserEntity userEntity = new UserEntity();
+            userEntity.Id = id ?? Guid.NewGuid().ToString();
+            userEntity.Email = Faker.Internet.Email();
+            return userEntity;
 
         }
 

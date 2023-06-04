@@ -80,6 +80,7 @@
             // make sure all is valid
             if (!this.host.validate()) {
                 this.isLoading = false;
+                UiHelpers.showErrorToast('Validation Failure', '', 'Host properties missing or incorrect.', 10000);
                 return;
             }
 
