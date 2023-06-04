@@ -25,7 +25,7 @@
     }
 
     validateEmail = function () {
-        this.isEmailValid = (this.email.length >= 5);
+        this.isEmailValid = (this.email != null && this.email.length >= 5);
         return this.isEmailValid;
     }
 
