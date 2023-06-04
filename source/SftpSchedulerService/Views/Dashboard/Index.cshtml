@@ -18,19 +18,17 @@
             <span class="info-box-icon"><i class="fa fa-right-left"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Jobs</span>
-                <span class="info-box-number">0</span>
+                <span class="info-box-number">{{ jobTotalCount }}</span>
                 <div class="progress">
                     <div class="progress-bar" style="width: 100%"></div>
                 </div>
-                <span class="progress-description">
-                    Total number of jobs
-                </span>
             </div>
 
         </div>
 
     </div>
 
+    @*
     <div class="col-md-3 col-sm-6 col-12">
         <div class="info-box bg-success">
             <span class="info-box-icon"><i class="far fa-thumbs-up"></i></span>
@@ -66,21 +64,18 @@
         </div>
 
     </div>
+    *@
 
     <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box bg-danger">
-            <span class="info-box-icon"><i class="fas fa-comments"></i></span>
+        <div class="info-box" :class="jobFailingClass">
+            <span class="info-box-icon"><i class="fas fa-triangle-exclamation"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Comments</span>
-                <span class="info-box-number">41,410</span>
+                <span class="info-box-text">Failing jobs</span>
+                <span class="info-box-number">{{ jobFailingCount }}</span>
                 <div class="progress">
-                    <div class="progress-bar" style="width: 70%"></div>
+                    <div class="progress-bar" :style="'width: ' + jobFailingPercentage + '%'"></div>
                 </div>
-                <span class="progress-description">
-                    70% Increase in 30 Days
-                </span>
             </div>
-
         </div>
 
     </div>

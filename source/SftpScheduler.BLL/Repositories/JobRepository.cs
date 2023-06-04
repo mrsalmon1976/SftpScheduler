@@ -14,6 +14,12 @@ namespace SftpScheduler.BLL.Repositories
             return await dbContext.QueryAsync<JobEntity>(sql);
         }
 
+        public virtual async Task<int> GetAllCountAsync(IDbContext dbContext)
+        {
+            const string sql = @"SELECT COUNT(Id) FROM Job";
+            return await dbContext.ExecuteScalarAsync<int>(sql);
+        }
+
         public virtual async Task<JobEntity> GetByIdAsync(IDbContext dbContext, int id)
         {
             const string sql = @"SELECT * FROM Job WHERE Id = @Id";

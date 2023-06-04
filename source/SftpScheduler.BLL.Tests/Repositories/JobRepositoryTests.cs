@@ -59,6 +59,35 @@ namespace SftpScheduler.BLL.Tests.Repositories
 
         #endregion
 
+        #region GetAllCountAsync Tests
+
+        [Test]
+        public void GetAllCountAsync_Integration_ReturnsDbRecords()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+                    int count = Faker.RandomNumber.Next(3, 10);
+
+                    for (int i= 0; i< count; i++)
+                    {
+                        dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    }
+
+                    JobRepository jobRepo = new JobRepository();
+                    int result = jobRepo.GetAllCountAsync(dbContext).Result;
+
+                    Assert.That(result, Is.EqualTo(count));
+                }
+            }
+        }
+
+        #endregion
+
         #region GetAllFailingAsync Tests
 
         [Test]
