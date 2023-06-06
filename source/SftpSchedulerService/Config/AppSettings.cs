@@ -15,14 +15,12 @@ namespace SftpSchedulerService.Config
             // this constructor for testing only
             this._configuration = null!;
             this.BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            this.IsAutomatedTestContext = true;
         }
 
-        public AppSettings(IConfiguration configurationManager, string baseDirectory, bool isAutomatedTestContext)
+        public AppSettings(IConfiguration configurationManager, string baseDirectory)
         {
             this._configuration = configurationManager;
             this.BaseDirectory = baseDirectory;
-            this.IsAutomatedTestContext = isAutomatedTestContext;
         }
 
         public virtual string BaseDirectory { get; private set; }
@@ -72,8 +70,6 @@ namespace SftpSchedulerService.Config
                 return connString.Replace("{AppDir}", BaseDirectory);
             }
         }
-
-        public bool IsAutomatedTestContext { get; set; }
 
         public virtual string JwtSecret
         {

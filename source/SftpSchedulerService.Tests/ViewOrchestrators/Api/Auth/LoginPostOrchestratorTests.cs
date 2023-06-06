@@ -125,7 +125,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
         private LoginPostOrchestrator CreateLoginPostOrchestrator(UserManager<UserEntity> userManager)
         {
             ILogger<LoginPostOrchestrator> logger = Substitute.For<ILogger<LoginPostOrchestrator>>();
-            AppSettings appSettings = Substitute.For<AppSettings>(Substitute.For<IConfiguration>(), String.Empty, true);
+            AppSettings appSettings = Substitute.For<AppSettings>(Substitute.For<IConfiguration>(), String.Empty);
             appSettings.JwtSecret.Returns(Guid.NewGuid().ToString());   
 
             return new LoginPostOrchestrator(logger, appSettings, userManager);

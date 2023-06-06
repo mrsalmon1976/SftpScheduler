@@ -168,7 +168,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<JobLogRepository>();
         }
 
-        public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings)
+        public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings, bool isUnitTestContext)
         {
             services.AddQuartz(q =>
             {
@@ -195,12 +195,10 @@ namespace SftpSchedulerService.BootStrapping
                 options.StartDelay = TimeSpan.FromSeconds(5);
             });
 
-            if (appSettings.IsAutomatedTestContext)
+            if (isUnitTestContext)
             {
                 Quartz.Logging.LogProvider.IsDisabled = true;
             }
-
-
         }
 
         public static void AddValidators(this IServiceCollection services)

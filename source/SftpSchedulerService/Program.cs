@@ -13,6 +13,7 @@ using SftpScheduler.Common.IO;
 using System.Diagnostics;
 using SftpScheduler.Common.Services;
 using SftpScheduler.Common.Diagnostics;
+using SftpSchedulerService.Utilities;
 
 Logger? logger = null;
 
@@ -26,19 +27,23 @@ builder.Host.UseWindowsService();
 
 try
 {
+    bool isUnitTestContext = AppUtils.IsUnitTestContext;
+
     // logging - do this first!
-    builder.Logging.ClearProviders();
-    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-    builder.Host.UseNLog();
+    if (!isUnitTestContext)
+    {
+        builder.Logging.ClearProviders();
+        builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+        builder.Host.UseNLog();
+    }
     logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 
     logger.Info("SftpScheduler starting up");
-    bool isAutomatedTestContext = (builder.Configuration["AutomatedTestContext"] == "TRUE");
-    logger.Info("Context: " + (isAutomatedTestContext ? "Automated tests" : "Application"));
+    logger.Debug("Context: " + (isUnitTestContext ? "Automated tests" : "Application"));
 
     // initialise app settings
     logger.Debug("Application base directory: {baseDirectory}", AppContext.BaseDirectory);
-    AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory, isAutomatedTestContext);
+    AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory);
 
 
     // add services
@@ -78,7 +83,7 @@ try
     builder.Services.AddCommands();
     builder.Services.AddControllerOrchestrators();
 
-    builder.Services.AddQuartzScheduler(appSettings);
+    builder.Services.AddQuartzScheduler(appSettings, isUnitTestContext);
 
     // set up 
     var app = builder.Build();
@@ -86,14 +91,14 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
-    if (!appSettings.IsAutomatedTestContext && !Debugger.IsAttached)
+    if (!isUnitTestContext && !Debugger.IsAttached)
     {
         app.Urls.Add($"http://0.0.0.0:{appSettings.Port}");
     }
     app.UseStaticFiles();
 
     app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
-    if (!appSettings.IsAutomatedTestContext) 
+    if (!isUnitTestContext) 
     {
         app.InitialiseDatabase(appSettings);
     }
