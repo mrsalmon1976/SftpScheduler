@@ -47,7 +47,7 @@ try
 
 
     // add services
-    builder.Services.AddHostedService<Worker>();
+    //builder.Services.AddHostedService<Worker>();
     builder.Services.AddControllers();
     builder.Services.AddRazorPages();
     builder.Services.AddAutoMapper(AutoMapperBootstrapper.Configure);
