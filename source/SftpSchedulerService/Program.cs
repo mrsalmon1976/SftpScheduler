@@ -30,12 +30,9 @@ try
     bool isUnitTestContext = AppUtils.IsUnitTestContext;
 
     // logging - do this first!
-    if (!isUnitTestContext)
-    {
-        builder.Logging.ClearProviders();
-        builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-        builder.Host.UseNLog();
-    }
+    builder.Logging.ClearProviders();
+    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+    builder.Host.UseNLog();
     logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 
     logger.Info("SftpScheduler starting up");
