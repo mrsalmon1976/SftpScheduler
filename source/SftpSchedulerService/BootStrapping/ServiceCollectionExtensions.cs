@@ -176,13 +176,21 @@ namespace SftpSchedulerService.BootStrapping
                 q.SchedulerName = "SftpScheduler";
                 q.UseMicrosoftDependencyInjectionJobFactory();
                 q.UseDefaultThreadPool(x => x.MaxConcurrency = appSettings.MaxConcurrentJobs);
-                q.UsePersistentStore(x =>
+                if (isUnitTestContext)
                 {
-                    x.UseProperties = true;
-                    x.Properties.Add("quartz.jobStore.txIsolationLevelSerializable", "true");
-                    x.UseSQLite(appSettings.DbConnectionStringQuartz);
-                    x.UseJsonSerializer();
-                });
+                    q.UseInMemoryStore();
+                    Quartz.Logging.LogProvider.IsDisabled = true;
+                }
+                else
+                {
+                    q.UsePersistentStore(x =>
+                    {
+                        x.UseProperties = true;
+                        x.Properties.Add("quartz.jobStore.txIsolationLevelSerializable", "true");
+                        x.UseSQLite(appSettings.DbConnectionStringQuartz);
+                        x.UseJsonSerializer();
+                    });
+                }
             });
 
             services.AddTransient<TransferJob>();
@@ -195,10 +203,6 @@ namespace SftpSchedulerService.BootStrapping
                 options.StartDelay = TimeSpan.FromSeconds(5);
             });
 
-            if (isUnitTestContext)
-            {
-                Quartz.Logging.LogProvider.IsDisabled = true;
-            }
         }
 
         public static void AddValidators(this IServiceCollection services)
