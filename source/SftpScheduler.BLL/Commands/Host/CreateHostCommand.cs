@@ -19,10 +19,10 @@ namespace SftpScheduler.BLL.Commands.Host
 
     public class CreateHostCommand : ICreateHostCommand
     {
-        private readonly HostValidator _hostValidator;
+        private readonly IHostValidator _hostValidator;
         private readonly IPasswordProvider _passwordProvider;
 
-        public CreateHostCommand(HostValidator hostValidator, IPasswordProvider passwordProvider)
+        public CreateHostCommand(IHostValidator hostValidator, IPasswordProvider passwordProvider)
         {
             _hostValidator = hostValidator;
             _passwordProvider = passwordProvider;

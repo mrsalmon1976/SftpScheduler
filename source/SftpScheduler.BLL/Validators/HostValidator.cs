@@ -8,7 +8,12 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Validators
 {
-    public class HostValidator
+    public interface IHostValidator
+    {
+        ValidationResult Validate(HostEntity hostEntity);
+    }
+
+    public class HostValidator : IHostValidator
     {
         public virtual ValidationResult Validate(HostEntity hostEntity)
         {

@@ -21,7 +21,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_ExecutesQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = EntityTestHelper.CreateHostEntity();
 
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
@@ -38,7 +38,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_InvalidHost_ThrowsDataValidationException()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = EntityTestHelper.CreateHostEntity();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
@@ -52,7 +52,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_PopulatesHostIdOnReturnValue()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
 
             var hostEntity = EntityTestHelper.CreateHostEntity();
             int newEntityId = Faker.RandomNumber.Next();
@@ -78,7 +78,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             hostEntity.Password = password;
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             // execute
@@ -99,7 +99,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             var hostEntity = EntityTestHelper.CreateHostEntity();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             // execute
@@ -116,8 +116,6 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
                 dbIntegrationTestHelper.CreateDatabase();
-                HostValidator hostValidator = Substitute.For<HostValidator>();
-                hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
                 CreateHostCommand createHostCommand = new CreateHostCommand(new HostValidator(), new PasswordProvider("test"));
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())

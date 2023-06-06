@@ -17,9 +17,9 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
         private readonly ILogger<HostFingerprintScanOrchestrator> _logger;
         private readonly ISessionWrapperFactory _sessionWrapperFactory;
         private readonly IMapper _mapper;
-        private readonly HostValidator _hostValidator;
+        private readonly IHostValidator _hostValidator;
 
-        public HostFingerprintScanOrchestrator(ILogger<HostFingerprintScanOrchestrator> logger, ISessionWrapperFactory sessionWrapperFactory, IMapper mapper, HostValidator hostValidator)
+        public HostFingerprintScanOrchestrator(ILogger<HostFingerprintScanOrchestrator> logger, ISessionWrapperFactory sessionWrapperFactory, IMapper mapper, IHostValidator hostValidator)
         {
             _logger = logger;
             _sessionWrapperFactory = sessionWrapperFactory;

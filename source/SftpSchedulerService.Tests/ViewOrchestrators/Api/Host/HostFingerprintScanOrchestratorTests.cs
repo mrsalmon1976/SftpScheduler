@@ -18,7 +18,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         public void Execute_HostInvalid_ReturnsBadRequest()
         {
             HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             ValidationResult validationResult = new ValidationResult("error");
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(validationResult);
 
@@ -43,7 +43,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         public void Execute_ScanThrowsError_ReturnsBadRequest()
         {
             HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
@@ -67,7 +67,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         public void Execute_ScanSuccess_ReturnsAlgorithmResults()
         {
             HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
             string sha256Fingerprint = "Fingerprint-" + SessionWrapper.AlgorithmSha256;
@@ -100,7 +100,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 
         }
 
-        private HostFingerprintScanOrchestrator CreateOrchestrator(HostValidator hostValidator, ISessionWrapperFactory? sessionWrapperFactory = null, IMapper? mapper = null)
+        private HostFingerprintScanOrchestrator CreateOrchestrator(IHostValidator hostValidator, ISessionWrapperFactory? sessionWrapperFactory = null, IMapper? mapper = null)
         {
             sessionWrapperFactory ??= Substitute.For<ISessionWrapperFactory>();
             mapper ??= AutoMapperTestHelper.CreateMapper();

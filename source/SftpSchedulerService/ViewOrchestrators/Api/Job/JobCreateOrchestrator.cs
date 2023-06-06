@@ -17,9 +17,9 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
     {
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IMapper _mapper;
-        private readonly CreateJobCommand _createJobCommand;
+        private readonly ICreateJobCommand _createJobCommand;
 
-        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, CreateJobCommand createJobCommand)
+        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, ICreateJobCommand createJobCommand)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;

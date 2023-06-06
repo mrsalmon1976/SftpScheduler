@@ -21,7 +21,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_ExecutesQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = EntityTestHelper.CreateHostEntity();
 
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
@@ -37,7 +37,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_InvalidHost_ThrowsDataValidationException()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = EntityTestHelper.CreateHostEntity();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
@@ -58,7 +58,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             hostEntity.Password = String.Empty;
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             dbContext.When(x => x.ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<HostEntity>())).Do((ci) =>
@@ -89,7 +89,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             hostEntity.Password = password;
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             dbContext.When(x => x.ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<HostEntity>())).Do((ci) =>
@@ -115,7 +115,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             var hostEntity = EntityTestHelper.CreateHostEntity();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostValidator hostValidator = Substitute.For<HostValidator>();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             // execute
@@ -132,7 +132,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
                 dbIntegrationTestHelper.CreateDatabase();
-                HostValidator hostValidator = Substitute.For<HostValidator>();
+                IHostValidator hostValidator = Substitute.For<IHostValidator>();
                 hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
                 UpdateHostCommand updateHostCommand = new UpdateHostCommand(new HostValidator(), new PasswordProvider("test"));
@@ -151,7 +151,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             }
         }
 
-        private static UpdateHostCommand CreateCommand(HostValidator hostValidator, IPasswordProvider? passwordProvider = null)
+        private static UpdateHostCommand CreateCommand(IHostValidator hostValidator, IPasswordProvider? passwordProvider = null)
         {
             passwordProvider = (passwordProvider == null ? Substitute.For<IPasswordProvider>() : passwordProvider);
             return new UpdateHostCommand(hostValidator, passwordProvider);

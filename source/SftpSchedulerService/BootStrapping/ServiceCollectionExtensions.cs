@@ -39,7 +39,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IDeleteHostCommand, DeleteHostCommand>();
             services.AddScoped<IUpdateHostCommand, UpdateHostCommand>();
 
-            services.AddScoped<CreateJobCommand>();
+            services.AddScoped<ICreateJobCommand, CreateJobCommand>();
             services.AddScoped<IExecuteJobCommand, ExecuteJobCommand>();
             services.AddScoped<IUpdateJobCommand, UpdateJobCommand>();
             services.AddScoped<ICreateJobLogCommand, CreateJobLogCommand>();
@@ -208,7 +208,7 @@ namespace SftpSchedulerService.BootStrapping
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddTransient<IEmailValidator, EmailValidator>();
-            services.AddTransient<HostValidator>();
+            services.AddTransient<IHostValidator, HostValidator>();
             services.AddTransient<IJobValidator, JobValidator>();
             services.AddTransient<IUserValidator, UserValidator>();
         }

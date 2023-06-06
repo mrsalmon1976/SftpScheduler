@@ -11,7 +11,12 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.Job
 {
-    public class CreateJobCommand : SaveJobAbstractCommand
+    public interface ICreateJobCommand
+    {
+        Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity);
+    }
+
+    public class CreateJobCommand : SaveJobAbstractCommand, ICreateJobCommand
     {
         private readonly IJobValidator _jobValidator;
         private readonly ISchedulerFactory _schedulerFactory;

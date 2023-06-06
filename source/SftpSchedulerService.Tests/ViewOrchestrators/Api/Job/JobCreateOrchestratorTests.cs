@@ -29,7 +29,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
-            CreateJobCommand createJobCommand = MockCreateJobCommand();
+            ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = ViewModelTestHelper.CreateJobViewModel();
 
             createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
@@ -47,7 +47,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
-            CreateJobCommand createJobCommand = MockCreateJobCommand();
+            ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = ViewModelTestHelper.CreateJobViewModel();
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
 
@@ -69,7 +69,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
-            CreateJobCommand createJobCommand = MockCreateJobCommand();
+            ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = ViewModelTestHelper.CreateJobViewModel();
             JobViewModel jobViewModelExpected = ViewModelTestHelper.CreateJobViewModel();
             jobViewModelExpected.Id = Faker.RandomNumber.Next();
@@ -86,11 +86,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             JobViewModel resultModel = (JobViewModel)result.Value;
 
             Assert.That(resultModel.Id, Is.EqualTo(jobViewModelExpected.Id));
-        }
-
-        private CreateJobCommand MockCreateJobCommand()
-        {
-            return Substitute.For<CreateJobCommand>(Substitute.For<IJobValidator>(), Substitute.For<ISchedulerFactory>());
         }
 
     }
