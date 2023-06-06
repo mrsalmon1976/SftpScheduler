@@ -14,20 +14,24 @@ using System.Diagnostics;
 using SftpScheduler.Common.Services;
 using SftpScheduler.Common.Diagnostics;
 
-var logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
+Logger? logger = null;
 
 var webApplicationOptions = new WebApplicationOptions()
 {
     Args = args,
-    ContentRootPath = AppContext.BaseDirectory,
-    //WebRootPath = AppContext.BaseDirectory
-    //ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
+    ContentRootPath = AppContext.BaseDirectory
 };
 var builder = WebApplication.CreateBuilder(webApplicationOptions);
 builder.Host.UseWindowsService();
 
 try
 {
+    // logging - do this first!
+    builder.Logging.ClearProviders();
+    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+    builder.Host.UseNLog();
+    logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
+
     logger.Info("SftpScheduler starting up");
     bool isAutomatedTestContext = (builder.Configuration["AutomatedTestContext"] == "TRUE");
     logger.Info("Context: " + (isAutomatedTestContext ? "Automated tests" : "Application"));
@@ -36,10 +40,6 @@ try
     logger.Debug("Application base directory: {baseDirectory}", AppContext.BaseDirectory);
     AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory, isAutomatedTestContext);
 
-    // logging
-    builder.Logging.ClearProviders();
-    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-    builder.Host.UseNLog();
 
     // add services
     builder.Services.AddHostedService<Worker>();
@@ -102,11 +102,20 @@ try
 }
 catch (Exception ex)
 {
-    logger.Fatal(ex, ex.Message);
+    if (logger != null)
+    {
+        logger.Fatal(ex, ex.Message);
+    }
+    else
+    {
+        // if we get here, our NLog setup failed so this is a last-gasp attempt
+        string logPath = Path.Combine(AppContext.BaseDirectory, "errordump.log");
+        File.WriteAllText(logPath, ex.Message + Environment.NewLine + ex.StackTrace);
+    }
 }
 finally
 {
-    logger.Info("SftpScheduler shutting down");
+    logger?.Info("SftpScheduler shutting down");
     NLog.LogManager.Shutdown();
 }
 public partial class Program 
