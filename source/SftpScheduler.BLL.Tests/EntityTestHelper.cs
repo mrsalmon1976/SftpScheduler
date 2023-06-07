@@ -9,6 +9,13 @@ namespace SftpScheduler.BLL.Tests
 {
     internal class EntityTestHelper
     {
+        internal static GlobalSettingEntity CreateGlobalSettingEntity(string? key = null)
+        {
+            GlobalSettingEntity globalSettingEntity = new GlobalSettingEntity();
+            globalSettingEntity.Id = key ?? Guid.NewGuid().ToString();
+            globalSettingEntity.SettingValue = Guid.NewGuid().ToString();
+            return globalSettingEntity;
+        }
 
         internal static HostEntity CreateHostEntity(int id = 0)
         {
@@ -54,8 +61,8 @@ namespace SftpScheduler.BLL.Tests
             userEntity.Id = id ?? Guid.NewGuid().ToString();
             userEntity.Email = Faker.Internet.Email();
             return userEntity;
-
         }
+
 
 
     }

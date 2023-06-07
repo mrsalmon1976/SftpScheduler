@@ -19,6 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.AutoUpdater.Tests", "SftpSchedulerService.AutoUpdater.Tests\SftpSchedulerService.AutoUpdater.Tests.csproj", "{20604B22-08C8-43B9-B531-7E7A834B8E1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpScheduler.BLL.TestInfrastructure", "SftpScheduler.BLL.TestInfrastructure\SftpScheduler.BLL.TestInfrastructure.csproj", "{A9368C1D-4419-40F4-9822-7E36D63CAA2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpSchedulerService.TestInfrastructure", "SftpSchedulerService.TestInfrastructure\SftpSchedulerService.TestInfrastructure.csproj", "{09BB3E25-4A05-45D9-997E-2AD7F2610513}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpScheduler.Common.TestInfrastructure", "SftpScheduler.Common.TestInfrastructure\SftpScheduler.Common.TestInfrastructure.csproj", "{5F01056C-B312-4251-9748-36CB881BADB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +63,18 @@ Global
 		{20604B22-08C8-43B9-B531-7E7A834B8E1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20604B22-08C8-43B9-B531-7E7A834B8E1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20604B22-08C8-43B9-B531-7E7A834B8E1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9368C1D-4419-40F4-9822-7E36D63CAA2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9368C1D-4419-40F4-9822-7E36D63CAA2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9368C1D-4419-40F4-9822-7E36D63CAA2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9368C1D-4419-40F4-9822-7E36D63CAA2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F01056C-B312-4251-9748-36CB881BADB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F01056C-B312-4251-9748-36CB881BADB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F01056C-B312-4251-9748-36CB881BADB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F01056C-B312-4251-9748-36CB881BADB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

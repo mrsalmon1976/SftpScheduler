@@ -20,7 +20,7 @@
 
         IEnumerable<string> EnumerateFiles(string path);
 
-        bool Exists(string path);
+        bool Exists(string? path);
 
         string[] GetFiles(string sourceDirectory, SearchOption searchOption, string searchPattern = "*.*");
 
@@ -126,7 +126,7 @@
             return Directory.EnumerateFiles(path);
         }
 
-        public bool Exists(string path)
+        public virtual bool Exists(string? path)
         {
             return Directory.Exists(path);
         }

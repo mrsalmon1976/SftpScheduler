@@ -1,0 +1,57 @@
+﻿@using SftpScheduler.BLL.Data;
+@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Settings";
+
+}
+@section PageActionMenu {
+}
+@section Scripts {
+    <environment-script src="~/js/models/settings.js"></environment-script>
+    <environment-script src="~/js/pages/settings/index.js"></environment-script>
+}
+<div id="app-settings" v-cloak>
+
+    <div class="card card-primary card-outline card-outline-tabs">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-settings-general" data-toggle="pill" href="#tab-settings-general-content" role="tab" aria-controls="tab-settings-general-content" aria-selected="true">General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-settings-smtp" data-toggle="pill" href="#tab-settings-smtp-content" role="tab" aria-controls="tab-settings-smtp-content" aria-selected="false">SMTP</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                @* General settings tab *@
+                <div class="tab-pane fade show active" id="tab-settings-general-content" role="tabpanel" aria-labelledby="tab-settings-general">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="job-schedule" class="col-sm-2 col-form-label">Concurrent Jobs</label>
+                            <div class="col-sm-4">
+                                <input type="number" v-model="settings.maxConcurrentJobs" size="2" min="1" max="20" class="form-control" id="settings-max-concurrent-jobs" autocomplete="false">
+                                <span class="feedback">
+                                    Be careful with this setting.  Too many concurrent jobs may overload the server or your network.  Changing this value will only take 
+                                    effect once the SftpSchedulerService is restarted.
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                @* SMTP tab *@
+                <div class="tab-pane fade" id="tab-settings-smtp-content" role="tabpanel" aria-labelledby="tab-settings-smtp">
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">Save Settings</button>
+            </div>
+        </div>
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
+    </div>
+</div>
+
+

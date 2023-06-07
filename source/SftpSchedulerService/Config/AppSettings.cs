@@ -25,6 +25,14 @@ namespace SftpSchedulerService.Config
 
         public virtual string BaseDirectory { get; private set; }
 
+        public virtual string DataDirectory
+        {
+            get
+            {
+                return Path.Combine(BaseDirectory, "Data");
+            }
+        }
+
         public virtual string DbPath
         {
             get
@@ -100,14 +108,6 @@ namespace SftpSchedulerService.Config
             get
             {
                 return _configuration["AppSettings:LatestVersionUrl"];
-            }
-        }
-
-        public virtual int MaxConcurrentJobs
-        {
-            get
-            {
-                return Convert.ToInt32(_configuration["AppSettings:MaxConcurrentJobs"]);
             }
         }
 

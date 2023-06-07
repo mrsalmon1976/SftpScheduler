@@ -41,7 +41,11 @@ try
     // initialise app settings
     logger.Debug("Application base directory: {baseDirectory}", AppContext.BaseDirectory);
     AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory);
-
+    IGlobalSettingsProvider globalSettingsProvider = new GlobalSettingsProvider(appSettings, new DirectoryUtility(), new FileUtility());
+    GlobalSettings globalSettings = globalSettingsProvider.Load();
+    builder.Services.AddSingleton<AppSettings>(appSettings);
+    builder.Services.AddSingleton<GlobalSettings>(globalSettings);
+    builder.Services.AddSingleton<IGlobalSettingsProvider>(globalSettingsProvider);
 
     // add services
     //builder.Services.AddHostedService<Worker>();
@@ -52,7 +56,6 @@ try
     // custom
     builder.Services.AddIdentity(appSettings);
 
-    builder.Services.AddSingleton<AppSettings>(appSettings);
     builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
     builder.Services.AddScoped<IDbContext>((sp) => new SQLiteDbContext(appSettings.DbPath));
     builder.Services.AddSingleton<ResourceUtils>();
@@ -80,7 +83,7 @@ try
     builder.Services.AddCommands();
     builder.Services.AddControllerOrchestrators();
 
-    builder.Services.AddQuartzScheduler(appSettings, isUnitTestContext);
+    builder.Services.AddQuartzScheduler(appSettings, globalSettings.MaxConcurrentJobs, isUnitTestContext);
 
     // set up 
     var app = builder.Build();

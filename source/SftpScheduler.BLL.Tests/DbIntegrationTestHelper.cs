@@ -95,5 +95,16 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
+        internal GlobalSettingEntity CreateGlobalSettingEntity(IDbContext dbContext)
+        {
+            GlobalSettingEntity globalSettingEntity = EntityTestHelper.CreateGlobalSettingEntity();
+
+            string sql = @"INSERT INTO GlobalSetting (Id, SettingValue) VALUES (@Id, @SettingValue)";
+            dbContext.ExecuteNonQueryAsync(sql, globalSettingEntity).GetAwaiter().GetResult();
+
+            return globalSettingEntity;
+
+        }
+
     }
 }

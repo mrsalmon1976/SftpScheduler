@@ -100,5 +100,11 @@
     "inputFiles": [
       "wwwroot/js/pages/user/form.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/models/settings.min.js",
+    "inputFiles": [
+      "wwwroot/js/models/settings.js"
+    ]
   }
 ]

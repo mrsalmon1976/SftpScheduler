@@ -9,8 +9,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="wwwroot\js\models\host - Copy.min.js" />
+    <Content Remove="wwwroot\js\models\settings.js" />
     <Content Remove="wwwroot\js\pages\auth\change-password.js" />
     <Content Remove="wwwroot\js\pages\auth\login - Copy.min.js" />
+    <Content Remove="wwwroot\js\pages\settings\form.min.js" />
+    <Content Remove="wwwroot\js\pages\settings\index.js" />
     <Content Remove="wwwroot\js\pages\update\index.min.js" />
     <Content Remove="wwwroot\js\pages\update\install.js" />
     <Content Remove="wwwroot\js\pages\user\form.js" />
@@ -40,6 +44,7 @@
     <PackageReference Include="Quartz.Serialization.Json" Version="3.6.2" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Models\Settings\" />
     <Folder Include="Pages\" />
     <Folder Include="wwwroot\plugins\moment\" />
   </ItemGroup>

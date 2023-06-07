@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Quartz;
-using Quartz.Impl;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Commands.Transfer;
@@ -168,14 +165,14 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<JobLogRepository>();
         }
 
-        public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings, bool isUnitTestContext)
+        public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings, int maxConcurrentJobs, bool isUnitTestContext)
         {
             services.AddQuartz(q =>
             {
                 q.SchedulerId = "SftpScheduler";
                 q.SchedulerName = "SftpScheduler";
                 q.UseMicrosoftDependencyInjectionJobFactory();
-                q.UseDefaultThreadPool(x => x.MaxConcurrency = appSettings.MaxConcurrentJobs);
+                q.UseDefaultThreadPool(x => x.MaxConcurrency = maxConcurrentJobs);
                 if (isUnitTestContext)
                 {
                     q.UseInMemoryStore();

@@ -19,6 +19,9 @@ namespace SftpScheduler.Common.IO
 
         void Move(string source, string target, bool overwrite);
 
+        string ReadAllText(string path);
+
+        void WriteAllText(string path, string contents);
     }
 
     public class FileUtility : IFileUtility
@@ -35,7 +38,7 @@ namespace SftpScheduler.Common.IO
         }
 
 
-        public bool Exists(string? path)
+        public virtual bool Exists(string? path)
         {
             return File.Exists(path);
         }
@@ -54,6 +57,14 @@ namespace SftpScheduler.Common.IO
             File.Move(source, target);
         }
 
+        public string ReadAllText(string path)
+        {
+            return File.ReadAllText(path);
+        }
 
+        public void WriteAllText(string path, string contents)
+        {
+            File.WriteAllText(path, contents);
+        }
     }
 }

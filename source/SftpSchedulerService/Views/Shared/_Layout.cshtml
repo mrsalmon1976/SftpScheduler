@@ -30,27 +30,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SftpScheduler | @ViewBag.PageTitle</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-
-
-    <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <!--
+    @*
     <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-    -->
+    *@
     <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!--
+    @*
     <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
-    -->
+    *@
     <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
     <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <environment-style href="~/css/custom.css" />
-    <!--
+    @*
     <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-    -->
+    *@
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 
@@ -115,6 +111,7 @@
                     RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fa-server", new string[] { UserRoles.Admin });
                     RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt", new string[] { UserRoles.Admin });
                     RenderMenuItem("menu-users", "Users", "/users", "fa-users", new string[] { UserRoles.Admin });
+                    RenderMenuItem("menu-settings", "Settings", "/settings", "fa-gear", new string[] { UserRoles.Admin });
                 }
             </ul>
             </nav>
@@ -164,14 +161,10 @@
     </div>
 <!-- ./wrapper -->
 
-<!-- jQuery -->
 <script src="~/plugins/jquery/jquery.min.js"></script>
-<!--
-<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
--->
 <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/plugins/moment/moment.min.js"></script>
-    <!--
+ @*
 <script src="plugins/chart.js/Chart.min.js"></script>
 <script src="plugins/sparklines/sparkline.js"></script>
 <script src="plugins/jqvmap/jquery.vmap.min.js"></script>
@@ -180,7 +173,7 @@
 <script src="plugins/daterangepicker/daterangepicker.js"></script>
 <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
--->
+*@
 <script src="~/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <script src="~/plugins/axios/axios.min.js"></script>
 <script src="~/plugins/mitt/mitt.umd.js"></script>
