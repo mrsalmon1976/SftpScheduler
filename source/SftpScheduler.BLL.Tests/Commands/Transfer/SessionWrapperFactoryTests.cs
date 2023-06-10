@@ -1,13 +1,10 @@
 ﻿using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
 using WinSCP;
 
 namespace SftpScheduler.BLL.Tests.Commands.Transfer
@@ -25,18 +22,48 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             hostEntity.Password = encryptedPassword;
 
             // set up
-            IPasswordProvider passwordProvider = Substitute.For<IPasswordProvider>();
-            passwordProvider.Decrypt(encryptedPassword).Returns(decryptedPasswrd);
+            IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
+            encryptionProvider.Decrypt(encryptedPassword).Returns(decryptedPasswrd);
 
             // execute
-            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(passwordProvider);
+            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(encryptionProvider);
             ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity);
 
             // assert
-            passwordProvider.Received(1).Decrypt(encryptedPassword);
+            encryptionProvider.Received(1).Decrypt(encryptedPassword);
             Assert.That(sessionWrapper.SessionOptions.Password, Is.EqualTo(decryptedPasswrd));
 
         }
+
+        [Test]
+        public void CreateSession_DecryptionFails_ThrowsApplicationException()
+        {
+            string encryptedPassword = Guid.NewGuid().ToString();
+            string decryptedPasswrd = Guid.NewGuid().ToString();
+
+            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
+            hostEntity.Password = encryptedPassword;
+
+            // set up
+            IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
+            encryptionProvider.Decrypt(encryptedPassword).Throws(new CryptographicException());
+
+            // execute
+            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(encryptionProvider);
+            try
+            {
+                sessionWrapperFactory.CreateSession(hostEntity);
+                Assert.Fail("ApplicationException not thrown");
+            }
+            catch (ApplicationException aex)
+            {
+                Assert.That(aex.Message.StartsWith("Unable to decrypt password"));
+            }
+
+            // assert
+            encryptionProvider.Received(1).Decrypt(encryptedPassword);
+        }
+
 
         [TestCase("")]
         [TestCase(null)]
@@ -46,7 +73,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             hostEntity.KeyFingerprint = hostKeyFingerprint;
 
             // execute
-            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IPasswordProvider>());
+            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IEncryptionProvider>());
             ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity);
 
             // assert
@@ -63,7 +90,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             hostEntity.KeyFingerprint = hostKeyFingerprint;
 
             // execute
-            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IPasswordProvider>());
+            ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IEncryptionProvider>());
             ISessionWrapper sessionWrapper = sessionWrapperFactory.CreateSession(hostEntity);
 
             // assert

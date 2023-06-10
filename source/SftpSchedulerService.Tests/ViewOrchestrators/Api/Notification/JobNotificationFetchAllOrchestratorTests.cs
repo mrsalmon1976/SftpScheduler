@@ -1,24 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Validators;
-using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Caching;
-using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Models.Notification;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.

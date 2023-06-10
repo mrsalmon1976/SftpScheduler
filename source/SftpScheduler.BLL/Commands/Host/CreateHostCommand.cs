@@ -2,13 +2,7 @@
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Security;
-using SftpScheduler.BLL.Utility;
 using SftpScheduler.BLL.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.Host
 {
@@ -20,12 +14,12 @@ namespace SftpScheduler.BLL.Commands.Host
     public class CreateHostCommand : ICreateHostCommand
     {
         private readonly IHostValidator _hostValidator;
-        private readonly IPasswordProvider _passwordProvider;
+        private readonly IEncryptionProvider _encryptionProvider;
 
-        public CreateHostCommand(IHostValidator hostValidator, IPasswordProvider passwordProvider)
+        public CreateHostCommand(IHostValidator hostValidator, IEncryptionProvider encryptionProvider)
         {
             _hostValidator = hostValidator;
-            _passwordProvider = passwordProvider;
+            _encryptionProvider = encryptionProvider;
         }
 
         public virtual async Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity)
@@ -36,7 +30,7 @@ namespace SftpScheduler.BLL.Commands.Host
                 throw new DataValidationException("Host details supplied are invalid", validationResult);
             }
 
-            hostEntity.Password = _passwordProvider.Encrypt(hostEntity.Password);
+            hostEntity.Password = _encryptionProvider.Encrypt(hostEntity.Password);
 
             string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, KeyFingerprint, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @KeyFingerprint, @Created)";
             await dbContext.ExecuteNonQueryAsync(sql, hostEntity);

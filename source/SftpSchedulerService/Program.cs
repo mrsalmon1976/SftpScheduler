@@ -62,7 +62,8 @@ try
     builder.Services.AddScoped<IDirectoryUtility, DirectoryUtility>();
     builder.Services.AddScoped<IFileUtility, FileUtility>();
     builder.Services.AddScoped<IFileTransferService, FileTransferService>();
-    builder.Services.AddScoped<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
+    builder.Services.AddScoped<IPasswordProvider, PasswordProvider>();
+    builder.Services.AddScoped<IEncryptionProvider>((sp) => new EncryptionProvider(AppConstants.SecretKeyContainer));
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();
     builder.Services.AddScoped<ICacheProvider, CacheProvider>();
     builder.Services.AddSingleton<SftpScheduler.Common.Web.IHttpClientFactory, SftpScheduler.Common.Web.HttpClientFactory>();

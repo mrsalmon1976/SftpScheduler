@@ -1,11 +1,5 @@
 ﻿using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using WinSCP;
 
 namespace SftpScheduler.BLL.Commands.Transfer
@@ -18,11 +12,11 @@ namespace SftpScheduler.BLL.Commands.Transfer
     public class SessionWrapperFactory : ISessionWrapperFactory
     {
         private const int DefaultPort = 21;
-        private readonly IPasswordProvider _passwordProvider;
+        private readonly IEncryptionProvider _encryptionProvider;
 
-        public SessionWrapperFactory(IPasswordProvider passwordProvider)
+        public SessionWrapperFactory(IEncryptionProvider encryptionProvider)
         {
-            _passwordProvider = passwordProvider;
+            _encryptionProvider = encryptionProvider;
         }
 
         public ISessionWrapper CreateSession(HostEntity hostEntity)
@@ -43,8 +37,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
             if (!String.IsNullOrWhiteSpace(hostEntity.Password))
             {
-                string password = _passwordProvider.Decrypt(hostEntity.Password);
-                sessionOptions.Password = password;
+                sessionOptions.Password = DecryptPassword(hostEntity);
             }
 
             if (String.IsNullOrEmpty(hostEntity.KeyFingerprint))
@@ -58,6 +51,19 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
             ISessionWrapper sessionWrapper = new SessionWrapper(sessionOptions);
             return sessionWrapper;
+        }
+
+        private string DecryptPassword(HostEntity host)
+        {
+            try
+            {
+                return _encryptionProvider.Decrypt(host.Password);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Unable to decrypt password on host [{host.Name}]- this will need to be reset on the console.", ex);
+            }
+
         }
 
     }

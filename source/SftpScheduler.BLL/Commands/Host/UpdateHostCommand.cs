@@ -20,12 +20,12 @@ namespace SftpScheduler.BLL.Commands.Host
     public class UpdateHostCommand : IUpdateHostCommand
     {
         private readonly IHostValidator _hostValidator;
-        private readonly IPasswordProvider _passwordProvider;
+        private readonly IEncryptionProvider _encryptionProvider;
 
-        public UpdateHostCommand(IHostValidator hostValidator, IPasswordProvider passwordProvider)
+        public UpdateHostCommand(IHostValidator hostValidator, IEncryptionProvider encryptionProvider)
         {
             _hostValidator = hostValidator;
-            _passwordProvider = passwordProvider;
+            _encryptionProvider = encryptionProvider;
         }
 
         public virtual async Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity)
@@ -41,7 +41,7 @@ namespace SftpScheduler.BLL.Commands.Host
 
             if (isPasswordUpdated)
             {
-                hostEntity.Password = _passwordProvider.Encrypt(hostEntity.Password);
+                hostEntity.Password = _encryptionProvider.Encrypt(hostEntity.Password);
                 passwordUpdateText = "@Password";
             }
 

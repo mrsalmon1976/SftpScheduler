@@ -51,7 +51,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHostPasswordLeftBlank_PasswordNotUpdated()
         {
             // setup
-            IPasswordProvider passwordProvider = Substitute.For<IPasswordProvider>();
+            IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
             string executedSql = String.Empty;
 
             var hostEntity = EntityTestHelper.CreateHostEntity();
@@ -67,12 +67,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             });
 
             // execute
-            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator, passwordProvider);
+            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator, encryptionProvider);
             HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
 
             // assert
             Assert.That(result, Is.Not.Null);
-            passwordProvider.DidNotReceive().Encrypt(Arg.Any<string>());
+            encryptionProvider.DidNotReceive().Encrypt(Arg.Any<string>());
 
             Assert.That(executedSql.Contains("Password = Password"));
         }
@@ -81,7 +81,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHostPasswordChanged_PasswordEncryptedBeforeStorage()
         {
             // setup
-            IPasswordProvider passwordProvider = Substitute.For<IPasswordProvider>();
+            IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
             string password = Guid.NewGuid().ToString();
             string executedSql = String.Empty;
 
@@ -98,12 +98,12 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             });
 
             // execute
-            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator, passwordProvider);
+            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator, encryptionProvider);
             HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
 
             // assert
             Assert.That(result, Is.Not.Null);
-            passwordProvider.Received(1).Encrypt(password);
+            encryptionProvider.Received(1).Encrypt(password);
 
             Assert.That(executedSql.Contains("Password = @Password"));
         }
@@ -135,7 +135,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
                 IHostValidator hostValidator = Substitute.For<IHostValidator>();
                 hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
-                UpdateHostCommand updateHostCommand = new UpdateHostCommand(new HostValidator(), new PasswordProvider("test"));
+                UpdateHostCommand updateHostCommand = new UpdateHostCommand(new HostValidator(), new EncryptionProvider("SftpSchedulerTests"));
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
                     DateTime dtBefore = DateTime.UtcNow;
@@ -151,10 +151,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             }
         }
 
-        private static UpdateHostCommand CreateCommand(IHostValidator hostValidator, IPasswordProvider? passwordProvider = null)
+        private static UpdateHostCommand CreateCommand(IHostValidator hostValidator, IEncryptionProvider? encryptionProvider = null)
         {
-            passwordProvider = (passwordProvider == null ? Substitute.For<IPasswordProvider>() : passwordProvider);
-            return new UpdateHostCommand(hostValidator, passwordProvider);
+            encryptionProvider = (encryptionProvider == null ? Substitute.For<IEncryptionProvider>() : encryptionProvider);
+            return new UpdateHostCommand(hostValidator, encryptionProvider);
         }
 
 
