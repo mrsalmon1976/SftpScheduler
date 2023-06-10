@@ -44,7 +44,6 @@ try
     IGlobalSettingsProvider globalSettingsProvider = new GlobalSettingsProvider(appSettings, new DirectoryUtility(), new FileUtility());
     GlobalSettings globalSettings = globalSettingsProvider.Load();
     builder.Services.AddSingleton<AppSettings>(appSettings);
-    builder.Services.AddSingleton<GlobalSettings>(globalSettings);
     builder.Services.AddSingleton<IGlobalSettingsProvider>(globalSettingsProvider);
 
     // add services
@@ -65,7 +64,7 @@ try
     builder.Services.AddScoped<IFileTransferService, FileTransferService>();
     builder.Services.AddScoped<IPasswordProvider>((sp) => new PasswordProvider(appSettings.SecretKey));
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();
-    builder.Services.AddScoped<ICacheProvider,  CacheProvider>();
+    builder.Services.AddScoped<ICacheProvider, CacheProvider>();
     builder.Services.AddSingleton<SftpScheduler.Common.Web.IHttpClientFactory, SftpScheduler.Common.Web.HttpClientFactory>();
     builder.Services.AddSingleton<IProcessWrapperFactory, ProcessWrapperFactory>();
 
@@ -81,7 +80,7 @@ try
     builder.Services.AddRepositories();
     builder.Services.AddValidators();
     builder.Services.AddCommands();
-    builder.Services.AddControllerOrchestrators();
+    builder.Services.AddViewOrchestrators();
 
     builder.Services.AddQuartzScheduler(appSettings, globalSettings.MaxConcurrentJobs, isUnitTestContext);
 

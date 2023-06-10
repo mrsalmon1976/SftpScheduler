@@ -28,7 +28,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Dashboard
             IEnumerable<JobEntity> failedJobs = CreateJobEntities(failedCount);
 
             jobRepo.GetAllCountAsync(dbContext).Returns(totalCount);
-            jobRepo.GetAllFailingAsync(dbContext).Returns(failedJobs);
+            jobRepo.GetAllFailingActiveAsync(dbContext).Returns(failedJobs);
 
             // execute
             IDashboardFetchAllOrchestrator orchestrator = CreateOrchestrator(dbContextFactory, jobRepo);

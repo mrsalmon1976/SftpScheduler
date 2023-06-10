@@ -38,7 +38,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             IDbContext dbContext = Substitute.For<IDbContext>();
             dbContextFactory.GetDbContext().Returns(dbContext);
 
-            jobRepo.GetAllFailingAsync(dbContext).Returns(Enumerable.Empty<JobEntity>());
+            jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Enumerable.Empty<JobEntity>());
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Enumerable.Empty<JobEntity>());
 
             // execute
@@ -70,7 +70,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
                 failingJobs.Add(EntityTestHelper.CreateJobEntity(i));
             }
 
-            jobRepo.GetAllFailingAsync(dbContext).Returns(failingJobs);
+            jobRepo.GetAllFailingActiveAsync(dbContext).Returns(failingJobs);
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Enumerable.Empty<JobEntity>());
 
             // execute
@@ -106,7 +106,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
 
             // assert
             cacheProvider.Received(1).Get<List<JobNotificationViewModel>>(CacheKeys.JobNotifications);
-            jobRepo.DidNotReceive().GetAllFailingAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
+            jobRepo.DidNotReceive().GetAllFailingActiveAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
             jobRepo.DidNotReceive().GetAllFailedSinceAsync(Arg.Any<IDbContext>(), Arg.Any<DateTime>()).GetAwaiter().GetResult();
 
             IEnumerable<JobNotificationViewModel> notificationsResult = result.Value as IEnumerable<JobNotificationViewModel>;
@@ -135,7 +135,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
 
             // assert
             cacheProvider.Received(1).Get<List<JobNotificationViewModel>>(CacheKeys.JobNotifications);
-            jobRepo.Received(1).GetAllFailingAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
+            jobRepo.Received(1).GetAllFailingActiveAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
             jobRepo.Received(1).GetAllFailedSinceAsync(Arg.Any<IDbContext>(), Arg.Any<DateTime>()).GetAwaiter().GetResult();
             cacheProvider.Received(1).Set(CacheKeys.JobNotifications, Arg.Any<object>(), Arg.Any<TimeSpan>());
             }
@@ -158,7 +158,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
                 warningJobs.Add(EntityTestHelper.CreateJobEntity(i));
             }
 
-            jobRepo.GetAllFailingAsync(dbContext).Returns(Enumerable.Empty<JobEntity>());
+            jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Enumerable.Empty<JobEntity>());
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);
 
             // execute
@@ -199,7 +199,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
 
             int totalJobCount = failingJobCount + warningJobCount;
 
-            jobRepo.GetAllFailingAsync(dbContext).Returns(failingJobs);
+            jobRepo.GetAllFailingActiveAsync(dbContext).Returns(failingJobs);
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);
 
             // execute
@@ -232,7 +232,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             warningJobs.Add(EntityTestHelper.CreateJobEntity(2));
             warningJobs.Add(EntityTestHelper.CreateJobEntity(3));
 
-            jobRepo.GetAllFailingAsync(dbContext).Returns(failingJobs);
+            jobRepo.GetAllFailingActiveAsync(dbContext).Returns(failingJobs);
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);
 
             // execute

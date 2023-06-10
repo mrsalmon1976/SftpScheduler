@@ -88,10 +88,10 @@ namespace SftpScheduler.BLL.Tests.Repositories
 
         #endregion
 
-        #region GetAllFailingAsync Tests
+        #region GetAllFailingActiveAsync Tests
 
         [Test]
-        public void GetAllFailingAsync_IntegrationNoRecords_ReturnsEmptyEnum()
+        public void GetAllFailingActiveAsync_IntegrationNoRecords_ReturnsEmptyEnum()
         {
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
@@ -100,7 +100,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
                     JobRepository jobRepo = new JobRepository();
-                    JobEntity[] result = jobRepo.GetAllFailingAsync(dbContext).Result.ToArray();
+                    JobEntity[] result = jobRepo.GetAllFailingActiveAsync(dbContext).Result.ToArray();
 
                     Assert.That(result.Length, Is.EqualTo(0));
                 }
@@ -108,7 +108,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
         }
 
         [Test]
-        public void GetAllFailingAsync_IntegrationOnlyFailingJobs_ReturnsAllJobs()
+        public void GetAllFailingActiveAsync_IntegrationOnlyFailingJobs_ReturnsAllJobs()
         {
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
@@ -127,7 +127,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
                     dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity2.Id, JobStatus.Failed);
 
                     JobRepository jobRepo = new JobRepository();
-                    JobEntity[] result = jobRepo.GetAllFailingAsync(dbContext).Result.ToArray();
+                    JobEntity[] result = jobRepo.GetAllFailingActiveAsync(dbContext).Result.ToArray();
 
                     Assert.That(result.Length, Is.EqualTo(2));
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
@@ -137,7 +137,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
         }
 
         [Test]
-        public void GetAllFailingAsync_IntegrationSomeFailingJobs_ReturnsJobs()
+        public void GetAllFailingActiveAsync_IntegrationSomeFailingJobs_ReturnsJobs()
         {
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
@@ -161,12 +161,43 @@ namespace SftpScheduler.BLL.Tests.Repositories
                     dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity3.Id, JobStatus.Success);
 
                     JobRepository jobRepo = new JobRepository();
-                    JobEntity[] result = jobRepo.GetAllFailingAsync(dbContext).Result.ToArray();
+                    JobEntity[] result = jobRepo.GetAllFailingActiveAsync(dbContext).Result.ToArray();
 
                     Assert.That(result.Length, Is.EqualTo(2));
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity2.Id), Is.Not.Null);
                     Assert.That(result.SingleOrDefault(x => x.Id == jobEntity3.Id), Is.Null);
+                }
+            }
+        }
+
+        [Test]
+        public void GetAllFailingActiveAsync_IntegrationWithDisabledJobs_OnlyReturnsEnabledJobs()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity1.Id, JobStatus.Failed);
+
+                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id, false);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity2.Id, JobStatus.Failed);
+
+                    JobEntity jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity3.Id, JobStatus.Failed);
+
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllFailingActiveAsync(dbContext).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(2));
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity2.Id), Is.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity3.Id), Is.Not.Null);
                 }
             }
         }

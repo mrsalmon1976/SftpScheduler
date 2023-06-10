@@ -33,7 +33,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 
                 using (IDbContext dbContext = _dbContextFactory.GetDbContext())
                 {
-                    var failingJobsTask = _jobRepo.GetAllFailingAsync(dbContext);
+                    var failingJobsTask = _jobRepo.GetAllFailingActiveAsync(dbContext);
                     var warningJobsTask = _jobRepo.GetAllFailedSinceAsync(dbContext, DateTime.Now.AddDays(-1));
 
                     await Task.WhenAll(failingJobsTask, warningJobsTask);

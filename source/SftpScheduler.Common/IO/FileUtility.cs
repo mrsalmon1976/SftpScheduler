@@ -21,7 +21,7 @@ namespace SftpScheduler.Common.IO
 
         string ReadAllText(string path);
 
-        void WriteAllText(string path, string contents);
+        Task WriteAllTextAsync(string path, string contents);
     }
 
     public class FileUtility : IFileUtility
@@ -62,9 +62,9 @@ namespace SftpScheduler.Common.IO
             return File.ReadAllText(path);
         }
 
-        public void WriteAllText(string path, string contents)
+        public Task WriteAllTextAsync(string path, string contents)
         {
-            File.WriteAllText(path, contents);
+            return File.WriteAllTextAsync(path, contents);
         }
     }
 }

@@ -7,13 +7,13 @@
     },
     methods: {
         async loadSettings() {
-        //    let result = await axios.get('/api/hosts')
-        //        .catch(err => {
-        //            UiHelpers.showErrorToast('Error', '', err.message);
-        //            this.isLoading = false;
-        //        });
+            let result = await axios.get('/api/settings')
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    this.isLoading = false;
+                });
 
-            //    this.allHosts = result.data;
+            this.settings.maxConcurrentJobs = result.data.maxConcurrentJobs;
             this.isLoading = false;
         },
         setLogReloadInterval() {
@@ -37,7 +37,7 @@
             await axios.post(url, this.settings)
 
                 .then(response => {
-                    //window.location.href = '/jobs';
+                    UiHelpers.showSuccessToast('Global settings successfully updated');
                 })
                 .catch(err => {
                     if (err.response && err.response.data && err.response.data.errorMessages) {
@@ -49,12 +49,13 @@
                     else {
                         UiHelpers.showErrorToast('Validation Error', '', err.message);
                     }
-                    this.isLoading = false;
                 });
+            this.isLoading = false;
         }
     },
     mounted: function () {
         this.isLoading = true;
+        UiHelpers.setPageHeader('Global Settings');
         this.loadSettings();
     }
 }).mount('#app-settings')

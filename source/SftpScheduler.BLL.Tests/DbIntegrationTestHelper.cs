@@ -58,10 +58,11 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId)
+        internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId, bool isEnabled = true)
         {
             JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
             jobEntity.HostId = hostId;
+            jobEntity.IsEnabled = isEnabled;
 
             string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, IsEnabled, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @IsEnabled, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();

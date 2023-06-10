@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Repositories;
 using SftpScheduler.Common.IO;
 
 namespace SftpSchedulerService.Config
@@ -12,6 +9,7 @@ namespace SftpSchedulerService.Config
 
         GlobalSettings Load();
 
+        Task Save(GlobalSettings globalSettings);
 
     }
 
@@ -19,6 +17,8 @@ namespace SftpSchedulerService.Config
     {
         private readonly IDirectoryUtility _dirUtility;
         private readonly IFileUtility _fileUtility;
+
+        private GlobalSettings? _globalSettings;
 
         public GlobalSettingsProvider(IDirectoryUtility dirUtility, IFileUtility fileUtility)
         {
@@ -31,7 +31,7 @@ namespace SftpSchedulerService.Config
             _dirUtility = dirUtility;
             _fileUtility = fileUtility;
 
-            FilePath = Path.Combine(appSettings.DataDirectory, "global.json");
+            FilePath = Path.Combine(appSettings.DataDirectory, "global.settings.json");
         }
 
         //private T GetDefaultValue<T>(GlobalSettingKey settingKey)
@@ -61,21 +61,25 @@ namespace SftpSchedulerService.Config
 
         public GlobalSettings Load()
         {
-            GlobalSettings? globalSettings = null;
-            if (_fileUtility.Exists(this.FilePath))
+            if (_globalSettings == null)
             {
-                string fileData = _fileUtility.ReadAllText(FilePath);
-                globalSettings = JsonConvert.DeserializeObject<GlobalSettings>(fileData);
+                if (_fileUtility.Exists(this.FilePath))
+                {
+                    string fileData = _fileUtility.ReadAllText(FilePath);
+                    _globalSettings = JsonConvert.DeserializeObject<GlobalSettings>(fileData);
+                }
+                _globalSettings ??= new GlobalSettings();
             }
-            return globalSettings ?? new GlobalSettings();
+            return _globalSettings;
         }
 
-        public void Save(GlobalSettings globalSettings)
+        public async Task Save(GlobalSettings globalSettings)
         {
             string dataDirectory = Path.GetDirectoryName(FilePath)!;
             _dirUtility.Create(dataDirectory);
             string fileData = JsonConvert.SerializeObject(globalSettings, Formatting.Indented);
-            _fileUtility.WriteAllText(FilePath, fileData);
+            await _fileUtility.WriteAllTextAsync(FilePath, fileData);
+            _globalSettings = globalSettings;
         }
 
 

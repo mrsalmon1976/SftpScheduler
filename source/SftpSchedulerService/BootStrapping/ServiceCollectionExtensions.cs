@@ -22,6 +22,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Update;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
 using System.Text;
 using SftpSchedulerService.ViewOrchestrators.Api.Dashboard;
+using SftpSchedulerService.ViewOrchestrators.Api.Settings;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -122,7 +123,7 @@ namespace SftpSchedulerService.BootStrapping
 
         }
 
-        public static void AddControllerOrchestrators(this IServiceCollection services)
+        public static void AddViewOrchestrators(this IServiceCollection services)
         {
             services.AddScoped<ICronGetScheduleOrchestrator, CronGetScheduleOrchestrator>();
 
@@ -151,6 +152,9 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IUpdateInstallOrchestrator, UpdateInstallOrchestrator>();
 
             services.AddScoped<IChangePasswordPostOrchestrator, ChangePasswordPostOrchestrator>();
+
+            services.AddScoped<ISettingsFetchAllOrchestrator, SettingsFetchAllOrchestrator>();
+            services.AddScoped<ISettingsUpdateOrchestrator, SettingsUpdateOrchestrator>();
 
             services.AddScoped<IUserCreateOrchestrator, UserCreateOrchestrator>();
             services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();

@@ -26,7 +26,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Dashboard
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 var totalJobCountTask = _jobRepository.GetAllCountAsync(dbContext);
-                var failingJobsTask = _jobRepository.GetAllFailingAsync(dbContext);
+                var failingJobsTask = _jobRepository.GetAllFailingActiveAsync(dbContext);
 
                 await Task.WhenAll(totalJobCountTask, failingJobsTask);
 

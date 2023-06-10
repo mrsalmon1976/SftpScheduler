@@ -44,7 +44,6 @@
     <PackageReference Include="Quartz.Serialization.Json" Version="3.6.2" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\Settings\" />
     <Folder Include="Pages\" />
     <Folder Include="wwwroot\plugins\moment\" />
   </ItemGroup>
