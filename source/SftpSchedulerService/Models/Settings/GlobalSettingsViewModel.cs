@@ -2,6 +2,10 @@
 {
     public class GlobalSettingsViewModel
     {
+        public int DigestTime { get; set; }
+
+        public string[] DigestDays { get; set; } = Array.Empty<string>();
+
         public int MaxConcurrentJobs { get; set; }
 
         public string SmtpHost { get; set; } = String.Empty;

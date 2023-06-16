@@ -17,6 +17,8 @@
                     this.isLoading = false;
                 });
 
+            this.settings.digestDays = result.data.digestDays;
+            this.settings.digestTime = result.data.digestTime;
             this.settings.maxConcurrentJobs = result.data.maxConcurrentJobs;
             this.settings.smtpHost = result.data.smtpHost;
             this.settings.smtpPort = result.data.smtpPort;

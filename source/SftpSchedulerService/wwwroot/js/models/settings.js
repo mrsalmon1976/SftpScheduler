@@ -1,5 +1,7 @@
 ﻿class SettingsModel {
     constructor() {
+        this.digestDays = [],
+        this.digestTime = 1,
         this.maxConcurrentJobs = 1;
 
         this.smtpHost = '';

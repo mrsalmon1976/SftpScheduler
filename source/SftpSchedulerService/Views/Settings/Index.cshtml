@@ -3,6 +3,20 @@
     Layout = "_Layout";
     ViewBag.PageTitle = "Settings";
 
+    List<SelectListItem> DigestDayOptions = new List<SelectListItem>();
+    for (int i=0; i<= 23; i++)
+    {
+        string hr = i.ToString();
+        DigestDayOptions.Add(new SelectListItem(hr.PadLeft(2, '0') + ":00", hr));
+    }
+
+
+    void RenderDigestCheckBox(DayOfWeek dayOfWeek)
+    {
+        <input type="checkbox" id="settings-digest-day-@dayOfWeek" value="@dayOfWeek" v-model="settings.digestDays" style="margin-right:3px;" />
+        <label for="settings-digest-day-@dayOfWeek" class="form-check-label">@dayOfWeek.ToString().ToUpper().Substring(0, 3)</label>
+        @Html.Raw("&nbsp;")
+    }
 }
 @section PageActionMenu {
 }
@@ -65,7 +79,7 @@
                         <div class="form-group row">
                             <label for="settings-smtp-password" class="col-sm-2 col-form-label">Password</label>
                             <div class="col-sm-4">
-                                <input type="checkbox" id="smtp-password-unchanged" v-model="settings.smtpPasswordIgnored" /> <label for="smtp-password-unchanged">Leave unchanged</label><br />
+                                <input type="checkbox" class="form-check-label" id="smtp-password-unchanged" v-model="settings.smtpPasswordIgnored" /> <label for="smtp-password-unchanged">Leave unchanged</label><br />
                                 <input type="password" v-model="settings.smtpPassword" class="form-control" id="settings-smtp-password" placeholder="" :readonly="settings.smtpPasswordIgnored">
                             </div>
                         </div>
@@ -86,6 +100,36 @@
                             <div class="col-sm-4">
                                 <input type="text" v-model="settings.smtpFromEmail" @@blur="settings.validateSmtpFromEmail()" class="form-control" id="settings-smtp-from-email" placeholder="donotreply@yourdomain.com">
                                 <span v-if="!settings.isSmtpFromEmailValid" class="error invalid-feedback">Please provide a valid email address</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                @* Notifications tab *@
+                <div class="tab-pane fade show active" id="tab-settings-notifications" role="tabpanel" aria-labelledby="tab-settings-notifications">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="settings-digest-days" class="col-sm-2 col-form-label">Email Digest Days</label>
+                            <div class="col-sm-4">
+                                @{
+                                    RenderDigestCheckBox(DayOfWeek.Monday);
+                                    RenderDigestCheckBox(DayOfWeek.Tuesday);
+                                    RenderDigestCheckBox(DayOfWeek.Wednesday);
+                                    RenderDigestCheckBox(DayOfWeek.Thursday);
+                                    RenderDigestCheckBox(DayOfWeek.Friday);
+                                    RenderDigestCheckBox(DayOfWeek.Saturday);
+                                    RenderDigestCheckBox(DayOfWeek.Sunday);
+                                }
+                                <br />
+                                <span class="feedback">
+                                    If days are selected and SMTP properties have been captured, an email will be sent to all administrators on these days if there are failing jobs.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-digest-time" class="col-sm-2 col-form-label">Email Digest Time</label>
+                            <div class="col-sm-4">
+                                <select v-model="settings.digestTime" class="form-control" asp-items="DigestDayOptions">
+                                </select>
                             </div>
                         </div>
                     </form>

@@ -10,6 +10,8 @@ namespace SftpSchedulerService.Models.Settings
         public static GlobalSettingsViewModel MapToViewModel(GlobalSettings globalSetting)
         {
             GlobalSettingsViewModel model = new GlobalSettingsViewModel();
+            model.DigestDays = globalSetting.DigestDays.Select(x => x.ToString()).ToArray();
+            model.DigestTime = globalSetting.DigestTime;
             model.MaxConcurrentJobs = globalSetting.MaxConcurrentJobs;
             model.SmtpHost = globalSetting.Smtp.Host;
             model.SmtpPort = globalSetting.Smtp.Port;
@@ -24,6 +26,8 @@ namespace SftpSchedulerService.Models.Settings
         public static GlobalSettings MapToConfig(GlobalSettingsViewModel viewModel)
         {
             GlobalSettings settings = new GlobalSettings();
+            settings.DigestDays = viewModel.DigestDays.Select(x => Enum.Parse<DayOfWeek>(x)).ToArray();
+            settings.DigestTime = viewModel.DigestTime;
             settings.MaxConcurrentJobs = viewModel.MaxConcurrentJobs;
             settings.Smtp.Host = viewModel.SmtpHost;
             settings.Smtp.Port = viewModel.SmtpPort;
