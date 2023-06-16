@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 
 namespace SftpScheduler.BLL.Validators
@@ -14,7 +15,9 @@ namespace SftpScheduler.BLL.Validators
         public bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
+            {
                 return false;
+            }
 
             try
             {
@@ -45,6 +48,16 @@ namespace SftpScheduler.BLL.Validators
 
             try
             {
+                new MailAddress(email);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+
+            try
+            {
                 return Regex.IsMatch(email,
                     @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
                     RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
@@ -53,6 +66,7 @@ namespace SftpScheduler.BLL.Validators
             {
                 return false;
             }
+
         }
     }
 }

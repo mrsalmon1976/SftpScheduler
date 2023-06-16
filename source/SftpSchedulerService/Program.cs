@@ -14,6 +14,7 @@ using System.Diagnostics;
 using SftpScheduler.Common.Services;
 using SftpScheduler.Common.Diagnostics;
 using SftpSchedulerService.Utilities;
+using SftpScheduler.BLL.Net;
 
 Logger? logger = null;
 
@@ -65,6 +66,7 @@ try
     builder.Services.AddScoped<IPasswordProvider, PasswordProvider>();
     builder.Services.AddScoped<IEncryptionProvider>((sp) => new EncryptionProvider(AppConstants.SecretKeyContainer));
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();
+    builder.Services.AddScoped<ISmtpClientWrapper, SmtpClientWrapper>();
     builder.Services.AddScoped<ICacheProvider, CacheProvider>();
     builder.Services.AddSingleton<SftpScheduler.Common.Web.IHttpClientFactory, SftpScheduler.Common.Web.HttpClientFactory>();
     builder.Services.AddSingleton<IProcessWrapperFactory, ProcessWrapperFactory>();

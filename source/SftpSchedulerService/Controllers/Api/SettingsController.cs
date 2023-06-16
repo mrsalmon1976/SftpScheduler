@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using SftpSchedulerService.ViewOrchestrators.Api.Settings;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Models.Settings;
+using SftpSchedulerService.Models.Host;
+using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -13,11 +15,16 @@ namespace SftpSchedulerService.Controllers.Api
     {
         private readonly ISettingsFetchAllOrchestrator _settingsFetchAllOrchestrator;
         private readonly ISettingsUpdateOrchestrator _settingsUpdateOrchestrator;
+        private readonly ISettingsEmailTestOrchestrator _settingsEmailTestOrchestrator;
 
-        public SettingsController(ISettingsFetchAllOrchestrator settingsFetchAllOrchestrator, ISettingsUpdateOrchestrator settingsUpdateOrchestrator)
+        public SettingsController(ISettingsFetchAllOrchestrator settingsFetchAllOrchestrator
+            , ISettingsUpdateOrchestrator settingsUpdateOrchestrator
+            , ISettingsEmailTestOrchestrator settingsEmailTestOrchestrator
+            )
         {
             _settingsFetchAllOrchestrator = settingsFetchAllOrchestrator;
             _settingsUpdateOrchestrator = settingsUpdateOrchestrator;
+            _settingsEmailTestOrchestrator = settingsEmailTestOrchestrator;
         }
 
         [HttpGet]
@@ -26,13 +33,19 @@ namespace SftpSchedulerService.Controllers.Api
             return await _settingsFetchAllOrchestrator.Execute();
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GlobalSettingsViewModel model)
         {
             return await _settingsUpdateOrchestrator.Execute(model);
         }
 
+
+        [HttpPost]
+        [Route("email-test")]
+        public async Task<IActionResult> Post([FromBody] EmailTestViewModel model)
+        {
+            return await _settingsEmailTestOrchestrator.Execute(model);
+        }
 
 
     }

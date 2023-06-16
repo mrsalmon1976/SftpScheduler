@@ -2,7 +2,11 @@
     data() {
         return {
             isLoading: true,
+            isSmtpTabSelected: false,
             settings: new SettingsModel(),
+            testEmailToAddress: '',
+            testEmailSubject: 'SftpScheduler Test Email',
+            testEmailBody: 'This is a test email from SftpScheduler.',
         }
     },
     methods: {
@@ -14,7 +18,44 @@
                 });
 
             this.settings.maxConcurrentJobs = result.data.maxConcurrentJobs;
+            this.settings.smtpHost = result.data.smtpHost;
+            this.settings.smtpPort = result.data.smtpPort;
+            this.settings.smtpUserName = result.data.smtpUserName;
+            this.settings.smtpFromName = result.data.smtpFromName;
+            this.settings.smtpFromEmail = result.data.smtpFromEmail;
             this.isLoading = false;
+        },
+        openTestEmailDialog() {
+            $('#modal-test-email').modal();
+        },
+        async sendTestEmail() {
+            var emailData = {
+                host: this.settings.smtpHost,
+                port: this.settings.smtpPort,
+                userName: this.settings.smtpUserName,
+                password: this.settings.smtpPassword,
+                fromAddress: this.settings.smtpFromEmail,
+                enableSsl: this.settings.smtpEnableSsl,
+                toAddress: this.testEmailToAddress,
+                subject: this.testEmailSubject,
+                body: this.testEmailBody
+            };
+            var url = '/api/settings/email-test';
+            await axios.post(url, emailData)
+                .then(response => {
+                    UiHelpers.showSuccessToast('Test email successfully sent');
+                })
+                .catch(err => {
+                    if (err.response && err.response.data && err.response.data.errorMessages) {
+                        var errMessages = err.response.data.errorMessages;
+                        for (var i = 0; i < errMessages.length; i++) {
+                            UiHelpers.showErrorToast('Validation Error', '', errMessages[i]);
+                        }
+                    }
+                    else {
+                        UiHelpers.showErrorToast('Unexpected Error', '', err.message);
+                    }
+                });
         },
         setLogReloadInterval() {
             var that = this;
@@ -57,5 +98,11 @@
         this.isLoading = true;
         UiHelpers.setPageHeader('Global Settings');
         this.loadSettings();
+
+        var that = this;
+        $(document).on('shown.bs.tab', function (e)
+        {
+            that.isSmtpTabSelected = (e.target.innerText == 'SMTP');
+        });
     }
 }).mount('#app-settings')

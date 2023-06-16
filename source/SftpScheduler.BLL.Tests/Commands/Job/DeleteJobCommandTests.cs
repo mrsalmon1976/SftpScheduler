@@ -58,7 +58,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             int jobId = Faker.RandomNumber.Next(5, 1000);
-            string jobKeyName = TransferJob.GetJobKeyName(jobId);
+            string jobKeyName = JobUtils.GetJobKeyName(jobId);
 
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
             IScheduler scheduler = Substitute.For<IScheduler>();

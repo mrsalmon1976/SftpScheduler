@@ -8,23 +8,23 @@ using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Validators
 {
-    public interface IHostValidator
+    public interface ISmtpHostValidator
     {
-        ValidationResult Validate(HostEntity hostEntity);
+        ValidationResult Validate(SmtpHost smtpHost);
     }
 
-    public class HostValidator : IHostValidator
+    public class SmtpHostValidator : ISmtpHostValidator
     {
-        public virtual ValidationResult Validate(HostEntity smtpHostEntity)
+        public virtual ValidationResult Validate(SmtpHost smtpHost)
         {
-            if (smtpHostEntity == null) 
+            if (smtpHost == null) 
             { 
-                throw new NullReferenceException("No host entity supplied for validation"); 
+                throw new NullReferenceException("No SmtpHost supplied for validation"); 
             }
 
             var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
 
-            bool isValid = Validator.TryValidateObject(smtpHostEntity, new ValidationContext(smtpHostEntity), validationResults, true);
+            bool isValid = Validator.TryValidateObject(smtpHost, new ValidationContext(smtpHost), validationResults, true);
             if (!isValid)
             {
                 IEnumerable<string> errors = validationResults.Where(x => !String.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage ?? "");

@@ -15,6 +15,7 @@ namespace SftpScheduler.BLL.Jobs
     public class TransferJob : IJob
     {
         public const string DefaultGroup = "TransferJob";
+
         private readonly ILogger<TransferJob> _logger;
         private readonly IDbContextFactory _dbContextFactory;
         private readonly ITransferCommand _transferCommand;
@@ -35,29 +36,9 @@ namespace SftpScheduler.BLL.Jobs
             _updateJobLogCompleteCommand = updateJobLogCompleteCommand;
         }
 
-        public static string GetJobKeyName(int jobId)
-        {
-            return $"Job.{jobId}";
-        }
-
-        public static int GetJobIdFromKeyName(string keyName)
-        {
-            string[] tokens = (keyName ?? String.Empty).Split('.');
-            if (tokens.Length <= 1)
-            {
-                throw new InvalidOperationException($"Invalid key name '{keyName}'");
-            }
-            return Convert.ToInt32(tokens[tokens.Length - 1]);
-        }
-
-        public static string GetTriggerKeyName(int jobId)
-        {
-            return $"Trigger.{jobId}";
-        }
-
         public async Task Execute(IJobExecutionContext context)
         {
-            int jobId = GetJobIdFromKeyName(context.JobDetail.Key.Name);
+            int jobId = JobUtils.GetJobIdFromKeyName(context.JobDetail.Key.Name);
             string jobStatus = JobStatus.Success;
             string? errorMessage = null;
             int jobLogId = 0;

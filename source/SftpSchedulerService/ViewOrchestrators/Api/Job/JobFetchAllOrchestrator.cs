@@ -41,7 +41,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
                 {
                     if (jobViewModel.IsEnabled)
                     {
-                        TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobViewModel.Id), TransferJob.DefaultGroup);
+                        TriggerKey triggerKey = new TriggerKey(JobUtils.GetTriggerKeyName(jobViewModel.Id), TransferJob.DefaultGroup);
                         ITrigger? trigger = await scheduler.GetTrigger(triggerKey);
                         if (trigger != null)
                         {

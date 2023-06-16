@@ -29,7 +29,7 @@
                 <div class="tab-pane fade show active" id="tab-settings-general-content" role="tabpanel" aria-labelledby="tab-settings-general">
                     <form class="form-horizontal">
                         <div class="form-group row">
-                            <label for="job-schedule" class="col-sm-2 col-form-label">Concurrent Jobs</label>
+                            <label for="settings-max-concurrent-jobs" class="col-sm-2 col-form-label">Concurrent Jobs</label>
                             <div class="col-sm-4">
                                 <input type="number" v-model="settings.maxConcurrentJobs" size="2" min="1" max="20" class="form-control" id="settings-max-concurrent-jobs" autocomplete="false">
                                 <span class="feedback">
@@ -42,16 +42,105 @@
                 </div>
                 @* SMTP tab *@
                 <div class="tab-pane fade" id="tab-settings-smtp-content" role="tabpanel" aria-labelledby="tab-settings-smtp">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="settings-smtp-host" class="col-sm-2 col-form-label">Host</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="settings.smtpHost" @@blur="settings.validateSmtpHost()" class="form-control" id="settings-smtp-host" placeholder="mail.yourdomain.com or 192.168.0.1">
+                                <span v-if="!settings.isSmtpHostValid" class="error invalid-feedback">Please provide a valid host</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-smtp-port" class="col-sm-2 col-form-label">Port</label>
+                            <div class="col-sm-4">
+                                <input type="number" v-model="settings.smtpPort" size="2" min="1" max="65536" class="form-control" id="settings-smtp-port" autocomplete="false">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-smtp-user" class="col-sm-2 col-form-label">User name</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="settings.smtpUserName" class="form-control" id="settings-smtp-user" placeholder="User name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-smtp-password" class="col-sm-2 col-form-label">Password</label>
+                            <div class="col-sm-4">
+                                <input type="checkbox" id="smtp-password-unchanged" v-model="settings.smtpPasswordIgnored" /> <label for="smtp-password-unchanged">Leave unchanged</label><br />
+                                <input type="password" v-model="settings.smtpPassword" class="form-control" id="settings-smtp-password" placeholder="" :readonly="settings.smtpPasswordIgnored">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-smtp-ssl-enabled" class="col-sm-2 col-form-label">SSL Enabled</label>
+                            <div class="col-sm-4">
+                                <input type="checkbox" id="smtp-ssl-enabled" v-model="settings.smtpEnableSsl" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-smtp-from-name" class="col-sm-2 col-form-label">From Name</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="settings.smtpFromName" class="form-control" id="settings-smtp-from-name" placeholder="SftpScheduler">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-smtp-from-email" class="col-sm-2 col-form-label">From Email</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="settings.smtpFromEmail" @@blur="settings.validateSmtpFromEmail()" class="form-control" id="settings-smtp-from-email" placeholder="donotreply@yourdomain.com">
+                                <span v-if="!settings.isSmtpFromEmailValid" class="error invalid-feedback">Please provide a valid email address</span>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="card-footer">
-                <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">Save Settings</button>
+                <button type="button" @@click="submit" class="btn btn-primary" :disabled="isLoading">Save Settings</button>
+                <button type="button" @@click="openTestEmailDialog" class="btn btn-info" v-if="isSmtpTabSelected" style="margin-left:10px;">Send Test Email</button>
             </div>
         </div>
         <div class="overlay dark" v-if="isLoading">
             <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
         </div>
     </div>
+
+    @* TEST EMAIL DIALOG *@
+    <div class="modal fade" id="modal-test-email" tabindex="-1" role="dialog" aria-labelledby="modal-delete-host-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-test-email-label">Send Test Email</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="settings-test-email-to-address" class="col-sm-4 col-form-label">To Address</label>
+                            <div class="col-sm-8">
+                                <input type="email" v-model="testEmailToAddress" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-test-email-subject" class="col-sm-4 col-form-label">Subject</label>
+                            <div class="col-sm-8">
+                                <input type="text" v-model="testEmailSubject" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-test-email-subject" class="col-sm-4 col-form-label">Body</label>
+                            <div class="col-sm-8">
+                                <input type="text" v-model="testEmailBody" class="form-control" maxlength="255" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-dark btn-primary" v-on:click="sendTestEmail">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 

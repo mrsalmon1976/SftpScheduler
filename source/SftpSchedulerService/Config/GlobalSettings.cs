@@ -8,5 +8,7 @@ namespace SftpSchedulerService.Config
 
         public int MaxConcurrentJobs { get; set; } = DefaultMaxConcurrentJobs;
 
+        public GlobalSmtpSettings Smtp { get; set; } = new GlobalSmtpSettings();
+
     }
 }

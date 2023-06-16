@@ -351,3 +351,4 @@ MigrationBackup/
 
 deployment/build/**
 deployment/*.zip
+private/

@@ -63,7 +63,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             jobEntity.IsEnabled = true;
             JobEntity[] jobEntities = { jobEntity };
 
-            TriggerKey triggerKey = new TriggerKey(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup);
+            TriggerKey triggerKey = new TriggerKey(JobUtils.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup);
 
             DateTime nextFireTime = DateTime.UtcNow.AddSeconds(Faker.RandomNumber.Next(1, 1000));
             ITrigger trigger = Substitute.For<ITrigger>();

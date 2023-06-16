@@ -18,7 +18,7 @@ namespace SftpScheduler.BLL.Commands.Job
         {
 
             IScheduler scheduler = await schedulerFactory.GetScheduler();
-            JobKey jobKey = new JobKey(TransferJob.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup);
+            JobKey jobKey = new JobKey(JobUtils.GetJobKeyName(jobEntity.Id), TransferJob.DefaultGroup);
             bool isExistingJob = await scheduler.CheckExists(jobKey);
 
             // if there is an existing job, just delete it not matter what
@@ -38,7 +38,7 @@ namespace SftpScheduler.BLL.Commands.Job
 
                 // Trigger the job 
                 ITrigger trigger = TriggerBuilder.Create()
-                  .WithIdentity(TransferJob.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup)
+                  .WithIdentity(JobUtils.GetTriggerKeyName(jobEntity.Id), TransferJob.DefaultGroup)
                   .WithCronSchedule(jobEntity.Schedule)
                   .Build();
 

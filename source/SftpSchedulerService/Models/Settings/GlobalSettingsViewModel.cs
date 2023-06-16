@@ -2,6 +2,22 @@
 {
     public class GlobalSettingsViewModel
     {
-        public int MaxConcurrentJobs { get; set; } 
+        public int MaxConcurrentJobs { get; set; }
+
+        public string SmtpHost { get; set; } = String.Empty;
+
+        public int SmtpPort { get; set; }
+
+        public string SmtpUserName { get; set; } = String.Empty;
+
+        public string SmtpPassword { get; set; } = String.Empty;
+
+        public bool SmtpEnableSsl { get; set; } = true;
+
+        public bool SmtpPasswordIgnored { get; set; } = true;
+
+        public string SmtpFromName { get; set; } = String.Empty;
+
+        public string SmtpFromEmail { get; set; } = String.Empty;
     }
 }

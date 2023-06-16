@@ -155,6 +155,7 @@ namespace SftpSchedulerService.BootStrapping
 
             services.AddScoped<ISettingsFetchAllOrchestrator, SettingsFetchAllOrchestrator>();
             services.AddScoped<ISettingsUpdateOrchestrator, SettingsUpdateOrchestrator>();
+            services.AddScoped<ISettingsEmailTestOrchestrator, SettingsEmailTestOrchestrator>();
 
             services.AddScoped<IUserCreateOrchestrator, UserCreateOrchestrator>();
             services.AddScoped<IUserFetchAllOrchestrator, UserFetchAllOrchestrator>();
@@ -211,6 +212,7 @@ namespace SftpSchedulerService.BootStrapping
             services.AddTransient<IEmailValidator, EmailValidator>();
             services.AddTransient<IHostValidator, HostValidator>();
             services.AddTransient<IJobValidator, JobValidator>();
+            services.AddTransient<ISmtpHostValidator, SmtpHostValidator>();
             services.AddTransient<IUserValidator, UserValidator>();
         }
     }
