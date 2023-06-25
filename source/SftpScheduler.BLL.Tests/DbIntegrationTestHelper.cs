@@ -39,7 +39,18 @@ namespace SftpScheduler.BLL.Tests
             dbMigrator.MigrateDbChanges();
         }
 
-        internal HostEntity CreateHostEntity(IDbContext dbContext)
+		internal GlobalUserSettingEntity CreateGlobalUserSettingEntity(IDbContext dbContext, string id, string settingValue)
+		{
+			GlobalUserSettingEntity settingEntity = EntityTestHelper.CreateGlobalUserSettingEntity(id, settingValue);
+
+			string sql = @"INSERT INTO GlobalUserSetting (Id, SettingValue) VALUES (@Id, @SettingValue)";
+			dbContext.ExecuteNonQueryAsync(sql, settingEntity).GetAwaiter().GetResult();
+
+			return settingEntity;
+
+		}
+
+		internal HostEntity CreateHostEntity(IDbContext dbContext)
         {
             HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
 
@@ -88,17 +99,6 @@ namespace SftpScheduler.BLL.Tests
             jobLog.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
 
             return jobLog;
-
-        }
-
-        internal GlobalSettingEntity CreateGlobalSettingEntity(IDbContext dbContext)
-        {
-            GlobalSettingEntity globalSettingEntity = EntityTestHelper.CreateGlobalSettingEntity();
-
-            string sql = @"INSERT INTO GlobalSetting (Id, SettingValue) VALUES (@Id, @SettingValue)";
-            dbContext.ExecuteNonQueryAsync(sql, globalSettingEntity).GetAwaiter().GetResult();
-
-            return globalSettingEntity;
 
         }
 

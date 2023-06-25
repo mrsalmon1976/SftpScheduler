@@ -96,3 +96,8 @@ CREATE TABLE IF NOT EXISTS AspNetUserTokens (
 	PRIMARY KEY(UserId, LoginProvider, Name)
 	FOREIGN KEY(UserId) REFERENCES AspNetUsers(Id)
 );
+CREATE TABLE IF NOT EXISTS GlobalUserSetting (
+	Id TEXT NOT NULL,
+	SettingValue TEXT NOT NULL,
+	PRIMARY KEY(Id)
+);

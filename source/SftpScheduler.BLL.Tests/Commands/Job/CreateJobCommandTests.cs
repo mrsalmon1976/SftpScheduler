@@ -199,8 +199,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             scheduler.When(x => x.ScheduleJob(Arg.Any<IJobDetail>(), Arg.Any<ITrigger>())).Do((c) =>
             {
                 ITrigger trigger = c.ArgAt<ITrigger>(1);
-                Assert.That(trigger.Key.Group, Is.EqualTo($"{TransferJob.DefaultGroup}"));
-                Assert.That(trigger.Key.Name, Is.EqualTo($"Trigger.{jobEntity.Id}"));
+                Assert.That(trigger.Key.Group, Is.EqualTo($"{TransferJob.GroupName}"));
+                Assert.That(trigger.Key.Name, Is.EqualTo($"TransferTrigger.{jobEntity.Id}"));
             });
 
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
@@ -224,8 +224,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             scheduler.When(x => x.ScheduleJob(Arg.Any<IJobDetail>(), Arg.Any<ITrigger>())).Do((c) =>
             {
                 IJobDetail jobDetail = c.ArgAt<IJobDetail>(0);
-                Assert.That(jobDetail.Key.Group, Is.EqualTo($"{TransferJob.DefaultGroup}"));
-                Assert.That(jobDetail.Key.Name, Is.EqualTo($"Job.{jobEntity.Id}"));
+                Assert.That(jobDetail.Key.Group, Is.EqualTo($"{TransferJob.GroupName}"));
+                Assert.That(jobDetail.Key.Name, Is.EqualTo($"TransferJob.{jobEntity.Id}"));
             });
 
 

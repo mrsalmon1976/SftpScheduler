@@ -58,7 +58,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             int jobId = Faker.RandomNumber.Next(5, 1000);
-            string jobKeyName = JobUtils.GetJobKeyName(jobId);
+            string jobKeyName = TransferJob.JobKeyName(jobId);
 
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
             IScheduler scheduler = Substitute.For<IScheduler>();
@@ -67,7 +67,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             DeleteJobCommand deleteJobCommand = new DeleteJobCommand(schedulerFactory);
             deleteJobCommand.ExecuteAsync(dbContext, jobId).GetAwaiter().GetResult();
 
-            scheduler.Received(1).DeleteJob(new JobKey(jobKeyName, TransferJob.DefaultGroup));
+            scheduler.Received(1).DeleteJob(new JobKey(jobKeyName, TransferJob.GroupName));
         }
 
         [Test]

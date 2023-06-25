@@ -63,7 +63,8 @@ namespace SftpScheduler.BLL.Tests.Data
         [TestCase("AspNetUserLogins")]
         [TestCase("AspNetUserRoles")]
         [TestCase("AspNetUserTokens")]
-        public void MigrateDbChanges_Integration_TableCreated(string tableName)
+		[TestCase("GlobalUserSetting")]
+		public void MigrateDbChanges_Integration_TableCreated(string tableName)
         {
             IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
             IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());

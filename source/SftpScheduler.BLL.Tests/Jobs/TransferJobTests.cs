@@ -25,9 +25,9 @@ namespace SftpScheduler.BLL.Tests.Jobs
         {
             int jobId = Faker.RandomNumber.Next(1, 10000);
 
-            string jobName = JobUtils.GetJobKeyName(jobId);
+            string jobName = TransferJob.JobKeyName(jobId);
 
-            Assert.That(jobName, Is.EqualTo($"Job.{jobId}"));
+            Assert.That(jobName, Is.EqualTo($"TransferJob.{jobId}"));
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
             int jobId = Faker.RandomNumber.Next(1, 10000);
             string jobName = $"Job.{jobId}";
 
-            int result = JobUtils.GetJobIdFromKeyName(jobName);
+            int result = TransferJob.JobIdFromKeyName(jobName);
 
             Assert.That(result, Is.EqualTo(jobId));
         }

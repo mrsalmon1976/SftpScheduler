@@ -9,15 +9,17 @@ namespace SftpScheduler.BLL.Tests
 {
     internal class EntityTestHelper
     {
-        internal static GlobalSettingEntity CreateGlobalSettingEntity(string? key = null)
-        {
-            GlobalSettingEntity globalSettingEntity = new GlobalSettingEntity();
-            globalSettingEntity.Id = key ?? Guid.NewGuid().ToString();
-            globalSettingEntity.SettingValue = Guid.NewGuid().ToString();
-            return globalSettingEntity;
-        }
+		internal static GlobalUserSettingEntity CreateGlobalUserSettingEntity(string? id = null, string? settingValue = null)
+		{
+			GlobalUserSettingEntity settingEntity = new GlobalUserSettingEntity();
+			settingEntity.Id = id ?? Guid.NewGuid().ToString();
+			settingEntity.SettingValue = settingValue ?? Guid.NewGuid().ToString(); 
+			return settingEntity;
 
-        internal static HostEntity CreateHostEntity(int id = 0)
+		}
+
+
+		internal static HostEntity CreateHostEntity(int id = 0)
         {
             HostEntity hostEntity = new HostEntity();
             hostEntity.Id = id;

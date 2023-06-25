@@ -23,6 +23,8 @@ using SftpSchedulerService.ViewOrchestrators.Api.User;
 using System.Text;
 using SftpSchedulerService.ViewOrchestrators.Api.Dashboard;
 using SftpSchedulerService.ViewOrchestrators.Api.Settings;
+using SftpScheduler.BLL.Commands.Notification;
+using SftpScheduler.BLL.Commands.Setting;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -51,6 +53,11 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IUpdateJobLogCompleteCommand, UpdateJobLogCompleteCommand>();
 
             services.AddScoped<ITransferCommand, TransferCommand>();
+
+            services.AddScoped<IUpsertGlobalUserSettingCommand, UpsertGlobalUserSettingCommand>();
+
+
+			services.AddScoped<IUpsertDigestCommand, UpsertDigestCommand>();
         }
 
         public static void AddIdentity(this IServiceCollection services, AppSettings appSettings)
@@ -165,8 +172,9 @@ namespace SftpSchedulerService.BootStrapping
 
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<HostRepository>();
-            services.AddScoped<JobRepository>();
+            services.AddScoped<GlobalUserSettingRepository>();
+			services.AddScoped<HostRepository>();
+			services.AddScoped<JobRepository>();
             services.AddScoped<JobLogRepository>();
         }
 

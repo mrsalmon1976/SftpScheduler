@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SftpScheduler.BLL\SftpScheduler.BLL.csproj" />
-    <ProjectReference Include="..\SftpSchedulerService.AutoUpdater\SftpSchedulerService.AutoUpdater.csproj" />
     <ProjectReference Include="..\SftpScheduler.Common\SftpScheduler.Common.csproj" />
   </ItemGroup>
 

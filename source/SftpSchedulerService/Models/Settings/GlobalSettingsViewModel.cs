@@ -23,5 +23,6 @@
         public string SmtpFromName { get; set; } = String.Empty;
 
         public string SmtpFromEmail { get; set; } = String.Empty;
-    }
+
+	}
 }

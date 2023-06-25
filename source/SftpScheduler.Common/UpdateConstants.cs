@@ -14,13 +14,13 @@ namespace SftpScheduler.Common
 
         public const string UpdateTempFolderName = "__UpdateTemp";
 
-        public const string AutoUpdaterFolderName = "AutoUpdater";
+        public const string UpdaterFolderName = "Updater";
 
-        public const string AutoUpdaterNewFileExtension = ".new";
+        public const string UpdaterNewFileExtension = ".new";
 
         public const string LogFolderName = "logs";
 
-        public const string AutoUpdaterExeFileName = "SftpSchedulerService.AutoUpdater.exe";
+        public const string UpdaterExeFileName = "SftpSchedulerServiceUpdater.exe";
 
         public const string ApplicationExeFileName = "SftpSchedulerService.exe";
 

@@ -15,6 +15,8 @@ using SftpScheduler.Common.Services;
 using SftpScheduler.Common.Diagnostics;
 using SftpSchedulerService.Utilities;
 using SftpScheduler.BLL.Net;
+using SftpScheduler.BLL.Commands.Notification;
+using SftpScheduler.BLL.Config;
 
 Logger? logger = null;
 
@@ -42,14 +44,17 @@ try
     // initialise app settings
     logger.Debug("Application base directory: {baseDirectory}", AppContext.BaseDirectory);
     AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory);
-    IGlobalSettingsProvider globalSettingsProvider = new GlobalSettingsProvider(appSettings, new DirectoryUtility(), new FileUtility());
-    GlobalSettings globalSettings = globalSettingsProvider.Load();
     builder.Services.AddSingleton<AppSettings>(appSettings);
-    builder.Services.AddSingleton<IGlobalSettingsProvider>(globalSettingsProvider);
+	builder.Services.AddScoped<IGlobalUserSettingProvider, GlobalUserSettingProvider>();
 
-    // add services
-    //builder.Services.AddHostedService<Worker>();
-    builder.Services.AddControllers();
+	IStartupSettingProvider startupSettingsProvider = new StartupSettingProvider(appSettings, new DirectoryUtility(), new FileUtility());
+	builder.Services.AddSingleton<IStartupSettingProvider>(startupSettingsProvider);
+	StartupSettings startupSettings = startupSettingsProvider.Load();
+
+
+	// add services
+	//builder.Services.AddHostedService<Worker>();
+	builder.Services.AddControllers();
     builder.Services.AddRazorPages();
     builder.Services.AddAutoMapper(AutoMapperBootstrapper.Configure);
 
@@ -59,6 +64,7 @@ try
     builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
     builder.Services.AddScoped<IDbContext>((sp) => new SQLiteDbContext(appSettings.DbPath));
     builder.Services.AddSingleton<ResourceUtils>();
+    builder.Services.AddScoped<CronBuilder>();
 
     builder.Services.AddScoped<IDirectoryUtility, DirectoryUtility>();
     builder.Services.AddScoped<IFileUtility, FileUtility>();
@@ -85,7 +91,7 @@ try
     builder.Services.AddCommands();
     builder.Services.AddViewOrchestrators();
 
-    builder.Services.AddQuartzScheduler(appSettings, globalSettings.MaxConcurrentJobs, isUnitTestContext);
+    builder.Services.AddQuartzScheduler(appSettings, startupSettings.MaxConcurrentJobs, isUnitTestContext);
 
     // set up 
     var app = builder.Build();
@@ -103,6 +109,7 @@ try
     if (!isUnitTestContext) 
     {
         app.InitialiseDatabase(appSettings);
+        app.InitialiseDigestJob();
     }
 
     app.Run();

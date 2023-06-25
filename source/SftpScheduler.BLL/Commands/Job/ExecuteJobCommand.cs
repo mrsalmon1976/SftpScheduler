@@ -28,8 +28,8 @@ namespace SftpScheduler.BLL.Commands.Job
         public virtual async Task<bool> ExecuteAsync(int jobId)
         {
             string jobKeyName = $"AdHoc.Job.{jobId}";
-            JobKey jobKey = new JobKey(jobKeyName, TransferJob.DefaultGroup);
-            TriggerKey triggerKey = new TriggerKey($"AdHoc.Trigger.{jobId}", TransferJob.DefaultGroup);
+            JobKey jobKey = new JobKey(jobKeyName, TransferJob.GroupName);
+            TriggerKey triggerKey = new TriggerKey($"AdHoc.Trigger.{jobId}", TransferJob.GroupName);
 
             IScheduler scheduler = await _schedulerFactory.GetScheduler();
             

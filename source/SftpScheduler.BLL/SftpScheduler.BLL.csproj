@@ -9,11 +9,13 @@
   <ItemGroup>
     <None Remove="Resources\DbMigrations.sql" />
     <None Remove="Resources\Quartz.sql" />
+    <None Remove="Resources\Templates\DigestEmail.html" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Quartz.sql" />
     <EmbeddedResource Include="Resources\DbMigrations.sql" />
+    <EmbeddedResource Include="Resources\Templates\DigestEmail.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +30,7 @@
 
     <ItemGroup>
 	    <InternalsVisibleTo Include="SftpScheduler.BLL.Tests" />
+		<InternalsVisibleTo Include="SftpScheduler.BLL.TestInfrastructure" />
 		<InternalsVisibleTo Include="SftpSchedulerService.Tests" />
 	</ItemGroup>
 

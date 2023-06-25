@@ -1,4 +1,6 @@
-﻿using SftpScheduler.BLL.Data;
+﻿using SftpScheduler.BLL.Commands.Notification;
+using SftpScheduler.BLL.Config;
+using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Config;
 
@@ -17,6 +19,18 @@ namespace SftpSchedulerService.BootStrapping
 
                 var identityInitialiser = scope.ServiceProvider.GetRequiredService<IdentityInitialiser>();
                 identityInitialiser.Seed();
+            }
+        }
+
+        public static void InitialiseDigestJob(this WebApplication webApplication)
+        {
+            var scopeFactory = webApplication.Services.GetRequiredService<IServiceScopeFactory>();
+            using (var scope = scopeFactory.CreateScope())
+            {
+				IGlobalUserSettingProvider settingsProvider = scope.ServiceProvider.GetRequiredService<IGlobalUserSettingProvider>();
+				IUpsertDigestCommand upsertDigestCommand = scope.ServiceProvider.GetRequiredService<IUpsertDigestCommand>();
+
+				upsertDigestCommand.Execute(settingsProvider.DigestDays, settingsProvider.DigestTime);
             }
         }
 

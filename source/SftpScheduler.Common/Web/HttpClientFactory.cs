@@ -20,7 +20,7 @@ namespace SftpScheduler.Common.Web
         public HttpClientFactory()
         {
             _client = new HttpClient();
-            _client.DefaultRequestHeaders.Add("User-Agent", "SftpSchedulerService.AutoUpdater");
+            _client.DefaultRequestHeaders.Add("User-Agent", "SftpSchedulerServiceUpdater");
         }
 
         public HttpClient GetHttpClient()

@@ -25,14 +25,14 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Update
 
         public async Task<IActionResult> Execute()
         {
-            string autoUpdaterFolder = Path.Combine(_appSettings.BaseDirectory, UpdateConstants.AutoUpdaterFolderName);
+            string autoUpdaterFolder = Path.Combine(_appSettings.BaseDirectory, UpdateConstants.UpdaterFolderName);
             _logger.LogInformation("Autoupdater folder: {autoUpdaterFolder}", autoUpdaterFolder);
 
             using (IProcessWrapper process = _processWrapperFactory.CreateProcess())
             {
                 process.StartInfo.UseShellExecute = true;
                 process.StartInfo.WorkingDirectory = autoUpdaterFolder;
-                process.StartInfo.FileName = UpdateConstants.AutoUpdaterExeFileName;
+                process.StartInfo.FileName = UpdateConstants.UpdaterExeFileName;
                 process.StartInfo.Verb = UpdateConstants.StartInfoVerb;
                 bool isStarted = process.Start();
                 _logger.LogInformation("Process start result {isStarted}", isStarted);

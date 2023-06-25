@@ -33,7 +33,7 @@ namespace SftpScheduler.BLL.Commands.Job
 
             IScheduler scheduler = await _schedulerFactory.GetScheduler();
 
-            JobKey jobKey = new JobKey(JobUtils.GetJobKeyName(jobId), TransferJob.DefaultGroup);
+            JobKey jobKey = new JobKey(TransferJob.JobKeyName(jobId), TransferJob.GroupName);
 
             return await scheduler.DeleteJob(jobKey);
 
