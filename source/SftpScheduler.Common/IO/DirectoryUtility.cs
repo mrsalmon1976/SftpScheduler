@@ -1,4 +1,6 @@
-﻿namespace SftpScheduler.Common.IO
+﻿using System.IO;
+
+namespace SftpScheduler.Common.IO
 {
     // should be using SystemWrapper library but that targets framework,  not .NET 6
     public interface IDirectoryUtility
@@ -120,8 +122,7 @@
             }
         }
 
-
-        public IEnumerable<string> EnumerateFiles(string path)
+		public IEnumerable<string> EnumerateFiles(string path)
         {
             return Directory.EnumerateFiles(path);
         }

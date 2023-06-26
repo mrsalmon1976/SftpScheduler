@@ -17,6 +17,7 @@ using SftpSchedulerService.Utilities;
 using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Commands.Notification;
 using SftpScheduler.BLL.Config;
+using SftpSchedulerService.Workers;
 
 Logger? logger = null;
 
@@ -53,7 +54,6 @@ try
 
 
 	// add services
-	//builder.Services.AddHostedService<Worker>();
 	builder.Services.AddControllers();
     builder.Services.AddRazorPages();
     builder.Services.AddAutoMapper(AutoMapperBootstrapper.Configure);
@@ -93,8 +93,14 @@ try
 
     builder.Services.AddQuartzScheduler(appSettings, startupSettings.MaxConcurrentJobs, isUnitTestContext);
 
-    // set up 
-    var app = builder.Build();
+    // background jobs
+    if (!isUnitTestContext)
+    {
+        builder.Services.AddHostedService<UpdateCleanupWorker>();
+    }
+
+	// set up 
+	var app = builder.Build();
 
     app.UseAuthentication();
     app.UseAuthorization();
