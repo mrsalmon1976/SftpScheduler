@@ -9,7 +9,7 @@ var host = BootStrapper.CreateHostBuilder(args).Build();
 
 try
 {
-    logger.Info("SftpSchedulerService AutoUpdate start");
+    logger.Info("SftpSchedulerService Update start");
     UpdateOrchestrator orchestrator = host.Services.GetRequiredService<UpdateOrchestrator>();
     orchestrator.Run().GetAwaiter().GetResult();
 }
@@ -19,6 +19,6 @@ catch (Exception ex)
 }
 finally
 {
-    logger.Info("SftpSchedulerService AutoUpdate complete");
+    logger.Info("SftpSchedulerService Update complete");
 }
 

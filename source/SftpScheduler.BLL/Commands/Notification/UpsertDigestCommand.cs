@@ -47,8 +47,7 @@ namespace SftpScheduler.BLL.Commands.Notification
                     .WithIdentity(jobKey)
                     .Build();
 
-                // TODO: remove!!!!
-                schedule = "0 0/1 * ? * * *";
+                // schedule = "0 0/1 * ? * * *";
 
                 ITrigger trigger = TriggerBuilder.Create()
                   .WithIdentity(DigestJob.TriggerKeyName(), DigestJob.GroupName)
