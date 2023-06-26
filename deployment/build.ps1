@@ -6,7 +6,7 @@ function RemoveRedundantFiles
 	param([string]$buildPath)
 
 	Remove-Item -Path "$buildPath\appsettings.Development.json" -Force
-	Remove-Item -Path "$buildPath\AutoUpdater\appsettings.Development.json" -Force
+	Remove-Item -Path "$buildPath\Updater\appsettings.Development.json" -Force
 	Remove-Item -Path "$buildPath\da" -Force -Recurse 
 	Remove-Item -Path "$buildPath\de" -Force -Recurse 
 	Remove-Item -Path "$buildPath\es" -Force -Recurse 
@@ -94,11 +94,11 @@ New-Item -ItemType Directory -Force -Path $buildPath
 
 Write-Host "Updating project files for version $version"
 UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerService\SftpSchedulerService.csproj" -version $version
-UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerService.AutoUpdater\SftpSchedulerService.AutoUpdater.csproj" -version $version
+UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerServiceUpdater\SftpSchedulerServiceUpdater.csproj" -version $version
 
 Write-Host "Building version $version"
 & dotnet publish $sourcePath\SftpSchedulerService\SftpSchedulerService.csproj /p:EnvironmentName=Production /p:Configuration=Release --output $buildPath
-& dotnet publish $sourcePath\SftpSchedulerService.AutoUpdater\SftpSchedulerService.AutoUpdater.csproj /p:EnvironmentName=Production /p:Configuration=Release --output "$buildPath\AutoUpdater"
+& dotnet publish $sourcePath\SftpSchedulerServiceUpdater\SftpSchedulerServiceUpdater.csproj /p:EnvironmentName=Production /p:Configuration=Release --output "$buildPath\Updater"
 
 Write-Host "Removing redundant files"
 RemoveRedundantFiles -buildPath $buildPath

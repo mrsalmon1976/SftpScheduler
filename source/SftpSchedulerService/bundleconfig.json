@@ -106,5 +106,11 @@
     "inputFiles": [
       "wwwroot/js/models/settings.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/settings/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/settings/index.js"
+    ]
   }
 ]
