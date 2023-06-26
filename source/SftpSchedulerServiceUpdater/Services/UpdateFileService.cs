@@ -12,17 +12,16 @@ namespace SftpSchedulerServiceUpdater.Services
 {
     public interface IUpdateFileService
     {
-        Task Backup(UpdateLocationInfo updateLocationInfo);
+        void Backup(UpdateLocationInfo updateLocationInfo);
+        void CopyNewVersionFiles(UpdateLocationInfo updateLocationInfo);
 
-        Task CopyNewVersionFiles(UpdateLocationInfo updateLocationInfo);
-
-        Task DeleteCurrentVersionFiles(UpdateLocationInfo updateLocationInfo);
+        void DeleteCurrentVersionFiles(UpdateLocationInfo updateLocationInfo);
 
         void DeleteUpdateTempFolder(string updateTempFolder);
 
         void EnsureEmptyUpdateTempFolderExists(string updateTempFolder);
 
-        Task ExtractReleasePackage(string filePath, string extractFolder);
+        void ExtractReleasePackage(string filePath, string extractFolder);
 
     }
 
@@ -39,38 +38,29 @@ namespace SftpSchedulerServiceUpdater.Services
             _dirUtility = dirUtility;
         }
 
-        public async Task Backup(UpdateLocationInfo updateLocationInfo)
+        public void Backup(UpdateLocationInfo updateLocationInfo)
         {
-            await Task.Run(() =>
-            {
-                string[] exclusions = { updateLocationInfo.BackupFolder, updateLocationInfo.UpdateTempFolder };
+            string[] exclusions = { updateLocationInfo.BackupFolder, updateLocationInfo.UpdateTempFolder };
 
-                _dirUtility.Delete(updateLocationInfo.BackupFolder, MaxDeleteRetryCount);
-                _dirUtility.CopyRecursive(updateLocationInfo.ApplicationFolder, updateLocationInfo.BackupFolder, exclusions);
-            });
+            _dirUtility.Delete(updateLocationInfo.BackupFolder, MaxDeleteRetryCount);
+            _dirUtility.CopyRecursive(updateLocationInfo.ApplicationFolder, updateLocationInfo.BackupFolder, exclusions);
         }
 
-        public async Task CopyNewVersionFiles(UpdateLocationInfo updateLocationInfo)
+        public void CopyNewVersionFiles(UpdateLocationInfo updateLocationInfo)
         {
-            await Task.Run(() =>
-            {
-                _dirUtility.CopyRecursive(updateLocationInfo.UpdateTempFolder, updateLocationInfo.ApplicationFolder);
-            });
+            _dirUtility.CopyRecursive(updateLocationInfo.UpdateTempFolder, updateLocationInfo.ApplicationFolder);
         }
 
-        public async Task DeleteCurrentVersionFiles(UpdateLocationInfo updateLocationInfo)
+        public void DeleteCurrentVersionFiles(UpdateLocationInfo updateLocationInfo)
         {
-            await Task.Run(() =>
-            {
-                string[] exclusions = {
-                    updateLocationInfo.BackupFolder
-                    , updateLocationInfo.UpdateTempFolder
-                    , updateLocationInfo.DataFolder
-                    , updateLocationInfo.LogFolder
-                    , updateLocationInfo.UpdaterFolder
-                };
-                _dirUtility.DeleteContents(updateLocationInfo.ApplicationFolder, exclusions, MaxDeleteRetryCount);
-            });
+            string[] exclusions = {
+                updateLocationInfo.BackupFolder
+                , updateLocationInfo.UpdateTempFolder
+                , updateLocationInfo.DataFolder
+                , updateLocationInfo.LogFolder
+                , updateLocationInfo.UpdaterFolder
+            };
+            _dirUtility.DeleteContents(updateLocationInfo.ApplicationFolder, exclusions, MaxDeleteRetryCount);
         }
 
         public void DeleteUpdateTempFolder(string updateTempFolder)
@@ -88,28 +78,24 @@ namespace SftpSchedulerServiceUpdater.Services
             _dirUtility.Create(updateTempFolder);
         }
 
-        public async Task ExtractReleasePackage(string filePath, string extractFolder)
+        public void ExtractReleasePackage(string filePath, string extractFolder)
         {
-            await Task.Run(() =>
+            _fileUtility.ExtractZipFile(filePath, extractFolder);
+
+            // rename all the autoupdater files with a .temp extension otherwise we will fail to overwrite
+            string autoUpdateFolder = Path.Combine(extractFolder, UpdateConstants.UpdaterFolderName);
+            if (_dirUtility.Exists(autoUpdateFolder))
             {
-                _fileUtility.ExtractZipFile(filePath, extractFolder);
-
-                // rename all the autoupdater files with a .temp extension otherwise we will fail to overwrite
-                string autoUpdateFolder = Path.Combine(extractFolder, UpdateConstants.UpdaterFolderName);
-                if (_dirUtility.Exists(autoUpdateFolder))
+                string[] files = _dirUtility.GetFiles(autoUpdateFolder, SearchOption.AllDirectories);
+                foreach (string f in files)
                 {
-                    string[] files = _dirUtility.GetFiles(autoUpdateFolder, SearchOption.AllDirectories);
-                    foreach (string f in files)
-                    {
-                        string newName = $"{f}{UpdateConstants.UpdaterNewFileExtension}";
-                        _fileUtility.Move(f, newName, true);
-                    }
+                    string newName = $"{f}{UpdateConstants.UpdaterNewFileExtension}";
+                    _fileUtility.Move(f, newName, true);
                 }
+            }
 
-                // delete the zip file
-                _fileUtility.Delete(filePath);
-
-            });
+            // delete the zip file
+            _fileUtility.Delete(filePath);
         }
     }
 }

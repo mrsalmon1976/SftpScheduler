@@ -28,7 +28,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
-            updateFileService.Backup(updateLocationInfo).Wait();
+            updateFileService.Backup(updateLocationInfo);
 
             // assert
             dirUtility.Received(1).Delete(updateLocationInfo.BackupFolder, UpdateFileService.MaxDeleteRetryCount);
@@ -48,7 +48,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
-            updateFileService.Backup(updateLocationInfo).Wait();
+            updateFileService.Backup(updateLocationInfo);
 
             // assert
             dirUtility.Received(1).CopyRecursive(updateLocationInfo.ApplicationFolder, updateLocationInfo.BackupFolder, Arg.Any<IEnumerable<string>>());
@@ -71,7 +71,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
-            updateFileService.CopyNewVersionFiles(updateLocationInfo).Wait();
+            updateFileService.CopyNewVersionFiles(updateLocationInfo);
 
             // assert
             dirUtility.Received(1).CopyRecursive(updateLocationInfo.UpdateTempFolder, updateLocationInfo.ApplicationFolder, Arg.Any<string[]>());
@@ -90,7 +90,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
-            updateFileService.DeleteCurrentVersionFiles(updateLocationInfo).Wait();
+            updateFileService.DeleteCurrentVersionFiles(updateLocationInfo);
 
             // assert
             dirUtility.Received(1).DeleteContents(updateLocationInfo.ApplicationFolder, Arg.Any<IEnumerable<string>>(), UpdateFileService.MaxDeleteRetryCount);
@@ -109,7 +109,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(dirUtility: dirUtility);
-            updateFileService.DeleteCurrentVersionFiles(updateLocationInfo).Wait();
+            updateFileService.DeleteCurrentVersionFiles(updateLocationInfo);
 
             // assert
             dirUtility.Received(1).DeleteContents(updateLocationInfo.ApplicationFolder, Arg.Any<IEnumerable<string>>());
@@ -176,7 +176,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(fileUtility: fileUtility);
-            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
+            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder);
 
             // assert
             fileUtility.Received(1).ExtractZipFile(zipFilePath, extractFolder);
@@ -200,7 +200,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(fileUtility, dirUtility);
-            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
+            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder);
 
             // assert
             dirUtility.Received(1).Exists(autoUpdateFolder);
@@ -219,7 +219,7 @@ namespace SftpSchedulerServiceUpdater.Tests.Services
 
             // execute
             IUpdateFileService updateFileService = CreateUpdateFileService(fileUtility);
-            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder).Wait();
+            updateFileService.ExtractReleasePackage(zipFilePath, extractFolder);
 
             // assert
             fileUtility.Received(1).Delete(zipFilePath);

@@ -7,8 +7,6 @@ using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Utility;
 using System.Net.Mail;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SftpScheduler.BLL.Jobs
 {

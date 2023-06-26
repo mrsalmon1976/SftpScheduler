@@ -10,7 +10,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
 {
     public interface ISettingsEmailTestOrchestrator : IViewOrchestrator
     {
-        Task<IActionResult> Execute(EmailTestViewModel testEmailViewModel);
+        IActionResult Execute(EmailTestViewModel testEmailViewModel);
     }
 
     public class SettingsEmailTestOrchestrator : ISettingsEmailTestOrchestrator
@@ -28,7 +28,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
             _emailValidator = emailValidator;
         }
 
-        public async Task<IActionResult> Execute(EmailTestViewModel testEmailViewModel)
+        public IActionResult Execute(EmailTestViewModel testEmailViewModel)
         {
             SmtpHost smtpHost = EmailTestMapper.MapToSmtpHost(testEmailViewModel);
             var result = _smtpHostValidator.Validate(smtpHost);

@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Config;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Settings;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
 {
     public interface ISettingsFetchAllOrchestrator : IViewOrchestrator
     {
-        Task<IActionResult> Execute();
+        IActionResult Execute();
     }
 
     public class SettingsFetchAllOrchestrator : ISettingsFetchAllOrchestrator
@@ -22,7 +21,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
 			_startupSettingProvider = startupSettingProvider;
 		}
 
-        public async Task<IActionResult> Execute()
+        public IActionResult Execute()
         {
             GlobalSettingsViewModel viewModel = new GlobalSettingsViewModel();
 			SettingsModelMapper.MapValues(_globalUserSettingProvider, viewModel);

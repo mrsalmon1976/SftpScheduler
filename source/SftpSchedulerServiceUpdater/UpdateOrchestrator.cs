@@ -61,7 +61,7 @@ namespace SftpSchedulerServiceUpdater
                 await _updateDownloadService.DownloadFile(latestVersionInfo.DownloadUrl!, downloadPath);
 
                 _logger.LogInformation("Extracting release contents to {updateTempFolder}", _updateLocationInfo.UpdateTempFolder);
-                await _updateFileService.ExtractReleasePackage(downloadPath, _updateLocationInfo.UpdateTempFolder);
+                _updateFileService.ExtractReleasePackage(downloadPath, _updateLocationInfo.UpdateTempFolder);
 
                 bool isServiceInstalled = _installationService.IsServiceInstalled();
 
@@ -77,13 +77,13 @@ namespace SftpSchedulerServiceUpdater
                 }
 
                 _logger.LogInformation("Backing up current service files.");
-                await _updateFileService.Backup(_updateLocationInfo);
+                _updateFileService.Backup(_updateLocationInfo);
 
                 _logger.LogInformation("Deleting current service files.");
-                await _updateFileService.DeleteCurrentVersionFiles(_updateLocationInfo);
+                _updateFileService.DeleteCurrentVersionFiles(_updateLocationInfo);
 
                 _logger.LogInformation("Copying new service files...");
-                await _updateFileService.CopyNewVersionFiles(_updateLocationInfo);
+                _updateFileService.CopyNewVersionFiles(_updateLocationInfo);
 
                 // if the service was not installed, install it now!
                 if (!isServiceInstalled)

@@ -22,7 +22,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 
 			// execute
 			ISettingsFetchAllOrchestrator orchestrator = CreateOrchestrator(globalUserSettingProvider, startupSettingProvider);
-			IActionResult result = orchestrator.Execute().GetAwaiter().GetResult();
+			IActionResult result = orchestrator.Execute();
 			GlobalSettingsViewModel viewModel = ((result as OkObjectResult)!.Value as GlobalSettingsViewModel)!;
 
 			// assert

@@ -28,9 +28,9 @@ namespace SftpSchedulerService.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            return await _settingsFetchAllOrchestrator.Execute();
+            return _settingsFetchAllOrchestrator.Execute();
         }
 
         [HttpPost]
@@ -42,9 +42,9 @@ namespace SftpSchedulerService.Controllers.Api
 
         [HttpPost]
         [Route("email-test")]
-        public async Task<IActionResult> Post([FromBody] EmailTestViewModel model)
+        public IActionResult Post([FromBody] EmailTestViewModel model)
         {
-            return await _settingsEmailTestOrchestrator.Execute(model);
+            return _settingsEmailTestOrchestrator.Execute(model);
         }
 
 

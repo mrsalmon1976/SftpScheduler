@@ -1,7 +1,3 @@
-using SftpScheduler.Common;
-using SftpScheduler.Common.IO;
-using SftpSchedulerService.Config;
-
 namespace SftpSchedulerService.Workers
 {
     public class UpdateCleanupWorker : BackgroundService
