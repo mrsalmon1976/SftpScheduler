@@ -16,7 +16,7 @@ namespace SftpScheduler.BLL.Jobs
     {
         public const string GroupName = "DigestJob";
 
-		public const string DigestJobEmailSubject = "SfftpScheduler Digest Notification";
+		public const string DigestJobEmailSubject = "SftpScheduler Digest Notification";
 
 		public const string FailingJobsTag = "{{FailingJobs}}";
 
