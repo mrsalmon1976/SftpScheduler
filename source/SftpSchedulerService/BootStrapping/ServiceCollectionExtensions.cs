@@ -176,7 +176,8 @@ namespace SftpSchedulerService.BootStrapping
 			services.AddScoped<HostRepository>();
 			services.AddScoped<JobRepository>();
             services.AddScoped<JobLogRepository>();
-        }
+			services.AddScoped<IUserRepository, UserRepository>();
+		}
 
         public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings, int maxConcurrentJobs, bool isUnitTestContext)
         {

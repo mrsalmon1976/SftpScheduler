@@ -24,6 +24,22 @@ namespace SftpScheduler.BLL.Tests.Jobs
 	public class DigestJobTests
 	{
 		[Test]
+		public void Execute_SmtpNotConfigured_JobExits()
+		{
+			// setup
+			IUserRepository userRepo = new UserRepositoryBuilder().Build();
+			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpHost(String.Empty).Build();
+
+			// execute
+			DigestJob digestJob = CreateDigestJob(userRepo: userRepo, userSettingProvider: globalUserSettingProvider);
+			digestJob.Execute(Substitute.For<IJobExecutionContext>()).GetAwaiter().GetResult();
+
+			// assert
+			userRepo.DidNotReceive().GetUsersInRoleAsync(Arg.Any<string>());
+
+		}
+
+		[Test]
 		public void Execute_NoFailingJobs_NoEmailSent()
 		{
 			// setup
@@ -42,6 +58,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			smtpClient.DidNotReceive().Send(Arg.Any<SmtpHost>(), Arg.Any<MailMessage>());
 
 		}
+
 
 		[Test]
 		public void Execute_FailingJobs_EmailSent()
@@ -67,6 +84,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, Faker.Lorem.Paragraph()).Build();
 			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
 			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
 				.Build();
@@ -105,6 +123,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
 			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
 			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
 				.Build();
@@ -115,8 +134,11 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			// assert
 			Assert.That(mailMessage.To.Single().Address, Is.EqualTo(adminUsers.Single().Email));
-			Assert.That(mailMessage.Subject, Is.EqualTo(DigestJob.DigestJobEmailSubject));
 			Assert.That(mailMessage.Body, Is.EqualTo(emailBody));
+
+			string expectedSubject = $"{DigestJob.DigestJobEmailSubject} : {DateTime.Now.ToString("yyyy-MM-dd")}";
+			Assert.That(mailMessage.Subject, Is.EqualTo(expectedSubject));
+
 		}
 
 		[Test]
@@ -145,6 +167,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
 			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
 			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
 				.Build();
@@ -195,6 +218,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
 			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
 			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
 				.Build();
@@ -233,6 +257,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
 			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
 			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
 				.Build();

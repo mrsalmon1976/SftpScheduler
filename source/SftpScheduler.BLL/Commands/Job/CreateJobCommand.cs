@@ -1,13 +1,7 @@
 ﻿using Quartz;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Commands.Job
 {

@@ -449,38 +449,40 @@ ul.social li{
 <td valign="middle" class="hero bg_white" style="padding: 0em 0 4em 0;">
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-<td>
-<div class="body-section">
-	<table width="100%">
-		<tr>
-			<td style="background-color: #dc3545;color: white;width:100%;padding:5px;border: 1px solid #dc3545;">Failing Jobs</td>
-		</tr>
-		<tr>
-			<td style="border: 1px solid #dc3545;padding:5px;">
-				These jobs failed on the last attempt:
-				<ul>
-					{{FailingJobs}}
-				</ul>
-			</td>
-		</tr>
-	</table>
-</div>
-<div class="body-section">
-	<table width="100%">
-		<tr>
-			<td style="background-color: #ffc107;color: #1f2d3d;width:100%;padding:5px;border: 1px solid #ffc107;">Recent Job Failures</td>
-		</tr>
-		<tr>
-			<td style="border: 1px solid #ffc107;padding:5px;">
-				These jobs have failed in the last 24 hours:
-				<ul>
-					{{RecentlyFailedJobs}}
-				</ul>
-			</td>
-		</tr>
-	</table>
-</div>
-</td>
+	<td>
+		<p>&nbsp;</p>
+		<div class="body-section">
+			<table width="100%">
+				<tr>
+					<td style="background-color: #dc3545;color: white;width:100%;padding:5px;border: 1px solid #dc3545;">Failing Jobs</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid #dc3545;padding:5px;">
+						These jobs failed on the last attempt:
+						<ul>
+							{{FailingJobs}}
+						</ul>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>&nbsp;</p>
+		<div class="body-section" style="margin-top: 10px;">
+			<table width="100%">
+				<tr>
+					<td style="background-color: #ffc107;color: #1f2d3d;width:100%;padding:5px;border: 1px solid #ffc107;">Recent Job Failures</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid #ffc107;padding:5px;">
+						These jobs have failed in the last 24 hours:
+						<ul>
+							{{RecentlyFailedJobs}}
+						</ul>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</td>
 </tr>
 </table>
 </td>

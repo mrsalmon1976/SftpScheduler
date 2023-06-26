@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SftpScheduler.BLL.Exceptions;
+using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using System;
@@ -27,10 +28,14 @@ namespace SftpScheduler.BLL.Commands.User
 
         public virtual async Task<UserEntity> ExecuteAsync(UserManager<UserEntity> userManager, UserEntity user, string password, IEnumerable<string> roles)
         {
-            ValidationResult validationResult = await _userValidator.Validate(userManager, user);
-            if (!validationResult.IsValid)
+            // we don't validate the creation of the admin user
+            if (user.UserName != IdentityInitialiser.DefaultAdminUserName)
             {
-                throw new DataValidationException("User details supplied are invalid", validationResult);
+                ValidationResult validationResult = await _userValidator.Validate(userManager, user);
+                if (!validationResult.IsValid)
+                {
+                    throw new DataValidationException("User details supplied are invalid", validationResult);
+                }
             }
 
             var result = await userManager.CreateAsync(user, password);

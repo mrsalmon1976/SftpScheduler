@@ -7,6 +7,8 @@ using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Utility;
 using System.Net.Mail;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SftpScheduler.BLL.Jobs
 {
@@ -51,6 +53,24 @@ namespace SftpScheduler.BLL.Jobs
         {
             _logger.LogInformation("Digest job execution started");
 
+			// if SMTP not configured, exit
+			if (String.IsNullOrWhiteSpace(_globalUserSettingProvider.SmtpHost))
+			{
+				_logger.LogInformation("Global SMTP not set up - exiting digest job");
+				return;
+			}
+
+			var admins = await _userRepository.GetUsersInRoleAsync(UserRoles.Admin);
+			var adminEmailAddresses = String.Join(',', admins.Select(x => x.Email));
+
+			// if there are no admin mail addresses set, then exit
+			if (String.IsNullOrWhiteSpace(adminEmailAddresses))
+			{
+				_logger.LogInformation("No administrators with an email address - exiting digest job");
+				return;
+			}
+
+			// we're configured to send, load up the HTML and release the hounds
 			string emailBodyHtml = _resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate);
 			string recentlyFailedJobsHtml = "<li>No jobs have failed recently</li>";
 
@@ -75,19 +95,9 @@ namespace SftpScheduler.BLL.Jobs
 				emailBodyHtml = emailBodyHtml.Replace(RecentlyFailedJobsTag, recentlyFailedJobsHtml);
 			}
 
-			var admins = await _userRepository.GetUsersInRoleAsync(UserRoles.Admin);
-			var adminEmailAddresses = String.Join(',', admins.Select(x => x.Email));
-
-			// if there are no admin mail addresses set, then exit
-			if (String.IsNullOrWhiteSpace(adminEmailAddresses))
-			{
-				_logger.LogInformation("No administrators with an email address - exiting digest job");
-				return;
-			}
-
 			MailMessage mailMessage = _globalUserSettingProvider.BuildDefaultMailMessage();
 			mailMessage.To.Add(adminEmailAddresses);
-			mailMessage.Subject = DigestJobEmailSubject;
+			mailMessage.Subject = $"{DigestJobEmailSubject} : {DateTime.Now.ToString("yyyy-MM-dd")}";
 			mailMessage.Body = emailBodyHtml;
 
 			_smtpClient.Send(_globalUserSettingProvider.BuildSmtpHostFromSettings(), mailMessage);

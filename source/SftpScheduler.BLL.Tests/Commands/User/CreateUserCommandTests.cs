@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
+using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using System;
@@ -17,7 +18,31 @@ namespace SftpScheduler.BLL.Tests.Commands.User
     [TestFixture]
     public class CreateUserCommandTests
     {
-        [Test]
+		[Test]
+		public void ExecuteAsync_CreateDefaultAdminAccount_NoDataValidation()
+		{
+            // setup
+			string userName = Guid.NewGuid().ToString();
+			string password = Guid.NewGuid().ToString();
+
+			UserEntity userEntity = new UserEntity();
+			userEntity.UserName = IdentityInitialiser.DefaultAdminUserName;
+
+			IUserValidator userValidator = Substitute.For<IUserValidator>();
+
+			UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+			userManager.CreateAsync(Arg.Any<UserEntity>(), password).Returns(Task.FromResult(IdentityResult.Success));
+
+			// execute
+			ICreateUserCommand createUserCommand = CreateCommand(userValidator);
+			createUserCommand.ExecuteAsync(userManager, userEntity, password, Enumerable.Empty<string>()).GetAwaiter().GetResult();
+
+            // assert
+			userValidator.DidNotReceive().Validate(Arg.Any<UserManager<UserEntity>>(), Arg.Any<UserEntity>());
+
+		}
+
+		[Test]
         public void ExecuteAsync_ValidationFails_ThrowsDataValidationException()
         {
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
