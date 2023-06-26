@@ -96,7 +96,8 @@ try
     // background jobs
     if (!isUnitTestContext)
     {
-        builder.Services.AddHostedService<UpdateCleanupWorker>();
+		builder.Services.AddScoped<IUpdateCleanupWorkerService, UpdateCleanupWorkerService>();
+		builder.Services.AddHostedService<UpdateCleanupWorker>();
     }
 
 	// set up 
