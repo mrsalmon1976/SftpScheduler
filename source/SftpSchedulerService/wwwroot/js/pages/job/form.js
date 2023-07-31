@@ -9,6 +9,7 @@
             scheduleInWords: 'No schedule entered',
             job: new JobModel(),
             logs: [],
+            fileLogs: [],
             submitButtonText: 'Create Job'
         }
     },
@@ -76,6 +77,15 @@
             this.schedule = jobData.schedule;
 
         },
+        async loadFileLogs() {
+
+            let result = await axios.get('/api/jobs/' + this.job.hashId + '/filelogs')
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                });
+
+            this.fileLogs = result.data;
+        },
         async loadLogs() {
 
             let result = await axios.get('/api/jobs/' + this.job.hashId + '/logs')
@@ -89,6 +99,7 @@
             var that = this;
             setInterval(function () {
                 that.loadLogs();
+                that.loadFileLogs();
             }, 60000);
         },
         async submit() {
@@ -135,6 +146,7 @@
             this.submitButtonText = 'Update Job';
             this.loadJobDetail();
             this.loadLogs();
+            this.loadFileLogs();
             this.setLogReloadInterval();
         }
         this.isLoading = false;

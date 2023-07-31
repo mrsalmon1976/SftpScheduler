@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SftpScheduler.BLL.Commands.Job;
+using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.Common.IO;
 using System;
@@ -11,9 +14,9 @@ namespace SftpScheduler.BLL.Commands.Transfer
 {
     public interface IFileTransferService
     {
-        void DownloadFiles(ISessionWrapper sessionWrapper, DownloadOptions options);
+        void DownloadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, DownloadOptions options);
 
-        void UploadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToUpload, string remotePath);
+        void UploadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, UploadOptions options);
 
         IEnumerable<string> UploadFilesAvailable(string localPath);
     }
@@ -21,19 +24,21 @@ namespace SftpScheduler.BLL.Commands.Transfer
     public class FileTransferService : IFileTransferService
     {
         private readonly ILogger<FileTransferService> _logger;
-        private readonly IDirectoryUtility _directoryWrap;
+		private readonly ICreateJobFileLogCommand _createJobFileLogCommand;
+		private readonly IDirectoryUtility _directoryWrap;
         private readonly IFileUtility _fileWrap;
 
         public const string UploadNamePattern = "^*.uploaded_?\\d?\\d?\\d?$";
 
-        public FileTransferService(ILogger<FileTransferService> logger, IDirectoryUtility directoryWrap, IFileUtility fileWrap)
+        public FileTransferService(ILogger<FileTransferService> logger, ICreateJobFileLogCommand createJobFileLogCommand, IDirectoryUtility directoryWrap, IFileUtility fileWrap)
         {
             _logger = logger;
-            _directoryWrap = directoryWrap;
+			_createJobFileLogCommand = createJobFileLogCommand;
+			_directoryWrap = directoryWrap;
             _fileWrap = fileWrap;
         }
 
-        public void DownloadFiles(ISessionWrapper sessionWrapper, DownloadOptions options)
+        public void DownloadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, DownloadOptions options)
         {
             IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> remoteFiles = sessionWrapper.ListDirectory(options.RemotePath);
             IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> filesToDownload = remoteFiles.Where(x => !x.IsDirectory);
@@ -48,7 +53,10 @@ namespace SftpScheduler.BLL.Commands.Transfer
             {
                 string fileName = remoteFile.Name;
                 string localFilePath = Path.Combine(options.LocalPath, fileName);
-                sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload);
+                DateTime startDate = DateTime.Now;
+
+				// get the files - note the DeleteAfterDownload option is used here so files are removed by WinSCP
+				sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload);
                 _logger.LogInformation("Downloaded file {remoteFile} to {localPath}", remoteFile, localFilePath);
 
                 // archive file remotely
@@ -67,8 +75,17 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     string fileCopyPath = GetUniqueFileName(localCopyPath, fileNameWithoutExt, String.Empty, extension);
                     _fileWrap.Copy(localFilePath, fileCopyPath);
                 }
-            }
-        }
+
+				// log the transfer
+				JobFileLogEntity fileLog = new JobFileLogEntity();
+				fileLog.JobId = options.JobId;
+				fileLog.StartDate = startDate;
+				fileLog.EndDate = DateTime.Now;
+                fileLog.FileLength = _fileWrap.GetFileSize(localFilePath);
+                fileLog.FileName = fileName;
+                _createJobFileLogCommand.ExecuteAsync(dbContext, fileLog);
+			}
+		}
 
         public IEnumerable<string> UploadFilesAvailable(string localPath)
         {
@@ -93,21 +110,34 @@ namespace SftpScheduler.BLL.Commands.Transfer
             return newFiles;
         }
 
-        public void UploadFiles(ISessionWrapper sessionWrapper, IEnumerable<string> filesToUpload, string remotePath)
+        public void UploadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, UploadOptions options)
         {
-            foreach (string file in filesToUpload)
+            foreach (string file in options.LocalFilePaths)
             {
-                string fileName = Path.GetFileNameWithoutExtension(file);
-                string extension = Path.GetExtension(file);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(file);
+				string fileName = Path.GetFileName(file);
+				string extension = Path.GetExtension(file);
                 string? folder = Path.GetDirectoryName(file);
+                DateTime startDate = DateTime.Now;
 
-                sessionWrapper.PutFiles(file, remotePath);
 
-                string destFilePath = GetUniqueFileName(folder, fileName, ".uploaded", extension);
+				sessionWrapper.PutFiles(file, options.RemotePath);
+
+                string destFilePath = GetUniqueFileName(folder, fileNameWithoutExt, ".uploaded", extension);
                 _fileWrap.Move(file, destFilePath, false);
                 _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", file, destFilePath);
-            }
-        }
+
+				// log the transfer
+				JobFileLogEntity fileLog = new JobFileLogEntity();
+				fileLog.JobId = options.JobId;
+				fileLog.StartDate = startDate;
+				fileLog.EndDate = DateTime.Now;
+				fileLog.FileLength = _fileWrap.GetFileSize(destFilePath);
+				fileLog.FileName = fileName;
+				_createJobFileLogCommand.ExecuteAsync(dbContext, fileLog);
+
+			}
+		}
 
         private string GetUniqueFileName(string? folder, string fileName, string fileNameSuffix, string extension)
         {

@@ -63,7 +63,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string[] availableFiles = { "C:\\Temp\\1.zip" };
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(availableFiles);
 
-            fileTransferService.When(x => x.UploadFiles(Arg.Any<ISessionWrapper>(), Arg.Any<IEnumerable<string>>(), Arg.Any<string>())).Throw<Exception>();
+            fileTransferService.When(x => x.UploadFiles(Arg.Any<ISessionWrapper>(), Arg.Any<IDbContext>(), Arg.Any<UploadOptions>())).Throw<Exception>();
 
             // execute
             ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepository: jobRepo);
@@ -76,8 +76,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 // expected exception
             }
 
-            // assert
-            fileTransferService.Received(1).UploadFiles(sessionWrapper, Arg.Any<IEnumerable<string>>(), jobEntity.RemotePath);
+			// assert
+			fileTransferService.Received(1).UploadFiles(sessionWrapper, dbContext, Arg.Any<UploadOptions>());
             sessionWrapper.Received(2).ProgressCallback = Arg.Any<Action<int>>();
             Assert.That(sessionWrapper.ProgressCallback, Is.Null);
         }
@@ -103,7 +103,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             transferCommand.Execute(dbContext, jobId);
 
             // assert
-            fileTransferService.Received(1).DownloadFiles(sessionWrapper, Arg.Any<DownloadOptions>());
+            fileTransferService.Received(1).DownloadFiles(sessionWrapper, dbContext, Arg.Any<DownloadOptions>());
         }
 
         [Test]
@@ -124,12 +124,21 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string[] availableFiles =  { "C:\\Temp\\1.zip" };
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(availableFiles);
 
+            UploadOptions? optionsReceived = null;
+            fileTransferService.When(x => x.UploadFiles(sessionWrapper, dbContext, Arg.Any<UploadOptions>())).Do(ci =>
+            {
+				optionsReceived = ci.ArgAt<UploadOptions>(2);
+            });
+
             // execute
             ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepository: jobRepo);
             transferCommand.Execute(dbContext, jobId);
 
             // assert
-            fileTransferService.Received(1).UploadFiles(sessionWrapper, Arg.Any<IEnumerable<string>>(), jobEntity.RemotePath);
+            fileTransferService.Received(1).UploadFiles(sessionWrapper, dbContext, Arg.Any<UploadOptions>());
+            Assert.That(optionsReceived, Is.Not.Null);
+			Assert.That(optionsReceived.JobId, Is.EqualTo(jobId));
+			Assert.That(optionsReceived.RemotePath, Is.EqualTo(jobEntity.RemotePath));
         }
 
         [Test]

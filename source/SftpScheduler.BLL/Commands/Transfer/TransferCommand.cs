@@ -68,11 +68,12 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     if (jobEntity.Type == JobType.Download)
                     {
                         DownloadOptions options = this.BuildDownloadOptions(jobEntity);
-                        _fileTransferService.DownloadFiles(sessionWrapper, options);
+                        _fileTransferService.DownloadFiles(sessionWrapper, dbContext, options);
                     }
                     else
                     {
-                        _fileTransferService.UploadFiles(sessionWrapper, filesToTransfer, jobEntity.RemotePath);
+                        UploadOptions options = new UploadOptions(jobId, filesToTransfer, jobEntity.RemotePath);
+                        _fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
                     }
 
                 }

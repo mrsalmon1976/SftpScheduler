@@ -21,10 +21,14 @@
                 <li class="nav-item">
                     <a class="nav-link" id="tab-job-logs" data-toggle="pill" href="#tab-job-logs-content" role="tab" aria-controls="tab-job-logs-content" aria-selected="false">Logs</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-job-filelogs" data-toggle="pill" href="#tab-job-filelogs-content" role="tab" aria-controls="tab-job-filelogs-content" aria-selected="false">File Logs</a>
+                </li>
             </ul>
         </div>
         <div class="card-body">
             <div class="tab-content" id="custom-tabs-two-tabContent">
+                @* TAB: Job Form *@
                 <div class="tab-pane fade show active" id="tab-job-detail-content" role="tabpanel" aria-labelledby="tab-job-detail">
                     <form class="form-horizontal">
                         <div class="form-group row">
@@ -108,6 +112,7 @@
                         </div>
                     </form>
                 </div>
+                @* TAB: Logs *@
                 <div class="tab-pane fade" id="tab-job-logs-content" role="tabpanel" aria-labelledby="tab-job-logs">
                     <div v-if="logs.length == 0">
                         No logs exist for this job.
@@ -129,6 +134,30 @@
                                 <td class="nowrap text-sm">{{ formatDateTime(log.endDate) }}</td>
                                 <td class="text-sm"><span class="badge badge-padded" :class="getLogClass(log)">{{ log.status }}</span></td>
                                 <td class="text-sm"><span class="text-danger">{{ log.errorMessage }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                @* TAB: FileTransfer Logs *@
+                <div class="tab-pane fade" id="tab-job-filelogs-content" role="tabpanel" aria-labelledby="tab-job-filelogs">
+                    <div v-if="fileLogs.length == 0">
+                        No file transfer logs exist for this job.
+                    </div>
+                    <table v-if="fileLogs.length > 0" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>File Size</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="log in fileLogs">
+                                <td class="text-sm">{{ log.fileName }}</td>
+                                <td class="text-sm">{{ log.fileLengthReadable }}</td>
+                                <td class="nowrap text-sm">{{ formatDateTime(log.startDate) }}</td>
+                                <td class="nowrap text-sm">{{ formatDateTime(log.endDate) }}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -17,6 +17,8 @@ namespace SftpScheduler.Common.IO
 
         void ExtractZipFile(string sourceArchiveFileName, string destinationDirectoryName);
 
+        long GetFileSize(string path);
+
         void Move(string source, string target, bool overwrite);
 
         string ReadAllText(string path);
@@ -48,7 +50,13 @@ namespace SftpScheduler.Common.IO
             ZipFile.ExtractToDirectory(sourceArchiveFileName, destinationDirectoryName);
         }
 
-        public void Move(string source, string target, bool overwrite)
+		public long GetFileSize(string path)
+        {
+            return new FileInfo(path).Length;
+        }
+
+
+		public void Move(string source, string target, bool overwrite)
         {
             if (overwrite && File.Exists(target))
             {

@@ -25,6 +25,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Dashboard;
 using SftpSchedulerService.ViewOrchestrators.Api.Settings;
 using SftpScheduler.BLL.Commands.Notification;
 using SftpScheduler.BLL.Commands.Setting;
+using SftpSchedulerService.ViewOrchestrators.Api.JobFileLog;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -43,7 +44,8 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IExecuteJobCommand, ExecuteJobCommand>();
             services.AddScoped<IUpdateJobCommand, UpdateJobCommand>();
             services.AddScoped<ICreateJobLogCommand, CreateJobLogCommand>();
-            services.AddScoped<IDeleteJobCommand, DeleteJobCommand>();
+			services.AddScoped<ICreateJobFileLogCommand, CreateJobFileLogCommand>();
+			services.AddScoped<IDeleteJobCommand, DeleteJobCommand>();
 
             services.AddScoped<ICreateUserCommand, CreateUserCommand>();
             services.AddScoped<IUpdateUserCommand, UpdateUserCommand>();
@@ -149,7 +151,10 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IJobDeleteOneOrchestrator, JobDeleteOneOrchestrator>();
             services.AddScoped<IJobFetchAllOrchestrator, JobFetchAllOrchestrator>();
             services.AddScoped<IJobFetchOneOrchestrator, JobFetchOneOrchestrator>();
+            
             services.AddScoped<IJobLogFetchAllOrchestrator, JobLogFetchAllOrchestrator>();
+
+            services.AddScoped<IJobFileLogFetchAllOrchestrator, JobFileLogFetchAllOrchestrator>();
 
             services.AddScoped<IJobNotificationFetchAllOrchestrator, JobNotificationFetchAllOrchestrator>();
 
@@ -175,8 +180,9 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<GlobalUserSettingRepository>();
 			services.AddScoped<HostRepository>();
 			services.AddScoped<JobRepository>();
+            services.AddScoped<JobFileLogRepository>();
             services.AddScoped<JobLogRepository>();
-			services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 		}
 
         public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings, int maxConcurrentJobs, bool isUnitTestContext)

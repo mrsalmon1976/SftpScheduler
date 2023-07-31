@@ -80,6 +80,22 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
+        internal JobFileLogEntity CreateJobFileLogEntity(IDbContext dbContext, int jobId)
+        {
+            JobFileLogEntity jobFileLog = EntityTestHelper.CreateJobFileLogEntity();
+            jobFileLog.JobId = jobId;
+            jobFileLog.StartDate = DateTime.Now;
+
+            string sql = @"INSERT INTO JobFileLog (JobId, FileName, FileLength, StartDate, EndDate) VALUES (@JobId, @FileName, @FileLength, @StartDate, @EndDate)";
+            dbContext.ExecuteNonQueryAsync(sql, jobFileLog).GetAwaiter().GetResult();
+
+            sql = @"select last_insert_rowid()";
+            jobFileLog.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
+
+            return jobFileLog;
+
+        }
+
         internal JobLogEntity CreateJobLogEntity(IDbContext dbContext, int jobId, string status = JobStatus.InProgress)
         {
             JobLogEntity jobLog = EntityTestHelper.CreateJobLogEntity();
@@ -87,7 +103,7 @@ namespace SftpScheduler.BLL.Tests
             jobLog.Status = status;
             jobLog.StartDate = DateTime.Now;
 
-            if (jobLog.Status !=  JobStatus.InProgress)
+            if (jobLog.Status != JobStatus.InProgress)
             {
                 jobLog.EndDate = jobLog.StartDate.AddSeconds(5);
             }
@@ -101,6 +117,5 @@ namespace SftpScheduler.BLL.Tests
             return jobLog;
 
         }
-
     }
 }

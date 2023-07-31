@@ -48,16 +48,28 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal static JobLogEntity CreateJobLogEntity()
+        internal static JobFileLogEntity CreateJobFileLogEntity(int? jobId = null)
         {
-            JobLogEntity jobLog = new JobLogEntity();
-            jobLog.JobId = Faker.RandomNumber.Next(1, 100);
-            jobLog.StartDate = DateTime.Now.AddSeconds(-5);
-            return jobLog;
+            JobFileLogEntity jobFileLog = new JobFileLogEntity();
+            jobFileLog.JobId = (jobId.HasValue ? jobId.Value : Faker.RandomNumber.Next(1, 100));
+            jobFileLog.FileName = Faker.Name.First();
+            jobFileLog.FileLength = Faker.RandomNumber.Next(1, 1000);
+            jobFileLog.StartDate = DateTime.Now.AddSeconds(-50);
+			jobFileLog.EndDate = DateTime.Now.AddSeconds(-30);
+			return jobFileLog;
 
         }
 
-        internal static UserEntity CreateUserEntity(string? id = null)
+		internal static JobLogEntity CreateJobLogEntity()
+		{
+			JobLogEntity jobLog = new JobLogEntity();
+			jobLog.JobId = Faker.RandomNumber.Next(1, 100);
+			jobLog.StartDate = DateTime.Now.AddSeconds(-5);
+			return jobLog;
+
+		}
+
+		internal static UserEntity CreateUserEntity(string? id = null)
         {
             UserEntity userEntity = new UserEntity();
             userEntity.Id = id ?? Guid.NewGuid().ToString();
