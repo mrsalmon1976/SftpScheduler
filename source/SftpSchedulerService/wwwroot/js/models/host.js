@@ -32,7 +32,7 @@
     }
 
     validateName = function () {
-        this.isNameValid = (this.name.length >= 4);
+        this.isNameValid = (this.name.length >= 3);
         return this.isNameValid;
     }
 
