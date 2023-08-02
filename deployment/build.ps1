@@ -1,35 +1,75 @@
 $ErrorActionPreference = "Stop"
 Clear-Host
 
+function Remove-Item-IfExists 
+{
+	param([string]$path)
+
+	if (Test-Path -Path $path) {
+		Remove-Item -Path $path -Force -Recurse
+	}
+}
+
 function RemoveRedundantFiles
 {
 	param([string]$buildPath)
 
-	Remove-Item -Path "$buildPath\appsettings.Development.json" -Force
-	Remove-Item -Path "$buildPath\Updater\appsettings.Development.json" -Force
-	Remove-Item -Path "$buildPath\da" -Force -Recurse 
-	Remove-Item -Path "$buildPath\de" -Force -Recurse 
-	Remove-Item -Path "$buildPath\es" -Force -Recurse 
-	Remove-Item -Path "$buildPath\es-MX" -Force -Recurse 
-	Remove-Item -Path "$buildPath\fa" -Force -Recurse 
-	Remove-Item -Path "$buildPath\fi" -Force -Recurse 
-	Remove-Item -Path "$buildPath\fr" -Force -Recurse 
-	Remove-Item -Path "$buildPath\he-IL" -Force -Recurse 
-	Remove-Item -Path "$buildPath\it" -Force -Recurse 
-	Remove-Item -Path "$buildPath\ja" -Force -Recurse 
-	Remove-Item -Path "$buildPath\ko" -Force -Recurse 
-	Remove-Item -Path "$buildPath\nb" -Force -Recurse 
-	Remove-Item -Path "$buildPath\nl" -Force -Recurse 
-	Remove-Item -Path "$buildPath\pl" -Force -Recurse 
-	Remove-Item -Path "$buildPath\pt" -Force -Recurse 
-	Remove-Item -Path "$buildPath\ro" -Force -Recurse 
-	Remove-Item -Path "$buildPath\ru" -Force -Recurse 
-	Remove-Item -Path "$buildPath\sl" -Force -Recurse 
-	Remove-Item -Path "$buildPath\sv" -Force -Recurse 
-	Remove-Item -Path "$buildPath\tr" -Force -Recurse 
-	Remove-Item -Path "$buildPath\uk" -Force -Recurse 
-	Remove-Item -Path "$buildPath\zh-Hans" -Force -Recurse 
-	Remove-Item -Path "$buildPath\zh-Hant" -Force -Recurse 
+	Remove-Item-IfExists -Path "$buildPath\appsettings.Development.json" 
+	Remove-Item-IfExists -Path "$buildPath\Updater\appsettings.Development.json" 
+	Remove-Item-IfExists -Path "$buildPath\af" 
+	Remove-Item-IfExists -Path "$buildPath\ar" 
+	Remove-Item-IfExists -Path "$buildPath\az" 
+	Remove-Item-IfExists -Path "$buildPath\bg" 
+	Remove-Item-IfExists -Path "$buildPath\bn-BD"
+	Remove-Item-IfExists -Path "$buildPath\cs" 
+	Remove-Item-IfExists -Path "$buildPath\da" 
+	Remove-Item-IfExists -Path "$buildPath\de" 
+	Remove-Item-IfExists -Path "$buildPath\el" 
+	Remove-Item-IfExists -Path "$buildPath\es" 
+	Remove-Item-IfExists -Path "$buildPath\es-MX"
+	Remove-Item-IfExists -Path "$buildPath\fa"  
+	Remove-Item-IfExists -Path "$buildPath\fi"  
+	Remove-Item-IfExists -Path "$buildPath\fi-FI" 
+	Remove-Item-IfExists -Path "$buildPath\fr-BE" 
+	Remove-Item-IfExists -Path "$buildPath\fr" 
+	Remove-Item-IfExists -Path "$buildPath\fr-BE"
+	Remove-Item-IfExists -Path "$buildPath\he" 
+	Remove-Item-IfExists -Path "$buildPath\he-IL" 
+	Remove-Item-IfExists -Path "$buildPath\hr"  
+	Remove-Item-IfExists -Path "$buildPath\hu"  
+	Remove-Item-IfExists -Path "$buildPath\hy"  
+	Remove-Item-IfExists -Path "$buildPath\id"  
+	Remove-Item-IfExists -Path "$buildPath\is"  
+	Remove-Item-IfExists -Path "$buildPath\it"  
+	Remove-Item-IfExists -Path "$buildPath\ja"  
+	Remove-Item-IfExists -Path "$buildPath\ko"  
+	Remove-Item-IfExists -Path "$buildPath\ko-KR" 
+	Remove-Item-IfExists -Path "$buildPath\ku" 
+	Remove-Item-IfExists -Path "$buildPath\lv" 
+	Remove-Item-IfExists -Path "$buildPath\ms-MY"
+	Remove-Item-IfExists -Path "$buildPath\mt" 
+	Remove-Item-IfExists -Path "$buildPath\nb" 
+	Remove-Item-IfExists -Path "$buildPath\nb-NO"
+	Remove-Item-IfExists -Path "$buildPath\nl" 
+	Remove-Item-IfExists -Path "$buildPath\pl" 
+	Remove-Item-IfExists -Path "$buildPath\pt" 
+	Remove-Item-IfExists -Path "$buildPath\ro"  
+	Remove-Item-IfExists -Path "$buildPath\ru"  
+	Remove-Item-IfExists -Path "$buildPath\sl"  
+	Remove-Item-IfExists -Path "$buildPath\sk" 
+	Remove-Item-IfExists -Path "$buildPath\sr"  
+	Remove-Item-IfExists -Path "$buildPath\sr-Latn"
+	Remove-Item-IfExists -Path "$buildPath\sv" 
+	Remove-Item-IfExists -Path "$buildPath\th-TH"
+	Remove-Item-IfExists -Path "$buildPath\th-TN"
+	Remove-Item-IfExists -Path "$buildPath\tr" 
+	Remove-Item-IfExists -Path "$buildPath\uk" 
+	Remove-Item-IfExists -Path "$buildPath\uz-Cyrl-UZ" 
+	Remove-Item-IfExists -Path "$buildPath\uz-Latn-UZ"
+	Remove-Item-IfExists -Path "$buildPath\vi" 
+	Remove-Item-IfExists -Path "$buildPath\zh-Hans" 
+	Remove-Item-IfExists -Path "$buildPath\zh-CN" 
+	Remove-Item-IfExists -Path "$buildPath\zh-Hant" 
 }
 
 function UpdateProjectVersion

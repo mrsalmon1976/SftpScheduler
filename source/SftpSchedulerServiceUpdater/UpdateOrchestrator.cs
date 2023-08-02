@@ -53,6 +53,14 @@ namespace SftpSchedulerServiceUpdater
                 _logger.LogInformation("New version available: {versionNumber}", latestVersionInfo.VersionNumber);
                 updated = true;
 
+                _logger.LogInformation("Updater location information:");
+                _logger.LogInformation("..........Application folder: {0}", _updateLocationInfo.ApplicationFolder);
+                _logger.LogInformation("..........Log folder: {0}", _updateLocationInfo.LogFolder);
+                _logger.LogInformation("..........Data folder: {0}", _updateLocationInfo.DataFolder);
+                _logger.LogInformation("..........Backup folder: {0}", _updateLocationInfo.BackupFolder);
+                _logger.LogInformation("..........Updater folder: {0}", _updateLocationInfo.UpdaterFolder);
+                _logger.LogInformation("..........UpdateTemp folder: {0}", _updateLocationInfo.UpdateTempFolder);
+
                 _logger.LogInformation("Creating temporary update folder {updateTempFolder}", _updateLocationInfo.UpdateTempFolder);
                 _updateFileService.EnsureEmptyUpdateTempFolderExists(_updateLocationInfo.UpdateTempFolder);
 
