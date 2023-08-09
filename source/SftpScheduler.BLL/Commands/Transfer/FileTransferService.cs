@@ -57,7 +57,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
 				// get the files - note the DeleteAfterDownload option is used here so files are removed by WinSCP
 				sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload);
-                _logger.LogInformation("Downloaded file {remoteFile} to {localPath}", remoteFile, localFilePath);
+                _logger.LogInformation("Downloaded file {remoteFileName} to {localPath}", remoteFile.FullName, localFilePath);
 
                 // archive file remotely
                 if (!options.DeleteAfterDownload)
