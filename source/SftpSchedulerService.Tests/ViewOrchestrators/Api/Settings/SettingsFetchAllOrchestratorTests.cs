@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpScheduler.BLL.Config;
-using SftpScheduler.BLL.TestInfrastructure.Config;
+using SftpScheduler.BLL.Tests.Builders.Config;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Models.Settings;
-using SftpSchedulerService.TestInfrastructure.Config;
+using SftpSchedulerService.Tests.Builders.Config;
 using SftpSchedulerService.ViewOrchestrators.Api.Settings;
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings

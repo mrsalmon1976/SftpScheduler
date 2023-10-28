@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
@@ -48,7 +49,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateJobCommand updateJobCommand = Substitute.For<IUpdateJobCommand>();
             JobViewModel jobViewModel = ViewModelTestHelper.CreateJobViewModel();
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
@@ -72,7 +73,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobViewModel jobViewModel = ViewModelTestHelper.CreateJobViewModel();
             JobViewModel jobViewModelExpected = ViewModelTestHelper.CreateJobViewModel();
             jobViewModelExpected.Id = Faker.RandomNumber.Next();
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModelExpected);

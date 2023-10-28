@@ -14,15 +14,9 @@ namespace SftpScheduler.BLL.Security
 
     public class EncryptionProvider : IEncryptionProvider
     {
-        private readonly string _keyContainerName;
-        private readonly UTF8Encoding _encoding;
 
-        public const int KeySize = 2048;
-
-        public EncryptionProvider(string keyContainerName)
+        public EncryptionProvider()
         {
-            _keyContainerName = keyContainerName;
-            _encoding = new UTF8Encoding(false);
         }
 
         // TODO Use container urgently!
@@ -35,9 +29,8 @@ namespace SftpScheduler.BLL.Security
             else
             {
                 byte[] secret = Convert.FromBase64String(encryptedString);
-                using var rsa = CreateProvider();
-                byte[] plain = rsa.Decrypt(secret, true);
-                return _encoding.GetString(plain);
+                byte[] decryptedData = ProtectedData.Unprotect(secret, null, DataProtectionScope.LocalMachine);
+                return Encoding.UTF8.GetString(decryptedData);
             }
         }
 
@@ -49,24 +42,11 @@ namespace SftpScheduler.BLL.Security
             }
             else
             {
-                byte[] plainTextData = _encoding.GetBytes(plainTextString);
-
-                using var rsa = CreateProvider();
-                byte[] encryptedData = rsa.Encrypt(plainTextData, true);
+                byte[] plainTextData = Encoding.UTF8.GetBytes(plainTextString);
+                byte[] encryptedData = ProtectedData.Protect(plainTextData, null, DataProtectionScope.LocalMachine);
                 return Convert.ToBase64String(encryptedData);
             }
         }
-
-        private RSACryptoServiceProvider CreateProvider()
-        {
-            var parameters = new CspParameters()
-            {
-                KeyContainerName = _keyContainerName
-            };
-
-            return new RSACryptoServiceProvider(KeySize, parameters);
-        }
-
     }
 }
 #pragma warning restore CA1416 // Validate platform compatibility

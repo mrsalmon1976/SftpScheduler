@@ -1,6 +1,8 @@
 ﻿using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
+using static Quartz.Logging.OperationName;
 
 namespace SftpScheduler.BLL.Tests
 {
@@ -41,7 +43,10 @@ namespace SftpScheduler.BLL.Tests
 
 		internal GlobalUserSettingEntity CreateGlobalUserSettingEntity(IDbContext dbContext, string id, string settingValue)
 		{
-			GlobalUserSettingEntity settingEntity = EntityTestHelper.CreateGlobalUserSettingEntity(id, settingValue);
+			GlobalUserSettingEntity settingEntity = new GlobalUserSettingEntityBuilder()
+                .WithId(id)
+                .WithSettingValue(settingValue)
+                .Build();
 
 			string sql = @"INSERT INTO GlobalUserSetting (Id, SettingValue) VALUES (@Id, @SettingValue)";
 			dbContext.ExecuteNonQueryAsync(sql, settingEntity).GetAwaiter().GetResult();
@@ -52,7 +57,7 @@ namespace SftpScheduler.BLL.Tests
 
 		internal HostEntity CreateHostEntity(IDbContext dbContext)
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
+            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().WithId(0).Build();
 
             string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, hostEntity).GetAwaiter().GetResult();
@@ -66,9 +71,10 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId, bool isEnabled = true)
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.HostId = hostId;
-            jobEntity.IsEnabled = isEnabled;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()
+                .WithHostId(hostId)
+                .WithIsEnabled(isEnabled)
+                .Build();
 
             string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, IsEnabled, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @IsEnabled, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();
@@ -82,9 +88,10 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobFileLogEntity CreateJobFileLogEntity(IDbContext dbContext, int jobId)
         {
-            JobFileLogEntity jobFileLog = EntityTestHelper.CreateJobFileLogEntity();
-            jobFileLog.JobId = jobId;
-            jobFileLog.StartDate = DateTime.Now;
+            JobFileLogEntity jobFileLog = new JobFileLogEntityBuilder().WithRandomProperties()
+                .WithJobId(jobId)
+                .WithStartDate(DateTime.Now)
+                .Build();
 
             string sql = @"INSERT INTO JobFileLog (JobId, FileName, FileLength, StartDate, EndDate) VALUES (@JobId, @FileName, @FileLength, @StartDate, @EndDate)";
             dbContext.ExecuteNonQueryAsync(sql, jobFileLog).GetAwaiter().GetResult();
@@ -98,10 +105,11 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobLogEntity CreateJobLogEntity(IDbContext dbContext, int jobId, string status = JobStatus.InProgress)
         {
-            JobLogEntity jobLog = EntityTestHelper.CreateJobLogEntity();
-            jobLog.JobId = jobId;
-            jobLog.Status = status;
-            jobLog.StartDate = DateTime.Now;
+            JobLogEntity jobLog = new JobLogEntityBuilder().WithRandomProperties()
+                .WithJobId(jobId)
+                .WithStatus(status)
+                .WithStartDate(DateTime.Now)
+                .Build();
 
             if (jobLog.Status != JobStatus.InProgress)
             {

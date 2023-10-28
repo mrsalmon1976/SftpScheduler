@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using NSubstitute;
 using SftpScheduler.Common.IO;
-using SftpScheduler.Common.TestInfrastructure.IO;
+using SftpScheduler.Common.Tests.Builders.IO;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.TestInfrastructure.Config;
+using SftpSchedulerService.Tests.Builders.Config;
 
 namespace SftpSchedulerService.Tests.Config
 {

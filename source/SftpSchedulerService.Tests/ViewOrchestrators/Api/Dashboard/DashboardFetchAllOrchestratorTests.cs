@@ -3,6 +3,7 @@ using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpSchedulerService.Models.Dashboard;
 using SftpSchedulerService.ViewOrchestrators.Api.Dashboard;
 
@@ -49,7 +50,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Dashboard
             for (int i=0; i< count; i++)
             {
                 int hostId = Faker.RandomNumber.Next();
-                JobEntity jobEntity = EntityTestHelper.CreateJobEntity(hostId);
+                JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithHostId(hostId).Build();
                 jobs.Add(jobEntity);
             }
             return jobs;

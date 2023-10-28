@@ -5,6 +5,7 @@ using NSubstitute.ExceptionExtensions;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.User;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
@@ -49,7 +50,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         public void Execute_OnSave_ReturnsResultWithId()
         {
             UserViewModel userViewModel = ViewModelTestHelper.CreateUserViewModel();
-            UserEntity userEntity = EntityTestHelper.CreateUserEntity();
+            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             IUpdateUserCommand updateUserCmd = Substitute.For<IUpdateUserCommand>();
             updateUserCmd.ExecuteAsync(Arg.Any<UserManager<UserEntity>>(), Arg.Any<UserEntity>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>()).Returns(userEntity);

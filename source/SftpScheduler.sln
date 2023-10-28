@@ -15,11 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common", "Sft
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common.Tests", "SftpScheduler.Common.Tests\SftpScheduler.Common.Tests.csproj", "{25DC1F5F-B55A-40D6-AF63-696B649D87C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.BLL.TestInfrastructure", "SftpScheduler.BLL.TestInfrastructure\SftpScheduler.BLL.TestInfrastructure.csproj", "{A9368C1D-4419-40F4-9822-7E36D63CAA2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.BLL.Tests.Builders", "SftpScheduler.BLL.Tests.Builders\SftpScheduler.BLL.Tests.Builders.csproj", "{A9368C1D-4419-40F4-9822-7E36D63CAA2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.TestInfrastructure", "SftpSchedulerService.TestInfrastructure\SftpSchedulerService.TestInfrastructure.csproj", "{09BB3E25-4A05-45D9-997E-2AD7F2610513}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.Tests.Builders", "SftpSchedulerService.Tests.Builders\SftpSchedulerService.Tests.Builders.csproj", "{09BB3E25-4A05-45D9-997E-2AD7F2610513}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common.TestInfrastructure", "SftpScheduler.Common.TestInfrastructure\SftpScheduler.Common.TestInfrastructure.csproj", "{5F01056C-B312-4251-9748-36CB881BADB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common.Tests.Builders", "SftpScheduler.Common.Tests.Builders\SftpScheduler.Common.Tests.Builders.csproj", "{5F01056C-B312-4251-9748-36CB881BADB4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerServiceUpdater", "SftpSchedulerServiceUpdater\SftpSchedulerServiceUpdater.csproj", "{AB808B31-2D9F-4F0D-98BE-8BE13EAA4FA7}"
 EndProject

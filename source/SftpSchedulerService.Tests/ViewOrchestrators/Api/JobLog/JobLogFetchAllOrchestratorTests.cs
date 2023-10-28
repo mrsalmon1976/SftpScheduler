@@ -4,6 +4,7 @@ using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
@@ -31,7 +32,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.JobLog
             int maxLogId = Faker.RandomNumber.Next(1, 10000);
 
             JobLogViewModel[] jobLogViewModels = { ViewModelTestHelper.CreateJobLogViewModel() };
-            JobLogEntity[] jobLogEntities = { EntityTestHelper.CreateJobLogEntity(jobId) };
+            JobLogEntity[] jobLogEntities = { new JobLogEntityBuilder().WithRandomProperties().WithJobId(jobId).Build() };
 
             jobLogRepo.GetAllByJobAsync(Arg.Any<IDbContext>(), jobId, maxLogId, JobLogFetchAllOrchestrator.DefaultRowCount).Returns(jobLogEntities);
 

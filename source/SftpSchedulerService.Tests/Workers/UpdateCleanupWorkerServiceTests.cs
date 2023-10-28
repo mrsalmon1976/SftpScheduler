@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NLog.Targets;
+﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
 using SftpScheduler.Common;
 using SftpScheduler.Common.IO;
-using SftpScheduler.Common.TestInfrastructure.IO;
+using SftpScheduler.Common.Tests.Builders.IO;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.TestInfrastructure.Config;
+using SftpSchedulerService.Tests.Builders.Config;
 using SftpSchedulerService.Workers;
 
 namespace SftpSchedulerService.Tests.Workers

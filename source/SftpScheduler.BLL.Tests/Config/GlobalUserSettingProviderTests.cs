@@ -8,10 +8,10 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
-using SftpScheduler.BLL.TestInfrastructure.Commands.Setting;
-using SftpScheduler.BLL.TestInfrastructure.Data;
-using SftpScheduler.BLL.TestInfrastructure.Repositories;
-using SftpScheduler.BLL.TestInfrastructure.Security;
+using SftpScheduler.BLL.Tests.Builders.Commands.Setting;
+using SftpScheduler.BLL.Tests.Builders.Data;
+using SftpScheduler.BLL.Tests.Builders.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Security;
 using static Dapper.SqlMapper;
 
 namespace SftpScheduler.BLL.Tests.Config

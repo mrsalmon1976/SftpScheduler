@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SftpScheduler.BLL.Tests.Builders.Models;
+using System.Data;
 
 namespace SftpScheduler.BLL.Tests.Validators
 {
@@ -19,10 +21,9 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_ValidObject_NoValidationExceptionThrown()
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Id = Faker.RandomNumber.Next(1, 100);
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.HostId = hostEntity.Id;
+            int hostId = Faker.RandomNumber.Next(1, 100);
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithId(hostId).Build();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithHostId(hostId).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             HostRepository hostRepository = Substitute.For<HostRepository>();
@@ -41,8 +42,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase("    ")]
         public void Validate_InvalidNoName_ExceptionThrown(string name)
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.Name = name;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithName(name).Build();
             JobValidator jobValidator = CreateJobValidator();
 
             // execute
@@ -56,8 +56,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_InValidNoHost_ExceptionThrown()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.HostId = 0;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithHostId(0).Build();
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -68,8 +67,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_InValidHostDoesNotExist_ExceptionThrown()
         {
             int hostId = Faker.RandomNumber.Next(1, 100);
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.HostId = hostId;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithHostId(hostId).Build();
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             HostEntity hostEntity = null;
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -94,8 +92,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase(3)]
         public void Validate_InValidType_ExceptionThrown(int jobType)
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.Type = (JobType)jobType;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithType((JobType)jobType).Build();
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -107,8 +104,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_InValidSchedule_ExceptionThrown()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.Schedule = "invalid";
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithSchedule("invalid").Build();
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -118,8 +114,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_InValidLocalPath_ExceptionThrown()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.LocalPath = "";
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithLocalPath("").Build();
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -130,7 +125,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_LocalPathDoesNotExist_ExceptionThrown()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
             IDbContext dbContext = Substitute.For<IDbContext>();
             IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.Exists(Arg.Any<string>()).Returns(false);
@@ -145,8 +140,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_InValidRemotePath_ExceptionThrown()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.RemotePath = "";
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithRemotePath("").Build();
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -159,10 +153,11 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase(null)]
         public void Validate_DownloadJobAndDeleteRemoteFalseAndNoRemoteArchiveFolderProvided_ExceptionThrown(string remoteArchiveFolder)
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.DeleteAfterDownload = false;
-            jobEntity.RemoteArchivePath = remoteArchiveFolder;
-            jobEntity.Type = JobType.Download;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()
+                .WithDeleteAfterDownload(false)
+                .WithRemoteArchivePath(remoteArchiveFolder)
+                .WithType(JobType.Download)
+                .Build();
 
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
@@ -175,10 +170,11 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_UploadloadJobAndDeleteRemoteFalseAndNoRemoteArchiveFolderProvided_ValidatesCorrectly()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.DeleteAfterDownload = false;
-            jobEntity.RemoteArchivePath = String.Empty;
-            jobEntity.Type = JobType.Upload;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()
+                .WithDeleteAfterDownload(false)
+                .WithRemoteArchivePath(String.Empty)
+                .WithType(JobType.Upload)
+                .Build();
 
             JobValidator jobValidator = CreateJobValidator();
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
@@ -189,8 +185,9 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_LocalCopyPathsExist_ValidatesCorrectly()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()
+                .WithLocalCopyPaths("C:\\Temp\\Folder1;C:\\Temp\\Folder2")
+                .Build();
 
             IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
             dirWrap.Exists(jobEntity.LocalPath).Returns(true);
@@ -209,8 +206,9 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_LocalCopyPathDoesNotExist_ExceptionThrown()
         {
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.LocalCopyPaths = "C:\\Temp\\Folder1;C:\\Temp\\Folder2";
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()
+                .WithLocalCopyPaths("C:\\Temp\\Folder1;C:\\Temp\\Folder2")
+                .Build();
 
             IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
             dirWrap.Exists(jobEntity.LocalPath).Returns(true);

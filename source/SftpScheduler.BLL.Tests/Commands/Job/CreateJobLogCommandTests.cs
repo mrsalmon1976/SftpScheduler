@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            var jobEntity = EntityTestHelper.CreateJobEntity();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
             int newEntityId = Faker.RandomNumber.Next();
 
             dbContext.ExecuteScalarAsync<int>(Arg.Any<string>()).Returns(newEntityId);
@@ -39,7 +40,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            var jobEntity = EntityTestHelper.CreateJobEntity();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
 
 
             // execute

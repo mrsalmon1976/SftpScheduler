@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
@@ -32,7 +33,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             JobViewModel[] jobViewModels = { ViewModelTestHelper.CreateJobViewModel() };
-            JobEntity[] jobEntities = { EntityTestHelper.CreateJobEntity() };
+            JobEntity[] jobEntities = { new JobEntityBuilder().WithRandomProperties().Build() };
 
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
 
@@ -59,8 +60,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IScheduler scheduler = Substitute.For<IScheduler>();
             schedulerFactory.GetScheduler().Returns(scheduler);
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(1);
-            jobEntity.IsEnabled = true;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithIsEnabled(true).Build();
             JobEntity[] jobEntities = { jobEntity };
 
             TriggerKey triggerKey = new TriggerKey(TransferJob.TriggerKeyName(jobEntity.Id), TransferJob.GroupName);
@@ -93,8 +93,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IScheduler scheduler = Substitute.For<IScheduler>();
             schedulerFactory.GetScheduler().Returns(scheduler);
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.IsEnabled = false;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithIsEnabled(false).Build();
             JobEntity[] jobEntities = { jobEntity };
 
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);

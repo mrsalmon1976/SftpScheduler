@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
@@ -48,7 +49,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
+            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
             mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModel);

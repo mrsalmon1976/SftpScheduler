@@ -2,6 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 
 namespace SftpScheduler.BLL.Tests.Validators
@@ -14,7 +15,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             // setup
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            UserEntity userEntity = EntityTestHelper.CreateUserEntity();
+            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = null!;
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity!);
@@ -53,10 +54,9 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             // setup
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            UserEntity userEntity = EntityTestHelper.CreateUserEntity();
+            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
-            UserEntity existingUserEntity = EntityTestHelper.CreateUserEntity();
-            existingUserEntity.UserName = userEntity.UserName;
+            UserEntity existingUserEntity = new UserEntityBuilder().WithRandomProperties().WithUserName(userEntity.UserName).Build();
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity);
 
             // execute
@@ -73,7 +73,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             // setup
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            UserEntity userEntity = EntityTestHelper.CreateUserEntity();
+            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = null!;
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity!);

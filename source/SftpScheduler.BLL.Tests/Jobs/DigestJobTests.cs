@@ -9,12 +9,12 @@ using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.TestInfrastructure.Config;
-using SftpScheduler.BLL.TestInfrastructure.Data;
-using SftpScheduler.BLL.TestInfrastructure.Models;
-using SftpScheduler.BLL.TestInfrastructure.Net;
-using SftpScheduler.BLL.TestInfrastructure.Repositories;
-using SftpScheduler.BLL.TestInfrastructure.Utility;
+using SftpScheduler.BLL.Tests.Builders.Config;
+using SftpScheduler.BLL.Tests.Builders.Data;
+using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.BLL.Tests.Builders.Net;
+using SftpScheduler.BLL.Tests.Builders.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Utility;
 using SftpScheduler.BLL.Utility;
 using System.Net.Mail;
 

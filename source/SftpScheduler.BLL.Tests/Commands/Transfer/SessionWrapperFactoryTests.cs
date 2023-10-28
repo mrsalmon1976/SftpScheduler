@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Security;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using System.Security.Cryptography;
 using WinSCP;
 
@@ -17,9 +18,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         {
             string encryptedPassword = Guid.NewGuid().ToString();
             string decryptedPasswrd = Guid.NewGuid().ToString();
-            
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Password = encryptedPassword;
+
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPassword(encryptedPassword).Build();
 
             // set up
             IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
@@ -41,8 +41,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string encryptedPassword = Guid.NewGuid().ToString();
             string decryptedPasswrd = Guid.NewGuid().ToString();
 
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Password = encryptedPassword;
+            HostEntity hostEntity = new HostEntityBuilder().WithPassword(encryptedPassword).Build();
 
             // set up
             IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
@@ -69,8 +68,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [TestCase(null)]
         public void CreateSession_NoKeyFingerPrint_SetsPolicyToGiveUpSecurity(string hostKeyFingerprint)
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.KeyFingerprint = hostKeyFingerprint;
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithKeyFingerprint(hostKeyFingerprint).Build();
 
             // execute
             ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IEncryptionProvider>());
@@ -86,8 +84,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         public void CreateSession_NoKeyFingerPrint_SetsPolicyToGiveUpSecurity()
         {
             const string hostKeyFingerprint = "ssh-rsa 2048 e4:9b:47:5a:fc:09:0e:41:a9:7d:0d:f9:cc:c0:4d:e0";
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.KeyFingerprint = hostKeyFingerprint;
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithKeyFingerprint(hostKeyFingerprint).Build();
 
             // execute
             ISessionWrapperFactory sessionWrapperFactory = new SessionWrapperFactory(Substitute.For<IEncryptionProvider>());

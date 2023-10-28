@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_ValidObject_NoValidationExceptionThrown()
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid);
@@ -26,8 +27,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase("    ")]
         public void Validate_InValidObjectWithNoName_ExceptionThrown(string name)
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Name = name;
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithName(name).Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -39,8 +39,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase("    ")]
         public void Validate_InValidObjectWithNoHost_ExceptionThrown(string host)
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Host = host;
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithHost(host).Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -53,8 +52,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase(101010)]
         public void Validate_InValidObjectWithInvalidPort_ExceptionThrown(int port)
         {
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity();
-            hostEntity.Port = port;
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPort(port).Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);

@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +33,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string[] availableFiles = { "C:\\Temp\\1.zip" };
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(availableFiles);
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(jobId);
-            jobEntity.Type = JobType.Upload;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithId(jobId).WithType(JobType.Upload).Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
@@ -54,8 +54,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(jobId);
-            jobEntity.Type = JobType.Upload;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithId(jobId).WithType(JobType.Upload).Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, Arg.Any<int>()).Returns(Task.FromResult(jobEntity));
 
@@ -91,8 +90,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.Type = JobType.Download;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithType(JobType.Download).Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
@@ -115,8 +113,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity();
-            jobEntity.Type = JobType.Upload;
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithType(JobType.Upload).Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
@@ -152,8 +149,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(new string[] { "C:\\Temp\\1.zip" });
 
-            JobEntity jobEntity = EntityTestHelper.CreateJobEntity(Faker.RandomNumber.Next());
-            jobEntity.Type = JobType.Upload;
+            int jobId = Faker.RandomNumber.Next();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithId(jobId).WithType(JobType.Upload).Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobEntity.Id).Returns(Task.FromResult(jobEntity));
 

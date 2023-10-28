@@ -7,6 +7,7 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
@@ -31,7 +32,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             HostRepository hostRepo = Substitute.For<HostRepository>();
 
             HostViewModel[] hostViewModels = { ViewModelTestHelper.CreateHostViewModel() };
-            HostEntity[] hostEntities = { EntityTestHelper.CreateHostEntity() };
+            HostEntity[] hostEntities = { new HostEntityBuilder().Build() };
 
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);
 
@@ -55,14 +56,14 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             HostRepository hostRepo = Substitute.For<HostRepository>();
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
 
-            HostEntity hostEntity1 = EntityTestHelper.CreateHostEntity(111);
-            HostEntity hostEntity2 = EntityTestHelper.CreateHostEntity(222);
+            HostEntity hostEntity1 = new HostEntityBuilder().WithId(111).Build();
+            HostEntity hostEntity2 = new HostEntityBuilder().WithId(222).Build();
             HostEntity[] hostEntities = { hostEntity1, hostEntity2 };
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);
 
             // set up some job counts
-            HostJobCountEntity hostJobCountEntity1 = EntityTestHelper.CreateHostJobCountEntity(hostEntity1.Id);
-            HostJobCountEntity hostJobCountEntity2 = EntityTestHelper.CreateHostJobCountEntity(hostEntity2.Id);
+            HostJobCountEntity hostJobCountEntity1 = new HostJobCountEntityBuilder().WithHostId(hostEntity1.Id).Build();
+            HostJobCountEntity hostJobCountEntity2 = new HostJobCountEntityBuilder().WithHostId(hostEntity2.Id).Build();
             HostJobCountEntity[] hostJobCountEntities = { hostJobCountEntity1, hostJobCountEntity2 };
             hostRepo.GetAllJobCountsAsync(Arg.Any<IDbContext>()).Returns(hostJobCountEntities);
 

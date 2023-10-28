@@ -6,8 +6,6 @@
         
         public static string DefaultAdminUserPassword = "admin";
 
-        public static string SecretKeyContainer = "SftpSchedulerService";
-
         public static class NotificationType
         {
             public const string Error = "Error";

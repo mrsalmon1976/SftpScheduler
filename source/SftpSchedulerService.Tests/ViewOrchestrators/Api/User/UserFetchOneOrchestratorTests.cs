@@ -7,6 +7,7 @@ using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.User;
 using SftpSchedulerService.Utilities;
@@ -46,7 +47,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         {
             // setup
             UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            UserEntity userEntity = EntityTestHelper.CreateUserEntity();
+            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(Arg.Any<string>()).Returns(userEntity);
 
             // execute

@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
@@ -31,13 +32,16 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             string hashId = UrlUtils.Encode(hostId);
 
             HostRepository hostRepo = Substitute.For<HostRepository>();
-            HostEntity hostEntity = EntityTestHelper.CreateHostEntity(hostId);
+            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().WithId(hostId).Build();
             hostRepo.GetByIdAsync(dbContext, hostId).Returns(hostEntity);
 
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
 
+            // execute
             HostFetchOneOrchestrator hostFetchOneOrchestrator = new HostFetchOneOrchestrator(dbContextFactory, mapper, hostRepo);
             var result = hostFetchOneOrchestrator.Execute(hashId).Result as OkObjectResult;
+            
+            // assert
             Assert.That(result, Is.Not.Null);
 
             var resultModel = result.Value as HostViewModel;

@@ -10,8 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SftpScheduler.BLL.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using SftpScheduler.BLL.Commands.Job;
 
 namespace SftpScheduler.BLL.Tests.Commands.Transfer

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
                     JobEntity job = dbIntegrationTestHelper.CreateJobEntity(dbContext, host.Id);
 
-                    JobFileLogEntity jobFileLog = EntityTestHelper.CreateJobFileLogEntity(job.Id);
+                    JobFileLogEntity jobFileLog = new JobFileLogEntityBuilder().WithRandomProperties().WithJobId(job.Id).Build();
                     
                     JobFileLogEntity result = createJobFileLogCmd.ExecuteAsync(dbContext, jobFileLog).GetAwaiter().GetResult();
 
