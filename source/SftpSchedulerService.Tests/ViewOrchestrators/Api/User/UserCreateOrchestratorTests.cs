@@ -9,6 +9,7 @@ using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.User;
+using SftpSchedulerService.Tests.Builders.Models.User;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -23,7 +24,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         public void Execute_OnDataValidationException_ReturnsBadRequest()
         {
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
-            UserViewModel userViewModel = ViewModelTestHelper.CreateUserViewModel();
+            UserViewModel userViewModel = new UserViewModelBuilder().WithRandomProperties().Build();
 
             createUserCommand.ExecuteAsync(Arg.Any<UserManager<UserEntity>>(), Arg.Any<UserEntity>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
@@ -38,7 +39,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         [Test]
         public void Execute_OnSave_ReturnsOk()
         {
-            UserViewModel userViewModel = ViewModelTestHelper.CreateUserViewModel();
+            UserViewModel userViewModel = new UserViewModelBuilder().WithRandomProperties().Build();
 
             IUserCreateOrchestrator userCreateOrchestrator = CreateOrchestrator();
             var result = userCreateOrchestrator.Execute(userViewModel).Result as OkObjectResult;
@@ -50,7 +51,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         [Test]
         public void Execute_OnSave_ReturnsResultWithId()
         {
-            UserViewModel userViewModel = ViewModelTestHelper.CreateUserViewModel();
+            UserViewModel userViewModel = new UserViewModelBuilder().WithRandomProperties().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();

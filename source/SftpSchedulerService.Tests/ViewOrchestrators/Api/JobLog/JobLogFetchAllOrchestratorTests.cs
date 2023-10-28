@@ -6,11 +6,9 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpSchedulerService.Models.Job;
+using SftpSchedulerService.Tests.Builders.Models.JobLog;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 #pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -31,7 +29,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.JobLog
             string jobHash = UrlUtils.Encode(jobId);
             int maxLogId = Faker.RandomNumber.Next(1, 10000);
 
-            JobLogViewModel[] jobLogViewModels = { ViewModelTestHelper.CreateJobLogViewModel() };
+            JobLogViewModel[] jobLogViewModels = { new JobLogViewModelBuilder().WithRandomProperties().Build() };
             JobLogEntity[] jobLogEntities = { new JobLogEntityBuilder().WithRandomProperties().WithJobId(jobId).Build() };
 
             jobLogRepo.GetAllByJobAsync(Arg.Any<IDbContext>(), jobId, maxLogId, JobLogFetchAllOrchestrator.DefaultRowCount).Returns(jobLogEntities);

@@ -4,11 +4,6 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.Common.IO;
 using SftpScheduler.BLL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Commands.Job;
 

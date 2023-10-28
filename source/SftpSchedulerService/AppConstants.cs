@@ -13,6 +13,13 @@
             public const string Warning = "Warning";
 
             public const string Information = "Information";
+
+            public static string[] All = new string[] 
+            { 
+                NotificationType.Error, 
+                NotificationType.Warning, 
+                NotificationType.Information 
+            };
         }
     }
 }

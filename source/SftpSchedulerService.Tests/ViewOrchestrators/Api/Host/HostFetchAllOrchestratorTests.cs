@@ -1,21 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Host;
+using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 #pragma warning disable CS8604 // Possible null reference argument.
 
@@ -31,7 +23,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
             HostRepository hostRepo = Substitute.For<HostRepository>();
 
-            HostViewModel[] hostViewModels = { ViewModelTestHelper.CreateHostViewModel() };
+            HostViewModel[] hostViewModels = { new HostViewModelBuilder().WithRandomProperties().Build() };
             HostEntity[] hostEntities = { new HostEntityBuilder().Build() };
 
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);

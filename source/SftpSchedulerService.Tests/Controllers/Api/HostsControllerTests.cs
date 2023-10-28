@@ -1,16 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using Quartz;
+﻿using NSubstitute;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Models.Host;
+using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.Utilities;
-using SftpSchedulerService.ViewOrchestrators.Api.Cron;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 
 namespace SftpSchedulerService.Tests.Controllers.Api
 {
@@ -124,7 +117,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             // setup
             string[] roles = { UserRoles.Admin };
             IHostCreateOrchestrator orchestrator = Substitute.For<IHostCreateOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostCreateOrchestrator>(orchestrator);
 
             // execute
@@ -139,7 +132,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         {
             // setup
             IHostCreateOrchestrator orchestrator = Substitute.For<IHostCreateOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostCreateOrchestrator>(orchestrator);
 
             // execute
@@ -153,7 +146,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         public void Post_CheckAllRoles(params string[] authorisedRoles)
         {
             IHostCreateOrchestrator orchestrator = Substitute.For<IHostCreateOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             ControllerTestHelper.CheckAllRoles<IHostCreateOrchestrator>(orchestrator, UrlPost, HttpMethod.Post, hostViewModel, authorisedRoles);
         }
 
@@ -170,7 +163,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
             string[] roles = { UserRoles.Admin };
             IHostUpdateOrchestrator orchestrator = Substitute.For<IHostUpdateOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostUpdateOrchestrator>(orchestrator);
 
             // execute
@@ -188,7 +181,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             string url = String.Format(UrlPostUpdate, hashId);
 
             IHostUpdateOrchestrator orchestrator = Substitute.For<IHostUpdateOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostUpdateOrchestrator>(orchestrator);
 
             // execute
@@ -205,7 +198,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             string url = String.Format(UrlPostUpdate, hashId);
 
             IHostUpdateOrchestrator orchestrator = Substitute.For<IHostUpdateOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             ControllerTestHelper.CheckAllRoles<IHostUpdateOrchestrator>(orchestrator, url, HttpMethod.Post, hostViewModel, authorisedRoles);
         }
 
@@ -219,7 +212,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             // setup
             string[] roles = { UserRoles.Admin };
             IHostFingerprintScanOrchestrator orchestrator = Substitute.For<IHostFingerprintScanOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostFingerprintScanOrchestrator>(orchestrator);
 
             // execute
@@ -234,7 +227,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         {
             // setup
             IHostFingerprintScanOrchestrator orchestrator = Substitute.For<IHostFingerprintScanOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IHostFingerprintScanOrchestrator>(orchestrator);
 
             // execute
@@ -248,7 +241,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         public void PostScanFingerprint_CheckAllRoles(params string[] authorisedRoles)
         {
             IHostFingerprintScanOrchestrator orchestrator = Substitute.For<IHostFingerprintScanOrchestrator>();
-            HostViewModel hostViewModel = ViewModelTestHelper.CreateHostViewModel();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             ControllerTestHelper.CheckAllRoles<IHostFingerprintScanOrchestrator>(orchestrator, UrlPostScanFingerPrint, HttpMethod.Post, hostViewModel, authorisedRoles);
         }
 
