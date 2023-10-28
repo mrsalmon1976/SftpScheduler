@@ -4,13 +4,8 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Commands.User
 {
@@ -20,7 +15,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ResultFails_ThrowsDataValidationException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
             string currentPassword = Guid.NewGuid().ToString();
             string newPassword = Guid.NewGuid().ToString();
@@ -44,7 +39,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ResultSucceeds_PasswordIsChanged()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
             string currentPassword = Guid.NewGuid().ToString();
             string newPassword = Guid.NewGuid().ToString();
@@ -64,7 +59,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ResultSucceeds_ReturnsCreatedUser()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
             string currentPassword = Guid.NewGuid().ToString();
             string newPassword = Guid.NewGuid().ToString();

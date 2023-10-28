@@ -4,17 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using SftpScheduler.BLL.Identity.Models;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.ViewOrchestrators.Api.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 #pragma warning disable CS8625
 
@@ -26,7 +20,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
         [Test]
         public void Execute_UserDoesNotExist_ReturnsUnauthorized()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             HttpContext httpContext = Substitute.For<HttpContext>();
 
             LoginModel loginModel = new LoginModel();
@@ -45,7 +39,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
         [Test]
         public void Execute_PasswordIncorrect_ReturnsUnauthorized()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             HttpContext httpContext = Substitute.For<HttpContext>();
 
             UserEntity user = new UserEntity();
@@ -66,7 +60,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
         [Test]
         public void Execute_AccountLockedOut_ReturnsUnauthorized()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             HttpContext httpContext = Substitute.For<HttpContext>();
 
             UserEntity user = new UserEntity();

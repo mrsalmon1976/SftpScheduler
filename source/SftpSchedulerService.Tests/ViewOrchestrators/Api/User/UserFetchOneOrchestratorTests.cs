@@ -1,23 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
-using SftpScheduler.BLL.Commands.Host;
-using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Repositories;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.User;
-using SftpSchedulerService.Utilities;
-using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
 {
@@ -28,7 +16,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         public void Execute_UserNotFound_Returns404()
         {
             // setup
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity? userEntity = null;
             userManager.FindByIdAsync(Arg.Any<string>()).Returns(userEntity!);
 
@@ -46,7 +34,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         public void Execute_FetchesEntityAndReturnsAsViewModel()
         {
             // setup
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(Arg.Any<string>()).Returns(userEntity);
 

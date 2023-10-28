@@ -2,6 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 
@@ -14,7 +15,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_ValidObject_ReturnsSuccess()
         {
             // setup
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = null!;
@@ -32,7 +33,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_NullUserEntity_ThrowsException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity? userEntity = null;
 
             IUserValidator userValidator = CreateValidator();
@@ -53,7 +54,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_UserNameExists_ReturnsFail()
         {
             // setup
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = new UserEntityBuilder().WithRandomProperties().WithUserName(userEntity.UserName).Build();
@@ -72,7 +73,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_InvalidEmail_ReturnsFail()
         {
             // setup
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = null!;

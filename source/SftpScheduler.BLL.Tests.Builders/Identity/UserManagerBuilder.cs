@@ -3,18 +3,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using SftpScheduler.BLL.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SftpSchedulerService.Tests
+namespace SftpScheduler.BLL.Tests.Builders.Identity
 {
-    internal class IdentityTestHelper
+    public class UserManagerBuilder
     {
-        public static UserManager<UserEntity> CreateUserManagerMock()
+        public UserManager<UserEntity> Build()
         {
             IUserStore<UserEntity> userStore = Substitute.For<IUserStore<UserEntity>>();
             IOptions<IdentityOptions> options = Substitute.For<IOptions<IdentityOptions>>();
@@ -24,23 +18,9 @@ namespace SftpSchedulerService.Tests
             IServiceProvider serviceProvider = Substitute.For<IServiceProvider>();
             ILogger<UserManager<UserEntity>> logger = Substitute.For<ILogger<UserManager<UserEntity>>>();
 
-
             return Substitute.For<UserManager<UserEntity>>(userStore, options, passwordHasher, Enumerable.Empty<IUserValidator<UserEntity>>(), Enumerable.Empty<IPasswordValidator<UserEntity>>()
                 , lookupNormalizer, errorDescriber, serviceProvider, logger);
 
         }
-
-        public static RoleManager<IdentityRole> CreateRoleManagerMock()
-        {
-            IRoleStore<IdentityRole> roleStore = Substitute.For<IRoleStore<IdentityRole>>();
-            IdentityErrorDescriber errorDescriber = new IdentityErrorDescriber();
-            ILookupNormalizer lookupNormalizer = Substitute.For<ILookupNormalizer>();
-            ILogger<RoleManager<IdentityRole>> logger = Substitute.For<ILogger<RoleManager<IdentityRole>>>();
-
-            //new RoleManager<IdentityRole>(roleStore, Enumerable.Empty<IRoleValidator<IdentityRole>>(), lookupNormalizer, errorDescriber, logger);
-            return Substitute.For<RoleManager<IdentityRole>>(roleStore, Enumerable.Empty<IRoleValidator<IdentityRole>>(), lookupNormalizer, errorDescriber, logger);
-
-        }
-
     }
 }

@@ -5,6 +5,7 @@ using NSubstitute.ExceptionExtensions;
 using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.User;
@@ -71,7 +72,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
 
         private IUserCreateOrchestrator CreateOrchestrator(UserManager<UserEntity>? userManager = null, ICreateUserCommand? createUserCommand = null)
         {
-            userManager ??= IdentityTestHelper.CreateUserManagerMock();
+            userManager ??= new UserManagerBuilder().Build();
             createUserCommand ??= Substitute.For<ICreateUserCommand>();
 
             return new UserCreateOrchestrator(userManager, createUserCommand);

@@ -6,11 +6,7 @@ using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -24,8 +20,8 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_RoleExists_DoesNotRecreate(string roleName)
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
+            RoleManager<IdentityRole> roleManager = new RoleManagerBuilder().Build();
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
@@ -45,8 +41,8 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_RoleDoesNotExist_IsCreated(string roleName)
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
+            RoleManager<IdentityRole> roleManager = new RoleManagerBuilder().Build();
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
@@ -63,8 +59,8 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_RoleFailsToCreate_ThrowsDataValidationException()
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
+            RoleManager<IdentityRole> roleManager = new RoleManagerBuilder().Build();
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(false));
@@ -86,8 +82,8 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_AdminUserDoesNotExist_IsCreated()
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
+            RoleManager<IdentityRole> roleManager = new RoleManagerBuilder().Build();
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             roleManager.RoleExistsAsync(Arg.Any<string>()).Returns(Task.FromResult(true));
@@ -108,8 +104,8 @@ namespace SftpScheduler.BLL.Tests.Identity
         public void Seed_AdminUserExists_IsNotRecreated()
         {
             ILogger<IdentityInitialiser> logger = Substitute.For<ILogger<IdentityInitialiser>>();
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-            RoleManager<IdentityRole> roleManager = IdentityTestHelper.CreateRoleManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
+            RoleManager<IdentityRole> roleManager = new RoleManagerBuilder().Build();
             ICreateUserCommand createUserCommand = Substitute.For<ICreateUserCommand>();
 
             UserEntity user = new UserEntity();

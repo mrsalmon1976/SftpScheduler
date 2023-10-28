@@ -1,27 +1,16 @@
-﻿using AutoMapper;
-using Castle.Core.Logging;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Commands.User;
-using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Auth;
-using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Auth;
-using SftpSchedulerService.ViewOrchestrators.Api.Host;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -82,7 +71,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Auth
         {
             ILogger<ChangePasswordPostOrchestrator> logger = Substitute.For<ILogger<ChangePasswordPostOrchestrator>>();
             changePasswordCommand ??= Substitute.For<IChangePasswordCommand>();
-            userManager ??= IdentityTestHelper.CreateUserManagerMock();
+            userManager ??= new UserManagerBuilder().Build();
             return new ChangePasswordPostOrchestrator(logger, changePasswordCommand, userManager);
         }
 

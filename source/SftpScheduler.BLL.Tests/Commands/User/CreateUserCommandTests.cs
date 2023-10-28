@@ -5,13 +5,8 @@ using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Validators;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Commands.User
 {
@@ -30,8 +25,8 @@ namespace SftpScheduler.BLL.Tests.Commands.User
 
 			IUserValidator userValidator = Substitute.For<IUserValidator>();
 
-			UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
-			userManager.CreateAsync(Arg.Any<UserEntity>(), password).Returns(Task.FromResult(IdentityResult.Success));
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
+            userManager.CreateAsync(Arg.Any<UserEntity>(), password).Returns(Task.FromResult(IdentityResult.Success));
 
 			// execute
 			ICreateUserCommand createUserCommand = CreateCommand(userValidator);
@@ -45,7 +40,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
 		[Test]
         public void ExecuteAsync_ValidationFails_ThrowsDataValidationException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             string userName = Guid.NewGuid().ToString();
             string password = Guid.NewGuid().ToString();
 
@@ -75,7 +70,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ResultFails_ThrowsDataValidationException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             string userName = Guid.NewGuid().ToString();
             string password = Guid.NewGuid().ToString();
 
@@ -102,7 +97,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ResultSucceeds_RolesAdded()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             string userName = Guid.NewGuid().ToString();
             string password = Guid.NewGuid().ToString();
             string[] roles = new string[] { "Admin", "Test" };
@@ -121,7 +116,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ResultSucceeds_ReturnsCreatedUser()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             string userName = Guid.NewGuid().ToString();
             string password = Guid.NewGuid().ToString();
             string[] roles = new string[] { "Admin", "Test" };

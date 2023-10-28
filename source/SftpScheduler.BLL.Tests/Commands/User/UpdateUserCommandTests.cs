@@ -5,14 +5,9 @@ using SftpScheduler.BLL.Commands.User;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Commands.User
 {
@@ -22,7 +17,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_ValidationFails_ThrowsDataValidationException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
 
             IUserValidator userValidator = Substitute.For<IUserValidator>();
@@ -48,7 +43,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_UpdateUserFails_ThrowsDataValidationException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
@@ -73,7 +68,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_RolesUnchanged_NoUpdatesApplied()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
@@ -95,7 +90,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_RoleRemoved_UpdatesCorrectly()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
@@ -117,7 +112,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_RoleRemovalFails_ThrowsException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
@@ -146,7 +141,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_RoleAdded_UpdatesCorrectly()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
@@ -168,7 +163,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_RoleAdditionFails_ThrowsException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
@@ -197,7 +192,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_PasswordSupplied_UpdatesPasswordCorrectly()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
             string password = Guid.NewGuid().ToString();
@@ -222,7 +217,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_PasswordSuppliedButFails_ThrowsException()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
             string password = Guid.NewGuid().ToString();
@@ -255,7 +250,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         [Test]
         public void ExecuteAsync_SuccessfulUpdate_ReturnsUpdatedUserEntity()
         {
-            UserManager<UserEntity> userManager = IdentityTestHelper.CreateUserManagerMock();
+            UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
             UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
