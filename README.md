@@ -7,7 +7,7 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 
 [![Build status](https://ci.appveyor.com/api/projects/status/snreekxcc215u4if?svg=true)](https://ci.appveyor.com/project/mrsalmon1976/sftpscheduler)
 
-## Features
+# Features
 
 - Create a singular set of hosts
 - Passwords are encrypted
@@ -19,7 +19,22 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 - Notifications for repeated failures, and configurable daily digest emails containing details of failing jobs from the past 24 hours
 - Configurable user list
 
-## Screenshots
+# Installation
+
+## First Time and/or Manual Installation
+
+- Download the latest release
+- Extract the contents of the zip folder, and move them to the installation directory
+- Run "install.bat" as administrator - this will install SftpScheduler as a service on the machine
+- You may want to edit the installed service properties through the Windows services console and adjust the service user.  By default, running as SYSTEM may not have the permissions required to access folders on your machine or network.
+
+## Updates
+
+- SftpScheduler will automatically update when ner versions are released
+- If this update fails, check that your anti-virus is not quarantining the update files, and add the folder as an exclusion if necessary
+- To manually update, follow the steps in "First Time and/or Manual Installation" section.  Make sure you do not delete the "Data" folder - this contains all pevious settings, hosts and jobs.
+
+# Screenshots
 
 ![Dashboard screenshot](/img/screenshots/screenshot_dashboard.png?raw=true "Dashboard screenshot")
 
