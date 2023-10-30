@@ -5,6 +5,7 @@
             isEdit: false,
             hostId: '',
             host: new HostModel(),
+            auditLogs: [],
             scanDialogText: '',
             isScanError: false,
             keyFingerprints: [],
@@ -12,6 +13,18 @@
         }
     },
     methods: {
+        formatDateTime(dt) {
+            return UiHelpers.formatDateTime(dt);
+        },
+        async loadAuditLogs() {
+
+            let result = await axios.get('/api/hosts/' + this.host.hashId + '/auditlogs')
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                });
+
+            this.auditLogs = result.data;
+        },
         async loadHost() {
 
             let result = await axios.get('/api/hosts/' + this.host.hashId)
@@ -111,6 +124,7 @@
             this.isEdit = true;
             this.submitButtonText = 'Update Host';
             this.loadHost();
+            this.loadAuditLogs();
         }
         else {
             this.isLoading = false;

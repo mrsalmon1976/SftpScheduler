@@ -88,6 +88,7 @@ try
     // custom stuff
     builder.Services.AddRepositories();
     builder.Services.AddValidators();
+    builder.Services.AddServices();
     builder.Services.AddCommands();
     builder.Services.AddViewOrchestrators();
 

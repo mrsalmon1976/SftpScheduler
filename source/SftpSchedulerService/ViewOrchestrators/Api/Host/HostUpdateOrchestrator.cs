@@ -10,7 +10,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
     public interface IHostUpdateOrchestrator : IViewOrchestrator
     {
-        Task<IActionResult> Execute(HostViewModel hostViewModel);
+        Task<IActionResult> Execute(HostViewModel hostViewModel, string userName);
     }
 
     public class HostUpdateOrchestrator : IHostUpdateOrchestrator
@@ -26,19 +26,21 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
             _updateHostCommand = updateHostCommand;
         }
 
-        public async Task<IActionResult> Execute(HostViewModel hostViewModel)
+        public async Task<IActionResult> Execute(HostViewModel hostViewModel, string userName)
         {
             HostEntity hostEntity = _mapper.Map<HostEntity>(hostViewModel);
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
+                dbContext.BeginTransaction();
                 try
                 {
-                    hostEntity = await _updateHostCommand.ExecuteAsync(dbContext, hostEntity);
+                    hostEntity = await _updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName);
                 }
                 catch (DataValidationException dve)
                 {
                     return new BadRequestObjectResult(dve.ValidationResult);
                 }
+                dbContext.Commit();
             }
             var result = _mapper.Map<HostViewModel>(hostEntity);
             return new OkObjectResult(result);

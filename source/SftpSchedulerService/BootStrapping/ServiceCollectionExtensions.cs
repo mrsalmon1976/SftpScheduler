@@ -26,6 +26,8 @@ using SftpSchedulerService.ViewOrchestrators.Api.Settings;
 using SftpScheduler.BLL.Commands.Notification;
 using SftpScheduler.BLL.Commands.Setting;
 using SftpSchedulerService.ViewOrchestrators.Api.JobFileLog;
+using SftpScheduler.BLL.Services.Host;
+using SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -145,6 +147,8 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IHostFingerprintScanOrchestrator, HostFingerprintScanOrchestrator>();
             services.AddScoped<IHostUpdateOrchestrator, HostUpdateOrchestrator>();
 
+            services.AddScoped<IHostAuditLogFetchAllOrchestrator, HostAuditLogFetchAllOrchestrator>();
+
             services.AddScoped<IJobCreateOrchestrator, JobCreateOrchestrator>();
             services.AddScoped<IJobExecuteOrchestrator, JobExecuteOrchestrator>();
             services.AddScoped<IJobUpdateOrchestrator, JobUpdateOrchestrator>();
@@ -179,11 +183,17 @@ namespace SftpSchedulerService.BootStrapping
         {
             services.AddScoped<GlobalUserSettingRepository>();
 			services.AddScoped<HostRepository>();
-			services.AddScoped<JobRepository>();
+            services.AddScoped<IHostAuditLogRepository, HostAuditLogRepository>();
+            services.AddScoped<JobRepository>();
             services.AddScoped<JobFileLogRepository>();
             services.AddScoped<JobLogRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 		}
+
+        public static void AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<IHostAuditService, HostAuditService>();
+        }
 
         public static void AddQuartzScheduler(this IServiceCollection services, AppSettings appSettings, int maxConcurrentJobs, bool isUnitTestContext)
         {

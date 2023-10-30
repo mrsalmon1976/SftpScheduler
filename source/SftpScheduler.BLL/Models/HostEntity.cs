@@ -20,7 +20,7 @@ namespace SftpScheduler.BLL.Models
             this.KeyFingerprint = String.Empty;
         }
 
-        public virtual int Id { get; internal set; }
+        public virtual int Id { get; set; }
 
         [Required]
         public virtual string Name { get; set; }
@@ -40,6 +40,6 @@ namespace SftpScheduler.BLL.Models
         [HostKeyFingerprint]
         public virtual string KeyFingerprint {  get; set; }
 
-        public virtual DateTime Created { get; internal set; }
+        public virtual DateTime Created { get; set; }
     }
 }

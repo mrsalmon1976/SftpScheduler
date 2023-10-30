@@ -4,8 +4,12 @@ using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
+using SftpScheduler.BLL.Services.Host;
+using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.BLL.Tests.Builders.Services.Host;
 using SftpScheduler.BLL.Validators;
 using System;
 using System.Collections.Generic;
@@ -24,13 +28,40 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            string userName = Guid.NewGuid().ToString();   
 
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
-            UpdateHostCommand command = CreateCommand(hostValidator);
-            command.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
+            UpdateHostCommand command = CreateCommand(hostValidator: hostValidator);
+            command.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), hostEntity);
+
+        }
+
+        [Test]
+        public void Execute_ValidHost_CreatesAuditLogs()
+        {
+            // setup 
+            IDbContext dbContext = new DbContextBuilder().Build();
+            IHostValidator hostValidator = Substitute.For<IHostValidator>();
+            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            hostValidator.Validate(hostEntity).Returns(new ValidationResult());
+            string userName = Guid.NewGuid().ToString();
+
+            HostAuditLogEntity hostAuditLogEntity1 = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostEntity.Id).Build();
+            HostAuditLogEntity hostAuditLogEntity2 = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostEntity.Id).Build();
+            IEnumerable<HostAuditLogEntity> auditLogEntities = new HostAuditLogEntity[] { hostAuditLogEntity1, hostAuditLogEntity2 };
+            IHostAuditService hostAuditService = new HostAuditServiceBuilder().WithCompareHostsReturns(Arg.Any<HostEntity>(), Arg.Any<HostEntity>(), userName, auditLogEntities).Build();
+
+            // execute
+            UpdateHostCommand command = CreateCommand(hostValidator: hostValidator, hostAuditService: hostAuditService);
+            command.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult();
+
+            // assert
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), hostEntity);
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), hostAuditLogEntity1);
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), hostAuditLogEntity2);
 
         }
 
@@ -39,12 +70,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
+            string userName = Guid.NewGuid().ToString();
             var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
-            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator);
+            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator: hostValidator);
 
-            Assert.Throws<DataValidationException>(() => updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult());
+            Assert.Throws<DataValidationException>(() => updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult());
             hostValidator.Received(1).Validate(hostEntity);
         }
 
@@ -55,6 +87,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
             string executedSql = String.Empty;
 
+            string userName = Guid.NewGuid().ToString();
             var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPassword(String.Empty).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
@@ -67,8 +100,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             });
 
             // execute
-            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator, encryptionProvider);
-            HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
+            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator: hostValidator, encryptionProvider: encryptionProvider);
+            HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult();
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -85,6 +118,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             string password = Guid.NewGuid().ToString();
             string executedSql = String.Empty;
 
+            string userName = Guid.NewGuid().ToString();
             var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPassword(password).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
@@ -97,8 +131,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             });
 
             // execute
-            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator, encryptionProvider);
-            HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
+            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator: hostValidator, encryptionProvider: encryptionProvider);
+            HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult();
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -113,13 +147,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             // setup
             var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
 
+            string userName = Guid.NewGuid().ToString();
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             // execute
-            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator);
-            HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
+            UpdateHostCommand updateHostCommand = CreateCommand(hostValidator: hostValidator);
+            HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult();
 
             // assert
             Assert.That(result.Password, Is.Empty);
@@ -131,16 +166,18 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
             {
                 dbIntegrationTestHelper.CreateDatabase();
+                string userName = Guid.NewGuid().ToString();
                 IHostValidator hostValidator = Substitute.For<IHostValidator>();
                 hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
-                UpdateHostCommand updateHostCommand = new UpdateHostCommand(new HostValidator(), new EncryptionProvider());
+                UpdateHostCommand updateHostCommand = new UpdateHostCommand(new HostRepository(), new HostValidator(), new EncryptionProvider(), new HostAuditService());
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
                     DateTime dtBefore = DateTime.UtcNow;
-                    var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+                    hostEntity.Name = Guid.NewGuid().ToString();
 
-                    HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
+                    HostEntity result = updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(result);
                     Assert.That(result.Name, Is.EqualTo(hostEntity.Name));
@@ -150,10 +187,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             }
         }
 
-        private static UpdateHostCommand CreateCommand(IHostValidator hostValidator, IEncryptionProvider? encryptionProvider = null)
+        private static UpdateHostCommand CreateCommand(HostRepository? hostRepository = null, IHostValidator? hostValidator = null, IEncryptionProvider? encryptionProvider = null, IHostAuditService? hostAuditService = null)
         {
+            hostRepository = (hostRepository == null ? Substitute.For<HostRepository>() : hostRepository);
+            hostValidator = (hostValidator == null ? Substitute.For<IHostValidator>() : hostValidator);
             encryptionProvider = (encryptionProvider == null ? Substitute.For<IEncryptionProvider>() : encryptionProvider);
-            return new UpdateHostCommand(hostValidator, encryptionProvider);
+            hostAuditService = (hostAuditService == null ? Substitute.For<IHostAuditService>() : hostAuditService);
+            return new UpdateHostCommand(hostRepository, hostValidator, encryptionProvider, hostAuditService);
         }
 
 

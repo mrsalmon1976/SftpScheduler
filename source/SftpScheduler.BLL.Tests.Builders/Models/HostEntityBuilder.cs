@@ -56,7 +56,11 @@ namespace SftpScheduler.BLL.Tests.Builders.Models
             return this;
         }
 
-
+        public HostEntityBuilder WithUsername(string userName)
+        {
+            _hostEntity.Username = userName;
+            return this;
+        }
 
         public HostEntity Build()
 		{

@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Host;
@@ -27,11 +28,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            string userName = Guid.NewGuid().ToString();
 
-            updateHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
+            updateHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>(), Arg.Any<string>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
             HostUpdateOrchestrator orchestrator = new HostUpdateOrchestrator(dbContextFactory, mapper, updateHostCommand);
-            var result = orchestrator.Execute(hostViewModel).Result as BadRequestObjectResult;
+            var result = orchestrator.Execute(hostViewModel, userName).Result as BadRequestObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<ValidationResult>());
@@ -46,18 +48,70 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            string userName = Guid.NewGuid().ToString();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
             mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModel);
 
 
-            updateHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Returns(hostEntity);
+            updateHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>(), Arg.Any<string>()).Returns(hostEntity);
 
             HostUpdateOrchestrator orchestrator = new HostUpdateOrchestrator(dbContextFactory, mapper, updateHostCommand);
-            var result = orchestrator.Execute(hostViewModel).Result as OkObjectResult;
+            var result = orchestrator.Execute(hostViewModel, userName).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<HostViewModel>());
+        }
+
+        [Test]
+        public void Execute_OnSave_ExecutesCommandk()
+        {
+            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IMapper mapper = Substitute.For<IMapper>();
+            IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            string userName = Guid.NewGuid().ToString();
+
+            mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
+            mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModel);
+
+
+            updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName).Returns(hostEntity);
+
+            HostUpdateOrchestrator orchestrator = new HostUpdateOrchestrator(dbContextFactory, mapper, updateHostCommand);
+            var result = orchestrator.Execute(hostViewModel, userName).Result as OkObjectResult;
+
+            // assert
+            updateHostCommand.Received(1).ExecuteAsync(dbContext, hostEntity, userName);
+        }
+
+        [Test]
+        public void Execute_OnSave_RunsInTransaction()
+        {
+            // setup
+            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IMapper mapper = Substitute.For<IMapper>();
+            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            string userName = Guid.NewGuid().ToString();
+
+            mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
+            mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModel);
+
+
+            IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
+            updateHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>(), Arg.Any<string>()).Returns(hostEntity);
+
+            // execute
+            HostUpdateOrchestrator orchestrator = new HostUpdateOrchestrator(dbContextFactory, mapper, updateHostCommand);
+            orchestrator.Execute(hostViewModel, userName).GetAwaiter().GetResult();
+
+            // assert
+            dbContext.Received(1).BeginTransaction();
+            dbContext.Received(1).Commit();
         }
 
     }

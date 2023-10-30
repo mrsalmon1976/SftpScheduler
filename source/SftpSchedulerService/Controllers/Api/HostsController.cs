@@ -4,6 +4,7 @@ using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Utilities;
+using SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -18,6 +19,7 @@ namespace SftpSchedulerService.Controllers.Api
         private readonly IHostFingerprintScanOrchestrator _hostFingerprintScanOrchestrator;
         private readonly IHostFetchOneOrchestrator _hostFetchOneOrchestrator;
         private readonly IHostUpdateOrchestrator _hostUpdateOrchestrator;
+        private readonly IHostAuditLogFetchAllOrchestrator _hostAuditLogFetchAllOrchestrator;
 
         public HostsController(IHostCreateOrchestrator hostCreateOrchestrator
             , IHostFetchAllOrchestrator hostFetchAllOrchestrator
@@ -25,6 +27,7 @@ namespace SftpSchedulerService.Controllers.Api
             , IHostFingerprintScanOrchestrator hostFingerprintScanOrchestrator
             , IHostFetchOneOrchestrator hostFetchOneOrchestrator
             , IHostUpdateOrchestrator hostUpdateOrchestrator
+            , IHostAuditLogFetchAllOrchestrator hostAuditLogFetchAllOrchestrator
             )
         {
             _hostCreateOrchestrator = hostCreateOrchestrator;
@@ -33,6 +36,7 @@ namespace SftpSchedulerService.Controllers.Api
             _hostFingerprintScanOrchestrator = hostFingerprintScanOrchestrator;
             _hostFetchOneOrchestrator = hostFetchOneOrchestrator;
             _hostUpdateOrchestrator = hostUpdateOrchestrator;
+            _hostAuditLogFetchAllOrchestrator = hostAuditLogFetchAllOrchestrator;
         }
 
         [HttpGet]
@@ -50,7 +54,6 @@ namespace SftpSchedulerService.Controllers.Api
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
-        //[Route("api/auth/login")]
         public async Task<IActionResult> Post([FromBody] HostViewModel model)
         {
             return await _hostCreateOrchestrator.Execute(model);
@@ -62,7 +65,7 @@ namespace SftpSchedulerService.Controllers.Api
         public async Task<IActionResult> Post([FromBody] HostViewModel model, [FromRoute]string id)
         {
             model.Id = UrlUtils.Decode(id);
-            return await _hostUpdateOrchestrator.Execute(model);
+            return await _hostUpdateOrchestrator.Execute(model, User.Identity!.Name!);
         }
 
         [Authorize(Roles = UserRoles.Admin)]
@@ -79,6 +82,14 @@ namespace SftpSchedulerService.Controllers.Api
             return await _hostDeleteOneOrchestrator.Execute(id);
 
         }
+
+        [HttpGet]
+        [Route("{id}/auditlogs")]
+        public async Task<IActionResult> GetAuditLogs([FromRoute] string id)
+        {
+            return await _hostAuditLogFetchAllOrchestrator.Execute(id);
+        }
+
 
     }
 }

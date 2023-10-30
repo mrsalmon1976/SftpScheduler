@@ -4,6 +4,7 @@ using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
+using SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog;
 
 namespace SftpSchedulerService.Tests.Controllers.Api
 {
@@ -22,6 +23,8 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         const string UrlPostScanFingerPrint = "/api/hosts/scanfingerprint";
 
         const string UrlDelete = "/api/hosts/{0}";
+
+        const string UrlAuditLogs = "/api/hosts/{0}/auditlogs";
 
         #region Get Tests
 
@@ -170,7 +173,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Post, hostViewModel, roles, configureServices);
 
             // assert
-            orchestrator.Received(1).Execute(Arg.Any<HostViewModel>());
+            orchestrator.Received(1).Execute(Arg.Any<HostViewModel>(), Arg.Any<string>());
         }
 
         [Test]
@@ -188,7 +191,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Get, hostViewModel, configureServices);
 
             // assert
-            orchestrator.DidNotReceive().Execute(Arg.Any<HostViewModel>());
+            orchestrator.DidNotReceive().Execute(Arg.Any<HostViewModel>(), Arg.Any<string>());
         }
 
         [TestCase(UserRoles.Admin)]
@@ -296,5 +299,50 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
         #endregion
 
+        #region GetAuditLogs Tests
+
+        [Test]
+        public void GetAuditLogs_ExecuteSuccess()
+        {
+            // setup
+            string hashId = UrlUtils.Encode(Faker.RandomNumber.Next(1, 100));
+            string url = String.Format(UrlAuditLogs, hashId);
+            string[] roles = { UserRoles.User };
+            IHostAuditLogFetchAllOrchestrator orchestrator = Substitute.For<IHostAuditLogFetchAllOrchestrator>();
+            var configureServices = ControllerTestHelper.CreateConfiguration<IHostAuditLogFetchAllOrchestrator>(orchestrator);
+
+            // execute
+            ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Get, null, roles, configureServices);
+
+            // assert
+            orchestrator.Received(1).Execute(hashId);
+        }
+
+        [Test]
+        public void GetAuditLogs_ExecuteUnauthorised()
+        {
+            // setup
+            string hashId = UrlUtils.Encode(1);
+            string url = String.Format(UrlGetById, hashId);
+            IHostAuditLogFetchAllOrchestrator orchestrator = Substitute.For<IHostAuditLogFetchAllOrchestrator>();
+            var configureServices = ControllerTestHelper.CreateConfiguration<IHostAuditLogFetchAllOrchestrator>(orchestrator);
+
+            // execute
+            ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Get, null, configureServices);
+
+            // assert
+            orchestrator.DidNotReceive().Execute(Arg.Any<string>());
+        }
+
+        [TestCase(UserRoles.Admin, UserRoles.User)]
+        public void GetAuditLogs_CheckAllRoles(params string[] authorisedRoles)
+        {
+            string hashId = UrlUtils.Encode(1);
+            string url = String.Format(UrlAuditLogs, hashId);
+            IHostAuditLogFetchAllOrchestrator orchestrator = Substitute.For<IHostAuditLogFetchAllOrchestrator>();
+            ControllerTestHelper.CheckAllRoles<IHostAuditLogFetchAllOrchestrator>(orchestrator, url, HttpMethod.Get, null, authorisedRoles);
+        }
+
+        #endregion
     }
 }

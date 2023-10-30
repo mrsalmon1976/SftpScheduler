@@ -69,6 +69,20 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
+        internal HostAuditLogEntity CreateHostAuditLogEntity(IDbContext dbContext, int hostId)
+        {
+            HostAuditLogEntity hostAuditLogEntity = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostId).Build();
+
+            string sql = @"INSERT INTO HostAuditLog (HostId, PropertyName, FromValue, ToValue, UserName, Created) VALUES (@HostId, @PropertyName, @FromValue, @ToValue, @UserName, @Created)";
+            dbContext.ExecuteNonQueryAsync(sql, hostAuditLogEntity).GetAwaiter().GetResult();
+
+            sql = @"select last_insert_rowid()";
+            hostAuditLogEntity.Id = dbContext.ExecuteScalarAsync<int>(sql).GetAwaiter().GetResult();
+
+            return hostAuditLogEntity;
+
+        }
+
         internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId, bool isEnabled = true)
         {
             JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()

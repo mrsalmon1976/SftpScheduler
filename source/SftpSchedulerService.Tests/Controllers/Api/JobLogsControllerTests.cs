@@ -1,16 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using Quartz;
+﻿using NSubstitute;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Utilities;
-using SftpSchedulerService.ViewOrchestrators.Api.Cron;
-using SftpSchedulerService.ViewOrchestrators.Api.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.JobLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 
 namespace SftpSchedulerService.Tests.Controllers.Api
 {
