@@ -23,15 +23,15 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 
 ## First Time and/or Manual Installation
 
-- Download the latest release
-- Extract the contents of the zip folder, and move them to the installation directory
-- Run "install.bat" as administrator - this will install SftpScheduler as a service on the machine
-- You may want to edit the installed service properties through the Windows services console and adjust the service user.  By default, running as SYSTEM may not have the permissions required to access folders on your machine or network.
+- Download the latest release.
+- Extract the contents of the zip folder, and move them to the installation directory.
+- Run "install.bat" as administrator - this will install SftpScheduler as a service on the machine.
+- You may want to edit the installed service properties through the Windows services console and adjust the service user.  By default, running as SYSTEM may not have the permissions required to access folders on your machine or network, so you may want to set the Logon user as a local administrator or a domain user.
 
 ## Updates
 
-- SftpScheduler will automatically update when ner versions are released
-- If this update fails, check that your anti-virus is not quarantining the update files, and add the folder as an exclusion if necessary
+- SftpScheduler will automatically update when new versions are released.
+- If this update fails, check that your anti-virus is not quarantining the update files, and add the folder as an exclusion if necessary.
 - To manually update, follow the steps in "First Time and/or Manual Installation" section.  Make sure you do not delete the "Data" folder - this contains all pevious settings, hosts and jobs.
 
 # Screenshots
