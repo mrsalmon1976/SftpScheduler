@@ -4,6 +4,7 @@ using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpScheduler.BLL.Identity;
 using SftpSchedulerService.Utilities;
+using SftpSchedulerService.ViewOrchestrators.Api.JobAuditLog;
 
 namespace SftpSchedulerService.Controllers.Api
 {
@@ -18,13 +19,16 @@ namespace SftpSchedulerService.Controllers.Api
         private readonly IJobFetchOneOrchestrator _jobFetchOneOrchestrator;
         private readonly IJobUpdateOrchestrator _jobUpdateOrchestrator;
         private readonly IJobExecuteOrchestrator _jobExecuteOrchestrator;
+        private readonly IJobAuditLogFetchAllOrchestrator _jobAuditLogFetchAllOrchestrator;
 
         public JobsController(IJobCreateOrchestrator jobCreateOrchestrator
             , IJobDeleteOneOrchestrator jobDeleteOneOrchestrator
             , IJobFetchAllOrchestrator jobFetchAllOrchestrator
             , IJobFetchOneOrchestrator jobFetchOneOrchestrator
             , IJobUpdateOrchestrator jobUpdateOrchestrator
-            , IJobExecuteOrchestrator jobExecuteOrchestrator)
+            , IJobExecuteOrchestrator jobExecuteOrchestrator
+            , IJobAuditLogFetchAllOrchestrator jobAuditLogFetchAllOrchestrator
+            )
         {
             _jobCreateOrchestrator = jobCreateOrchestrator;
             _jobDeleteOneOrchestrator = jobDeleteOneOrchestrator;
@@ -32,6 +36,7 @@ namespace SftpSchedulerService.Controllers.Api
             _jobFetchOneOrchestrator = jobFetchOneOrchestrator;
             _jobUpdateOrchestrator = jobUpdateOrchestrator;
             _jobExecuteOrchestrator = jobExecuteOrchestrator;
+            _jobAuditLogFetchAllOrchestrator = jobAuditLogFetchAllOrchestrator;
         }
 
         //// GET: api/jobs
@@ -62,7 +67,7 @@ namespace SftpSchedulerService.Controllers.Api
         public async Task<IActionResult> Post([FromBody] JobViewModel model, [FromRoute] string id)
         {
             model.Id = UrlUtils.Decode(id);
-            return await _jobUpdateOrchestrator.Execute(model);
+            return await _jobUpdateOrchestrator.Execute(model, User.Identity!.Name!);
         }
 
         [Authorize(Roles = UserRoles.Admin)]
@@ -80,6 +85,14 @@ namespace SftpSchedulerService.Controllers.Api
             return await _jobDeleteOneOrchestrator.Execute(id);
            
         }
+
+        [HttpGet]
+        [Route("{id}/auditlogs")]
+        public async Task<IActionResult> GetAuditLogs([FromRoute] string id)
+        {
+            return await _jobAuditLogFetchAllOrchestrator.Execute(id);
+        }
+
 
     }
 }

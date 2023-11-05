@@ -1,14 +1,14 @@
 ﻿using SftpScheduler.BLL.Models;
 
-namespace SftpSchedulerService.Models.HostAuditLog
+namespace SftpSchedulerService.Models.JobAuditLog
 {
-    public class HostAuditLogMapper
+    public class JobAuditLogMapper
     {
-        public static HostAuditLogViewModel MapToViewModel(HostAuditLogEntity logEntity)
+        public static JobAuditLogViewModel MapToViewModel(JobAuditLogEntity logEntity)
         {
-            HostAuditLogViewModel viewModel = new HostAuditLogViewModel();
+            JobAuditLogViewModel viewModel = new JobAuditLogViewModel();
             viewModel.Id = logEntity.Id;
-            viewModel.HostId = logEntity.HostId;
+            viewModel.JobId = logEntity.JobId;
             viewModel.PropertyName = logEntity.PropertyName;
             viewModel.FromValue = logEntity.FromValue;
             viewModel.ToValue = logEntity.ToValue;
@@ -17,7 +17,7 @@ namespace SftpSchedulerService.Models.HostAuditLog
             return viewModel;
         }
 
-        public static IEnumerable<HostAuditLogViewModel> MapToViewModelCollection(IEnumerable<HostAuditLogEntity> logEntities)
+        public static IEnumerable<JobAuditLogViewModel> MapToViewModelCollection(IEnumerable<JobAuditLogEntity> logEntities)
         {
             return logEntities.Select(x => MapToViewModel(x));
         }

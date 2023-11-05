@@ -31,16 +31,16 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
             HostEntity hostEntity = _mapper.Map<HostEntity>(hostViewModel);
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
-                dbContext.BeginTransaction();
                 try
                 {
+                    dbContext.BeginTransaction();
                     hostEntity = await _updateHostCommand.ExecuteAsync(dbContext, hostEntity, userName);
+                    dbContext.Commit();
                 }
                 catch (DataValidationException dve)
                 {
                     return new BadRequestObjectResult(dve.ValidationResult);
                 }
-                dbContext.Commit();
             }
             var result = _mapper.Map<HostViewModel>(hostEntity);
             return new OkObjectResult(result);

@@ -6,6 +6,7 @@ using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
+using SftpSchedulerService.ViewOrchestrators.Api.JobAuditLog;
 
 namespace SftpSchedulerService.Tests.Controllers.Api
 {
@@ -23,6 +24,8 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         const string UrlPostRun = "/api/jobs/{0}/run";
 
         const string UrlDelete = "/api/jobs/{0}";
+
+        const string UrlGetAuditLogs = "/api/jobs/{0}/auditlogs";
 
         #region Get Tests
 
@@ -172,7 +175,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Post, jobViewModel, roles, configureServices);
 
             // assert
-            orchestrator.Received(1).Execute(Arg.Any<JobViewModel>());
+            orchestrator.Received(1).Execute(Arg.Any<JobViewModel>(), Arg.Any<string>());
         }
 
         [Test]
@@ -190,7 +193,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Get, hostViewModel, configureServices);
 
             // assert
-            orchestrator.DidNotReceive().Execute(Arg.Any<JobViewModel>());
+            orchestrator.DidNotReceive().Execute(Arg.Any<JobViewModel>(), Arg.Any<string>());
         }
 
         [TestCase(UserRoles.Admin)]
@@ -300,6 +303,53 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
             IJobDeleteOneOrchestrator orchestrator = Substitute.For<IJobDeleteOneOrchestrator>();
             ControllerTestHelper.CheckAllRoles<IJobDeleteOneOrchestrator>(orchestrator, url, HttpMethod.Delete, null, authorisedRoles);
+        }
+
+        #endregion
+
+
+        #region GetAuditLogs Tests
+
+        [Test]
+        public void GetAuditLogs_ExecuteSuccess()
+        {
+            // setup
+            string hashId = UrlUtils.Encode(Faker.RandomNumber.Next(1, 100));
+            string url = String.Format(UrlGetAuditLogs, hashId);
+            string[] roles = { UserRoles.Admin };
+            IJobAuditLogFetchAllOrchestrator orchestrator = Substitute.For<IJobAuditLogFetchAllOrchestrator>();
+            var configureServices = ControllerTestHelper.CreateConfiguration<IJobAuditLogFetchAllOrchestrator>(orchestrator);
+
+            // execute
+            ControllerTestHelper.ExecuteSuccess(url, HttpMethod.Get, null, roles, configureServices);
+
+            // assert
+            orchestrator.Received(1).Execute(hashId);
+        }
+
+        [Test]
+        public void GetAuditLogs_ExecuteUnauthorised()
+        {
+            // setup
+            string hashId = UrlUtils.Encode(1);
+            string url = String.Format(UrlGetAuditLogs, hashId);
+            IJobAuditLogFetchAllOrchestrator orchestrator = Substitute.For<IJobAuditLogFetchAllOrchestrator>();
+            var configureServices = ControllerTestHelper.CreateConfiguration<IJobAuditLogFetchAllOrchestrator>(orchestrator);
+
+            // execute
+            ControllerTestHelper.ExecuteUnauthorised(url, HttpMethod.Get, null, configureServices);
+
+            // assert
+            orchestrator.DidNotReceive().Execute(Arg.Any<string>());
+        }
+
+        [TestCase(UserRoles.Admin, UserRoles.User)]
+        public void GetAuditLogs_CheckAllRoles(params string[] authorisedRoles)
+        {
+            string hashId = UrlUtils.Encode(1);
+            string url = String.Format(UrlGetAuditLogs, hashId);
+            IJobAuditLogFetchAllOrchestrator orchestrator = Substitute.For<IJobAuditLogFetchAllOrchestrator>();
+            ControllerTestHelper.CheckAllRoles<IJobAuditLogFetchAllOrchestrator>(orchestrator, url, HttpMethod.Get, null, authorisedRoles);
         }
 
         #endregion

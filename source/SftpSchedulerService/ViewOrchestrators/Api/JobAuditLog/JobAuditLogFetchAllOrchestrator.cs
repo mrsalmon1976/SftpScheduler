@@ -1,27 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models.HostAuditLog;
+using SftpSchedulerService.Models.JobAuditLog;
 using SftpSchedulerService.Utilities;
 
-namespace SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog
+namespace SftpSchedulerService.ViewOrchestrators.Api.JobAuditLog
 {
-    public interface IHostAuditLogFetchAllOrchestrator : IViewOrchestrator
+    public interface IJobAuditLogFetchAllOrchestrator : IViewOrchestrator
     {
         Task<IActionResult> Execute(string hostHash);
     }
 
-    public class HostAuditLogFetchAllOrchestrator : IHostAuditLogFetchAllOrchestrator
+    public class JobAuditLogFetchAllOrchestrator : IJobAuditLogFetchAllOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly IHostAuditLogRepository _hostAuditLogRepo;
+        private readonly IJobAuditLogRepository _jobAuditLogRepo;
 
         public const int DefaultRowCount = 50;
 
-        public HostAuditLogFetchAllOrchestrator(IDbContextFactory dbContextFactory, IHostAuditLogRepository hostAuditLogRepo)
+        public JobAuditLogFetchAllOrchestrator(IDbContextFactory dbContextFactory, IJobAuditLogRepository jobAuditLogRepo)
         {
             _dbContextFactory = dbContextFactory;
-            _hostAuditLogRepo = hostAuditLogRepo;
+            _jobAuditLogRepo = jobAuditLogRepo;
         }
 
         public async Task<IActionResult> Execute(string hostHash)
@@ -30,8 +30,8 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog
 
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
-                var auditLogs = await _hostAuditLogRepo.GetByAllHostAsync(dbContext, hostId);
-                var result = HostAuditLogMapper.MapToViewModelCollection(auditLogs);
+                var auditLogs = await _jobAuditLogRepo.GetByAllJobAsync(dbContext, hostId);
+                var result = JobAuditLogMapper.MapToViewModelCollection(auditLogs);
                 return new OkObjectResult(result);
             }
         }

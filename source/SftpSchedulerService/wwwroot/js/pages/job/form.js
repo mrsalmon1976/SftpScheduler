@@ -8,6 +8,7 @@
             schedule: '',
             scheduleInWords: 'No schedule entered',
             job: new JobModel(),
+            auditLogs: [],
             logs: [],
             fileLogs: [],
             submitButtonText: 'Create Job'
@@ -43,6 +44,15 @@
         },
         isDownloadVisible() {
             return (this.job.type == JobTypes.Download);
+        },
+        async loadAuditLogs() {
+
+            let result = await axios.get('/api/jobs/' + this.job.hashId + '/auditlogs')
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                });
+
+            this.auditLogs = result.data;
         },
         async loadHosts() {
             let result = await axios.get('/api/hosts')
@@ -147,6 +157,7 @@
             this.loadJobDetail();
             this.loadLogs();
             this.loadFileLogs();
+            this.loadAuditLogs();
             this.setLogReloadInterval();
         }
         this.isLoading = false;

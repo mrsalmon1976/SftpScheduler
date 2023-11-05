@@ -24,6 +24,9 @@
                 <li class="nav-item">
                     <a class="nav-link" id="tab-job-filelogs" data-toggle="pill" href="#tab-job-filelogs-content" role="tab" aria-controls="tab-job-filelogs-content" aria-selected="false">File Logs</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-job-auditlogs" data-toggle="pill" href="#tab-job-auditlogs-content" role="tab" aria-controls="tab-job-auditlogs-content" aria-selected="false">Audit Logs</a>
+                </li>
             </ul>
         </div>
         <div class="card-body">
@@ -162,6 +165,33 @@
                         </tbody>
                     </table>
                 </div>
+                @* TAB: Audit Logs *@
+                <div class="tab-pane fade" id="tab-job-auditlogs-content" role="tabpanel" aria-labelledby="tab-job-auditlogs">
+                    <div v-if="auditLogs.length == 0">
+                        No audit logs exist for this job.
+                    </div>
+                    <table v-if="auditLogs.length > 0" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Field Name</th>
+                                <th>Before Value</th>
+                                <th>After Value</th>
+                                <th>User Name</th>
+                                <th>Change Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="log in auditLogs">
+                                <td class="text-sm">{{ log.propertyName }}</td>
+                                <td class="text-sm">{{ log.fromValue }}</td>
+                                <td class="text-sm">{{ log.toValue }}</td>
+                                <td class="text-sm">{{ log.userName }}</td>
+                                <td class="nowrap text-sm">{{ formatDateTime(log.created) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
         <div class="overlay dark" v-if="isLoading">

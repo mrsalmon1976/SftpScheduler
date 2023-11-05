@@ -6,6 +6,7 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpSchedulerService.Models.Job;
@@ -27,11 +28,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateJobCommand updateJobCommand = Substitute.For<IUpdateJobCommand>();
             JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            string userName = Guid.NewGuid().ToString();
 
-            updateJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
+            updateJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>(), userName).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
             JobUpdateOrchestrator jobUpdateOrchestrator = new JobUpdateOrchestrator(dbContextFactory, mapper, updateJobCommand);
-            var result = jobUpdateOrchestrator.Execute(jobViewModel).Result as BadRequestObjectResult;
+            var result = jobUpdateOrchestrator.Execute(jobViewModel, userName).Result as BadRequestObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<ValidationResult>());
@@ -49,16 +51,46 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
+            string userName = Guid.NewGuid().ToString();
 
 
-            updateJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Returns(jobEntity);
+            updateJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>(), userName).Returns(jobEntity);
 
             JobUpdateOrchestrator JobUpdateOrchestrator = new JobUpdateOrchestrator(dbContextFactory, mapper, updateJobCommand);
-            var result = JobUpdateOrchestrator.Execute(jobViewModel).Result as OkObjectResult;
+            var result = JobUpdateOrchestrator.Execute(jobViewModel, userName).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<JobViewModel>());
         }
+
+        [Test]
+        public void Execute_OnSave_ExecutesUpdateInTransaction()
+        {
+            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+
+            IMapper mapper = Substitute.For<IMapper>();
+            IUpdateJobCommand updateJobCommand = Substitute.For<IUpdateJobCommand>();
+            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+
+            mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
+            mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
+            string userName = Guid.NewGuid().ToString();
+
+
+            updateJobCommand.ExecuteAsync(dbContext, Arg.Any<JobEntity>(), userName).Returns(jobEntity);
+
+            // execute
+            JobUpdateOrchestrator jobUpdateOrchestrator = new JobUpdateOrchestrator(dbContextFactory, mapper, updateJobCommand);
+            jobUpdateOrchestrator.Execute(jobViewModel, userName).GetAwaiter().GetResult();
+
+            // assert
+            dbContext.Received(1).BeginTransaction();
+            dbContext.Received(1).Commit();
+            updateJobCommand.Received(1).ExecuteAsync(dbContext, jobEntity, userName);
+        }
+
 
         [Test]
         public void Execute_OnSave_ReturnsResultWithId()
@@ -72,12 +104,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModelExpected);
+            string userName = Guid.NewGuid().ToString();
 
 
-            updateJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Returns(jobEntity);
-
+            updateJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>(), userName).Returns(jobEntity);
             JobUpdateOrchestrator JobUpdateOrchestrator = new JobUpdateOrchestrator(dbContextFactory, mapper, updateJobCommand);
-            var result = (OkObjectResult)JobUpdateOrchestrator.Execute(jobViewModel).Result;
+            var result = (OkObjectResult)JobUpdateOrchestrator.Execute(jobViewModel, userName).Result;
             JobViewModel resultModel = (JobViewModel)result.Value;
 
             Assert.That(resultModel.Id, Is.EqualTo(jobViewModelExpected.Id));
