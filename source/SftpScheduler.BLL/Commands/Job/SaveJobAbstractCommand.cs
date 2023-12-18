@@ -62,9 +62,12 @@ namespace SftpScheduler.BLL.Commands.Job
             jobEntity.ScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
 
             // ensure remote paths are always suffixed and prefixed with "/"
-            jobEntity.RemotePath = $"/{jobEntity.RemotePath.Trim('/')}/";
+            if (jobEntity.RemotePath != "/")
+            {
+                jobEntity.RemotePath = $"/{jobEntity.RemotePath.Trim('/')}/";
+            }
 
-            if (!String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath))
+            if (!String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath) && jobEntity.RemoteArchivePath != "/")
             {
                 jobEntity.RemoteArchivePath = $"/{jobEntity.RemoteArchivePath.Trim('/')}/";
             }

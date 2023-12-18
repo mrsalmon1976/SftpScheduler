@@ -114,6 +114,25 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             Assert.That(result.RemotePath, Is.EqualTo("/Test/"));
         }
 
+        [Test]
+        public void Execute_ValidJobWithMinimalRemotePath_DoesNotSetLeadingTrailingSlash()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            IJobValidator jobValidator = Substitute.For<IJobValidator>();
+
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithRemotePath("/").Build();
+
+            jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
+
+            ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+
+            Assert.That(result.RemotePath, Is.EqualTo("/"));
+        }
+
+
         [TestCase("Test")]
         [TestCase("/Test")]
         [TestCase("Test/")]
@@ -133,6 +152,25 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
             Assert.That(result.RemoteArchivePath, Is.EqualTo("/Test/"));
+        }
+
+
+        [Test]
+        public void Execute_ValidJobWithMinimalRemoteArchivePath_DoesNotSetLeadingTrailingSlash()
+        {
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            IJobValidator jobValidator = Substitute.For<IJobValidator>();
+
+            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithRemoteArchivePath("/").Build();
+
+            jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
+
+            ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+
+            dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+
+            Assert.That(result.RemoteArchivePath, Is.EqualTo("/"));
         }
 
 
