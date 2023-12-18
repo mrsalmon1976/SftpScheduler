@@ -20,6 +20,7 @@
             <table class="table table-bordered" v-if="jobs.length > 0">
                 <thead>
                     <tr>
+                        <th width="18">Type</th>
                         <th>Name</th>
                         <th>Schedule</th>
                         <th>Status</th>
@@ -29,6 +30,10 @@
                 </thead>
                 <tbody>
                     <tr v-for="job in jobs">
+                        <td width="18" align="center">
+                            <i v-if="job.type == JOBTYPE_DOWNLOAD" class="fa fa-download" title="Download"></i>
+                            <i v-if="job.type == JOBTYPE_UPLOAD" class="fa fa-upload" title="Upload"></i>
+                        </td>
                         <td><a :href="'/jobs/' + job.hashId">{{ job.name }}</a></td>
                         <td>
                             {{ job.schedule }}

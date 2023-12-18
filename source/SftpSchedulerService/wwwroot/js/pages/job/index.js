@@ -3,7 +3,9 @@
         return {
             jobs: [],
             isLoading: true,
-            selectedJob: new JobModel()
+            selectedJob: new JobModel(),
+            JOBTYPE_DOWNLOAD: JobTypes.Download,
+            JOBTYPE_UPLOAD: JobTypes.Upload
         }
     },
     methods: {

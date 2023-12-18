@@ -44,7 +44,7 @@ class UiHelpers
     static formatDateTime(dt) {
         var dt = moment(dt);
         if (dt.isValid()) {
-            return dt.format('YYYY-MM-DD HH:mm:SS')
+            return dt.format('YYYY-MM-DD HH:mm:ss')
         }
         return '';
     };

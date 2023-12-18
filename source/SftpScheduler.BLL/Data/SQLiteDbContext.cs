@@ -13,14 +13,12 @@ namespace SftpScheduler.BLL.Data
 {
     public class SQLiteDbContext : DbContext
     {
-        private readonly string _dbPath;
         private readonly string _connString;
         private SQLiteConnection _conn;
 
         public SQLiteDbContext(string filePath)
         {
             this.Id = Guid.NewGuid(); 
-            _dbPath = filePath;
             _connString = String.Format("Data Source={0};Version=3;", filePath);
             _conn = new SQLiteConnection(_connString);
             _conn.Open();
