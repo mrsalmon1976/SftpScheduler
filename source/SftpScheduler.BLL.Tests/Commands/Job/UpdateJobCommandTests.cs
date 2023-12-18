@@ -330,6 +330,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
                     Assert.IsNotNull(result);
                     Assert.That(result.Name, Is.EqualTo(jobEntity.Name));
+                    Assert.That(result.RestartOnFailure, Is.EqualTo(jobEntity.RestartOnFailure));
                     Assert.That(jobEntity.Created, Is.GreaterThanOrEqualTo(dtBefore));
 
                 }

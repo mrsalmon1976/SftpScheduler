@@ -121,7 +121,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 DateTime startDate = DateTime.Now;
 
 
-				sessionWrapper.PutFiles(file, options.RemotePath);
+				sessionWrapper.PutFiles(file, options.RemotePath, options.RestartOnFailure);
 
                 string destFilePath = GetUniqueFileName(folder, fileNameWithoutExt, ".uploaded", extension);
                 _fileWrap.Move(file, destFilePath, false);

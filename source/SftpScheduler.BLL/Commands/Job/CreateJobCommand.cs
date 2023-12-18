@@ -25,7 +25,7 @@ namespace SftpScheduler.BLL.Commands.Job
         {
             base.ValidateAndPrepareJobEntity(dbContext, _jobValidator, jobEntity);
 
-            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, DeleteAfterDownload, RemoteArchivePath, LocalCopyPaths, IsEnabled, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @DeleteAfterDownload, @RemoteArchivePath, @LocalCopyPaths, @IsEnabled, @Created)";
+            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, DeleteAfterDownload, RemoteArchivePath, LocalCopyPaths, IsEnabled, Created, RestartOnFailure) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @DeleteAfterDownload, @RemoteArchivePath, @LocalCopyPaths, @IsEnabled, @Created, @RestartOnFailure)";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 
             sql = @"select last_insert_rowid()";

@@ -110,6 +110,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div v-if="isUploadVisible()">
+                            <div class="form-group row">
+                                <label for="job-restart-on-failure" class="col-sm-2 col-form-label">Restart on failure</label>
+                                <div class="col-sm-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" v-model="job.restartOnFailure" class="form-check-input" id="job-restart-on-failure" />
+                                    </div><br />
+                                    <span class="feedback">
+                                        When checked, uploads will restart from the beginning on job failure. This should only be turned on where servers or remote permissions do not support resuming transfers.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-footer">
                             <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">{{ submitButtonText }}</button>
                         </div>

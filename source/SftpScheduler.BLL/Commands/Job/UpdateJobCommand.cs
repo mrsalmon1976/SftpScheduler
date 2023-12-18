@@ -52,7 +52,8 @@ namespace SftpScheduler.BLL.Commands.Job
                 , DeleteAfterDownload = @DeleteAfterDownload
                 , RemoteArchivePath = @RemoteArchivePath
                 , LocalCopyPaths = @LocalCopyPaths
-                , IsEnabled = @IsEnabled 
+                , IsEnabled = @IsEnabled
+                , RestartOnFailure = @RestartOnFailure
                 WHERE Id = @Id";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 

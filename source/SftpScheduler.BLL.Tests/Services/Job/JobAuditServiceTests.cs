@@ -232,6 +232,25 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "Enabled", "True", "False");
         }
 
+        [Test]
+        public void CompareJobs_RestartOnFailureChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new DbContextBuilder().Build();
+            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().WithRestartOnFailure(true).Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.RestartOnFailure = false;
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "RestartOnFailure", "True", "False");
+        }
+
 
         [Test]
         public void CompareJobs_AllPropertiesChanged_AuditRecordsCreated()

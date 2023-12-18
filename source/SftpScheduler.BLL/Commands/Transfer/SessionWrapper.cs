@@ -24,7 +24,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Open();
 
-        void PutFiles(string localPath, string remotePath);
+        void PutFiles(string localPath, string remotePath, bool restartOnFailure);
 
         string ScanFingerprint(string algorithm);
     }
@@ -87,21 +87,20 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         }
 
-        public void PutFiles(string localPath, string remotePath)
+        public void PutFiles(string localPath, string remotePath, bool restartOnFailure)
         {
-            TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false);
+            TransferOptions options = new TransferOptions();
+            if (restartOnFailure)
+            {
+                options.ResumeSupport.State = TransferResumeSupportState.Off;
+            }
+
+            TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false, options);
             transferResult.Check();
         }
 
         public string ScanFingerprint(string algorithm)
         {
-            //SessionOptions sessionOptions = new SessionOptions
-            //{
-            //    Protocol = Protocol.Sftp,   
-            //    HostName = hostName,
-            //    PortNumber = port ?? 22
-            //};
-
             return _session.ScanFingerprint(this.SessionOptions, algorithm);
         }
 

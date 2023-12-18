@@ -70,6 +70,10 @@ namespace SftpScheduler.BLL.Services.Job
             {
                 changes.Add(new JobAuditLogEntity(hostId, "Enabled", HumanizeBoolean(currentJobEntity.IsEnabled), HumanizeBoolean(updatedJobEntity.IsEnabled), userName));
             }
+            if (currentJobEntity.RestartOnFailure != updatedJobEntity.RestartOnFailure)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "RestartOnFailure", HumanizeBoolean(currentJobEntity.RestartOnFailure), HumanizeBoolean(updatedJobEntity.RestartOnFailure), userName));
+            }
 
             return changes;
         }

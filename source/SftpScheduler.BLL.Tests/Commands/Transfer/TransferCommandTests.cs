@@ -136,6 +136,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             Assert.That(optionsReceived, Is.Not.Null);
 			Assert.That(optionsReceived.JobId, Is.EqualTo(jobId));
 			Assert.That(optionsReceived.RemotePath, Is.EqualTo(jobEntity.RemotePath));
+            Assert.That(optionsReceived.RestartOnFailure, Is.EqualTo(jobEntity.RestartOnFailure));
         }
 
         [Test]

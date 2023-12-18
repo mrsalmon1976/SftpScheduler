@@ -78,6 +78,12 @@ namespace SftpScheduler.BLL.Tests.Builders.Models
             return this;
         }
 
+        public JobEntityBuilder WithRestartOnFailure(bool restartOnFailure)
+        {
+            _jobEntity.RestartOnFailure = restartOnFailure;
+            return this;
+        }
+
         public JobEntityBuilder WithSchedule(string schedule)
         {
             _jobEntity.Schedule = schedule;

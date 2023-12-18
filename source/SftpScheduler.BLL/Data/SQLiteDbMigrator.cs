@@ -3,8 +3,10 @@ using SftpScheduler.BLL.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Data
@@ -32,8 +34,25 @@ namespace SftpScheduler.BLL.Data
 
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
-                string sql = _resourceUtils.ReadResource("SftpScheduler.BLL.Resources.DbMigrations.sql");
-                dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
+                string sqlFileContents = _resourceUtils.ReadResource("SftpScheduler.BLL.Resources.DbMigrations.sql");
+                IEnumerable<string> sqlStatements = Regex.Split(sqlFileContents, "--\\*\\*").Select(x => x.Trim()).Where(x => x.Length > 0);
+                foreach (string sql in sqlStatements)
+                {
+                    try
+                    {
+                        dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
+                    }
+                    catch (SQLiteException ex)
+                    {
+                        // SQLite doesn't allow for ALTER IF EXISTS, so we just ignore duplicate column names
+                        if (ex.Message.Contains("duplicate column name"))
+                        {
+                            continue;
+                        }
+                        throw;
+                    }
+                }
+
             }
         }
 

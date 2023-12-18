@@ -287,7 +287,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
 
-			UploadOptions options = new UploadOptions(1, newFiles, remotePath);
+			UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 
@@ -322,7 +322,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
-			UploadOptions options = new UploadOptions(1, newFiles, remotePath);
+			UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 
@@ -357,7 +357,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
 			// execute
 			IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap, createJobFileLogCommand: createJobFileLogCommand);
-			UploadOptions options = new UploadOptions(jobId, newFiles, remotePath);
+			UploadOptions options = new UploadOptions(jobId, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(Substitute.For<ISessionWrapper>(), dbContext, options);
 
             // assert
@@ -387,18 +387,42 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
-            UploadOptions options = new UploadOptions(1, newFiles, remotePath);
+            UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
-            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), remotePath);
+            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), remotePath, false);
             foreach (string file in newFiles)
             {
-                sessionWrapper.Received(1).PutFiles(file, remotePath);
+                sessionWrapper.Received(1).PutFiles(file, remotePath, false);
             }
         }
 
-		[Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void UploadFiles_FilesAvailableForUpload_RestartOnFailureObeyed(bool restartOnFailure)
+        {
+            List<string> newFiles = CreateLocalFileList(1, false);
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            string remotePath = $"/{Path.GetRandomFileName()}/";
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
+            directoryWrap.EnumerateFiles(Arg.Any<string>()).Returns(newFiles);
+
+            IFileUtility fileWrap = Substitute.For<IFileUtility>();
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
+            UploadOptions options = new UploadOptions(1, newFiles, remotePath, restartOnFailure);
+            fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
+
+            // assert
+            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), Arg.Any<string>(), restartOnFailure);
+        }
+
+        [Test]
 		public void UploadFiles_FilesAvailableForUpload_JobFileLogCommandExecuted()
 		{
 			List<string> newFiles = CreateLocalFileList(Faker.RandomNumber.Next(6, 9), false);
@@ -415,7 +439,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
 			// execute
 			IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileCmd, directoryWrap: directoryWrap);
-			UploadOptions options = new UploadOptions(1, newFiles, remotePath);
+			UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 			// assert

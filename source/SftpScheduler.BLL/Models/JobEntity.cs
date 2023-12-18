@@ -60,6 +60,8 @@ namespace SftpScheduler.BLL.Models
 
         public virtual DateTime Created { get; internal set; }
 
+        public bool RestartOnFailure { get; set; }
+
         public virtual IEnumerable<string> LocalCopyPathsAsEnumerable()
         {
             if (String.IsNullOrWhiteSpace(this.LocalCopyPaths)) 

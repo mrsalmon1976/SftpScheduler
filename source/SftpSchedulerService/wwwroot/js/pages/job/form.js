@@ -45,6 +45,9 @@
         isDownloadVisible() {
             return (this.job.type == JobTypes.Download);
         },
+        isUploadVisible() {
+            return (this.job.type == JobTypes.Upload);
+        },
         async loadAuditLogs() {
 
             let result = await axios.get('/api/jobs/' + this.job.hashId + '/auditlogs')
@@ -82,6 +85,7 @@
             this.job.remoteArchivePath = jobData.remoteArchivePath;
             this.job.localCopyPaths = jobData.localCopyPaths;
             this.job.isEnabled = jobData.isEnabled;
+            this.job.restartOnFailure = jobData.restartOnFailure;
             this.job.validate();
 
             this.schedule = jobData.schedule;

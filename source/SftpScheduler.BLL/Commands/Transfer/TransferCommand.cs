@@ -72,7 +72,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     }
                     else
                     {
-                        UploadOptions options = new UploadOptions(jobId, filesToTransfer, jobEntity.RemotePath);
+                        UploadOptions options = new UploadOptions(jobId, filesToTransfer, jobEntity.RemotePath, jobEntity.RestartOnFailure);
                         _fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
                     }
 
