@@ -8,7 +8,13 @@ namespace SftpScheduler.BLL.Tests.Builders.Models
 
 		private UserEntity _userEntity = new UserEntity();
 
-		public UserEntityBuilder WithRandomProperties()
+        public UserEntityBuilder WithLockoutEnabled(bool lockoutEnabled)
+        {
+            _userEntity.LockoutEnabled = lockoutEnabled;
+            return this;
+        }
+
+        public UserEntityBuilder WithRandomProperties()
 		{
 			_userEntity.Id = Guid.NewGuid().ToString();
 			_userEntity.UserName = Guid.NewGuid().ToString();

@@ -141,8 +141,40 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 		}
 
-		[Test]
-		public void Execute_FailingJobs_AllAdministratorsEmailed()
+        [Test]
+        public void Execute_FailingJobs_DisabledAdministratorsNotEmailed()
+        {
+			// setup
+			JobEntity[] failingJobs = { new JobEntityBuilder().WithRandomProperties().Build() };
+
+            int adminCount = Faker.RandomNumber.Next(2, 10);
+            List<UserEntity> adminUsers = new List<UserEntity>();
+            for (int i = 0; i < adminCount; i++)
+            {
+                adminUsers.Add(new UserEntityBuilder().WithRandomProperties().WithLockoutEnabled(true).Build());
+            };
+
+            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            JobRepository jobRepo = new JobRepositoryBuilder().WithGetAllFailingActiveAsyncReturns(dbContext, failingJobs).Build();
+            ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
+            IUserRepository userRepo  = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
+
+            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+                .WithSmtpHost("mailhost")
+                .Build();
+
+			// execute
+			DigestJob digestJob = CreateDigestJob(dbContextFactory, jobRepo: jobRepo, userRepo: userRepo, smtpClient: smtpClient, userSettingProvider: globalUserSettingProvider);
+            digestJob.Execute(Substitute.For<IJobExecutionContext>()).GetAwaiter().GetResult();
+
+            // assert
+            userRepo.Received(1).GetUsersInRoleAsync(UserRoles.Admin);
+            smtpClient.DidNotReceive().Send(Arg.Any<SmtpHost>(), Arg.Any<MailMessage>());
+        }
+
+        [Test]
+		public void Execute_FailingJobs_AllEnabledAdministratorsEmailed()
 		{
 			// setup
 			List<JobEntity> failingJobs = new List<JobEntity>
@@ -153,7 +185,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			int adminCount = Faker.RandomNumber.Next(2, 10);
 			List<UserEntity> adminUsers = new List<UserEntity>();
 			for (int i=0; i< adminCount; i++) {
-				adminUsers.Add(new UserEntityBuilder().WithRandomProperties().Build());
+				adminUsers.Add(new UserEntityBuilder().WithRandomProperties().WithLockoutEnabled(false).Build());
 			};
 
 			MailMessage mailMessage = new MailMessage();
