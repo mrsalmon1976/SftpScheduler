@@ -54,6 +54,7 @@ namespace SftpScheduler.BLL.Tests.Data
         }
 
         [TestCase("Job")]
+        [TestCase("JobAuditLog")]
         [TestCase("JobFileLog")]
 		[TestCase("JobLog")]
 		[TestCase("Host")]
