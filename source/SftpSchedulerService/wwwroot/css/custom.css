@@ -10,6 +10,9 @@
 .brand-link {
     padding: 11px 10px 10px 15px;
 }
+.dropdown-menu-lg {
+    min-width: 350px;
+}
 .fg-danger {
     color: #dc3545;
 }
@@ -56,4 +59,7 @@
 }
 .valid-feedback {
     color: #28a745;
+}
+.whitespace-normal {
+    white-space: normal;
 }

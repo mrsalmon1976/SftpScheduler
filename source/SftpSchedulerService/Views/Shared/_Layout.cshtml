@@ -71,7 +71,9 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" v-if="jobNotifications.length > 0">
                         <div v-for="notification in jobNotifications">
-                            <span class="dropdown-item text-sm"><a v-bind:href="'/jobs/' + notification.hashId" :class="[notification.textClass]"><i class="fa fa-triangle-exclamation"></i>&nbsp; {{ notification.text }}</a> </span>
+                            <span class="dropdown-item text-sm whitespace-normal">
+                                <a v-bind:href="'/jobs/' + notification.hashId" :class="[notification.textClass]"><i class="fa fa-triangle-exclamation"></i>&nbsp; {{ notification.text }}</a> 
+                            </span>
                             <div class="dropdown-divider"></div>
                         </div>
                         <a href="#" v-on:click="loadJobNotifications(true)" class="dropdown-item dropdown-footer">Refresh</a>
