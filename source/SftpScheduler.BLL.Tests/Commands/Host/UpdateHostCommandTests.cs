@@ -11,6 +11,7 @@ using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Tests.Builders.Services.Host;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();   
 
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
@@ -45,7 +46,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             // setup 
             IDbContext dbContext = new DbContextBuilder().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
             string userName = Guid.NewGuid().ToString();
 
@@ -71,7 +72,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             string userName = Guid.NewGuid().ToString();
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
             UpdateHostCommand updateHostCommand = CreateCommand(hostValidator: hostValidator);
@@ -88,7 +89,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             string executedSql = String.Empty;
 
             string userName = Guid.NewGuid().ToString();
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPassword(String.Empty).Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Password, String.Empty).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
@@ -119,7 +120,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             string executedSql = String.Empty;
 
             string userName = Guid.NewGuid().ToString();
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPassword(password).Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Password, password).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
@@ -145,7 +146,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_RemovesPasswordOnReturnValue()
         {
             // setup
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             string userName = Guid.NewGuid().ToString();
             IDbContext dbContext = Substitute.For<IDbContext>();

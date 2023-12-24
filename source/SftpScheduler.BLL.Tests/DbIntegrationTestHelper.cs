@@ -2,6 +2,7 @@
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
+using SftpScheduler.Test.Common;
 using static Quartz.Logging.OperationName;
 
 namespace SftpScheduler.BLL.Tests
@@ -57,9 +58,16 @@ namespace SftpScheduler.BLL.Tests
 
 		internal HostEntity CreateHostEntity(IDbContext dbContext)
         {
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().WithId(0).Build();
+            HostEntity hostEntity = new SubstituteBuilder<HostEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.Id, 0)
+                .WithProperty(x => x.Host, RandomData.Internet.IPAddress().ToString())
+                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65000))
+                .WithProperty(x => x.KeyFingerprint, String.Empty)
+                .WithProperty(x => x.Created, DateTime.UtcNow)
+                .Build();
 
-            string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, Created) VALUES (@Name, @Host, @Port, @Username, @Password, @Created)";
+            string sql = @"INSERT INTO Host (Name, Host, Port, Username, Password, KeyFingerprint, Created, Protocol, FtpsMode) VALUES (@Name, @Host, @Port, @Username, @Password, @KeyFingerprint, @Created, @Protocol, @FtpsMode)";
             dbContext.ExecuteNonQueryAsync(sql, hostEntity).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";

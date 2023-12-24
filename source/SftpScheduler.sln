@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerServiceUpdater
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerServiceUpdater.Tests", "SftpSchedulerServiceUpdater.Tests\SftpSchedulerServiceUpdater.Tests.csproj", "{F881322D-F779-4B2D-9965-BFA6CA932CDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpScheduler.Test.Common", "SftpScheduler.Test.Common\SftpScheduler.Test.Common.csproj", "{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{F881322D-F779-4B2D-9965-BFA6CA932CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F881322D-F779-4B2D-9965-BFA6CA932CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F881322D-F779-4B2D-9965-BFA6CA932CDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

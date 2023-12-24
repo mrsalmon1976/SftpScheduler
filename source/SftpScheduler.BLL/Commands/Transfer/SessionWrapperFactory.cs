@@ -21,18 +21,13 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         public ISessionWrapper CreateSession(HostEntity hostEntity)
         {
-
             // Setup session options
             SessionOptions sessionOptions = new SessionOptions
             {
-                Protocol = Protocol.Sftp,   // TODO: could be Ftps
+                Protocol = MapProtocol(hostEntity),
                 HostName = hostEntity.Host,
                 PortNumber = hostEntity.Port ?? DefaultPort,
                 UserName = hostEntity.Username
-                //ssh
-                //SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny  // TODO!  This needs to be removed!
-
-                //SshHostKeyFingerprint = "ssh-rsa 2048 xxxxxxxxxxx..."
             };
 
             if (!String.IsNullOrWhiteSpace(hostEntity.Password))
@@ -40,13 +35,21 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 sessionOptions.Password = DecryptPassword(hostEntity);
             }
 
-            if (String.IsNullOrEmpty(hostEntity.KeyFingerprint))
+
+            if (hostEntity.Protocol == Data.TransferProtocol.Ftps)
             {
-                sessionOptions.SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny;
+                sessionOptions.FtpSecure = MapFtpsMode(hostEntity);
             }
-            else
+            else if (hostEntity.Protocol == Data.TransferProtocol.Sftp)
             {
-                sessionOptions.SshHostKeyFingerprint = hostEntity.KeyFingerprint;
+                if (String.IsNullOrEmpty(hostEntity.KeyFingerprint))
+                {
+                    sessionOptions.SshHostKeyPolicy = SshHostKeyPolicy.GiveUpSecurityAndAcceptAny;
+                }
+                else
+                {
+                    sessionOptions.SshHostKeyFingerprint = hostEntity.KeyFingerprint;
+                }
             }
 
             ISessionWrapper sessionWrapper = new SessionWrapper(sessionOptions);
@@ -64,6 +67,40 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 throw new ApplicationException($"Unable to decrypt password on host [{host.Name}]- this will need to be reset on the console.", ex);
             }
 
+        }
+
+        private static FtpSecure MapFtpsMode(HostEntity host)
+        {
+            if (host.FtpsMode == Data.FtpsMode.None)
+            {
+                return FtpSecure.None;
+            }
+            else if (host.FtpsMode == Data.FtpsMode.Explicit) 
+            {
+                return FtpSecure.Explicit;
+            }
+            else if (host.FtpsMode == Data.FtpsMode.Implicit)
+            {
+                return FtpSecure.Implicit;
+            }
+            throw new NotSupportedException($"Unsupported FTPS mode {host.FtpsMode}");
+        }
+
+        private static Protocol MapProtocol(HostEntity host)
+        {
+            if (host.Protocol == Data.TransferProtocol.Sftp)
+            {
+                return Protocol.Sftp;
+            }
+            else if (host.Protocol == Data.TransferProtocol.Ftp)
+            {
+                return Protocol.Ftp;
+            }
+            else if (host.Protocol == Data.TransferProtocol.Ftps)
+            {
+                return Protocol.Ftp;
+            }
+            throw new NotSupportedException($"Unsupported protocol {host.Protocol}");
         }
 
     }

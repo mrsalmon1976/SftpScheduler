@@ -22,6 +22,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Host</th>
+                        <th>Protocol</th>
                         <th style="width: 40px">Jobs</th>
                         <th>Actions</th>
                     </tr>
@@ -30,6 +31,7 @@
                     <tr v-for="host in hosts">
                         <td><a :href="'/hosts/' + host.hashId">{{ host.name }}</a></td>
                         <td>{{ host.host }}</td>
+                        <td>{{ host.protocolName }}</td>
                         <td><span class="badge bg-primary">{{ host.jobCount }}</span></td>
                         <td><a href="#" class="btn btn-sm" :class="{ 'disabled' : (host.jobCount > 0) }" v-on:click="showDeleteDialog(host)"><i class="fa-regular fa-trash-can"></i></a></td>
                     </tr>

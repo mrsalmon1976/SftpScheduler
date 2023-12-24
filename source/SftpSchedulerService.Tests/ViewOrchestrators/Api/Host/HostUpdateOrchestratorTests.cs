@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SftpScheduler.BLL.Commands.Host;
@@ -9,6 +10,7 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
@@ -47,7 +49,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
@@ -71,7 +73,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
@@ -95,7 +97,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
             IMapper mapper = Substitute.For<IMapper>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);

@@ -34,6 +34,26 @@
                             </div>
                         </div>
                         <div class="form-group row">
+                            <label for="host-protocol" class="col-sm-2 col-form-label">Protocol</label>
+                            <div class="col-sm-2">
+                                <select v-model.number="host.protocol" type="number" class="form-control" id="host-protocol" @@blur="host.validateHost()">
+                                    <option value="0">SFTP</option>
+                                    <option value="1">FTP</option>
+                                    <option value="2">FTPS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" v-if="host.protocol == 2">
+                            <label for="host-ftpsmode" class="col-sm-2 col-form-label">FTPS Mode</label>
+                            <div class="col-sm-2">
+                                <select  v-model.number="host.ftpsMode" type="number" class="form-control" id="host-ftpsmode">
+                                    <option value="0">None</option>
+                                    <option value="1">Implicit</option>
+                                    <option value="2">Explicit</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="host-host" class="col-sm-2 col-form-label">Host</label>
                             <div class="col-sm-4">
                                 <input type="text" v-model="host.host" @@blur="host.validateHost()" class="form-control" id="host-host" placeholder="sftp.yourhost.com or 192.168.0.1">
@@ -44,6 +64,7 @@
                             <label for="host-port" class="col-sm-2 col-form-label">Port</label>
                             <div class="col-sm-4">
                                 <input type="number" v-model="host.port" class="form-control" id="host-port" placeholder="22" min="1" max="65536" />
+                                <span class="feedback">Leave port as 0 to use the default port for the protocol.</span>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -59,7 +80,7 @@
                                 <span v-if="isEdit" class="feedback">Only enter a new password if it has changed - leaving this blank will not change the existing password</span>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div v-if="host.protocol == 0" class="form-group row">
                             <label for="host-key-fingerprint" class="col-sm-2 col-form-label">Key Fingerprint</label>
                             <div class="col-sm-4">
                                 <input type="text" v-model="host.keyFingerprint" @@blur="host.validateKeyFingerprint()"  class="form-control" id="host-key-fingerprint" placeholder="">

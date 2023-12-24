@@ -62,6 +62,8 @@ namespace SftpScheduler.BLL.Commands.Host
                 , Username = @Username
                 , Password = { passwordUpdateText }
                 , KeyFingerprint = @KeyFingerprint
+                , Protocol = @Protocol
+                , FtpsMode = @FtpsMode
                 WHERE Id = @Id";
             await dbContext.ExecuteNonQueryAsync(sql, hostEntity);
 

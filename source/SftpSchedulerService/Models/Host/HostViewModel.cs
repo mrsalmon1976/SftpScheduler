@@ -1,4 +1,5 @@
-﻿using SftpSchedulerService.Utilities;
+﻿using SftpScheduler.BLL.Data;
+using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.Models.Host
 {
@@ -37,6 +38,16 @@ namespace SftpSchedulerService.Models.Host
         public string? Password { get; set; }
 
         public string KeyFingerprint { get; set; }
+
+        public TransferProtocol Protocol { get; set; }
+
+        public string ProtocolName {  get
+            {
+                return this.Protocol.ToString().ToUpper();
+            } 
+        }
+
+        public FtpsMode FtpsMode { get; set; }
 
         public int JobCount { get; set; }
     }

@@ -48,6 +48,14 @@ namespace SftpScheduler.BLL.Services.Host
             {
                 changes.Add(new HostAuditLogEntity(hostId, "KeyFingerprint", currentHostEntity.KeyFingerprint, updatedHostEntity.KeyFingerprint, userName));
             }
+            if (currentHostEntity.Protocol != updatedHostEntity.Protocol)
+            {
+                changes.Add(new HostAuditLogEntity(hostId, "Protocol", currentHostEntity.Protocol.ToString().ToUpper(), updatedHostEntity.Protocol.ToString().ToUpper(), userName));
+            }
+            if (currentHostEntity.FtpsMode != updatedHostEntity.FtpsMode)
+            {
+                changes.Add(new HostAuditLogEntity(hostId, "FtpsMode", currentHostEntity.FtpsMode.ToString(), updatedHostEntity.FtpsMode.ToString(), userName));
+            }
 
             return changes;
         }

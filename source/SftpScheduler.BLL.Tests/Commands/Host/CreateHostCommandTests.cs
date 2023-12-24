@@ -8,6 +8,7 @@ using SftpScheduler.BLL.Security;
 using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Commands.Host
 {
@@ -21,7 +22,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             IDbContext dbContext = new DbContextBuilder().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
 
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
 
             // execute
@@ -39,7 +40,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            HostEntity hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult(new string[] { "error" }));
 
             CreateHostCommand createHostCommand = new CreateHostCommand(hostValidator, Substitute.For<IEncryptionProvider>());
@@ -54,7 +55,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
 
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             int newEntityId = Faker.RandomNumber.Next();
 
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
@@ -74,7 +75,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
             string password = Guid.NewGuid().ToString();
 
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPassword(password).Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Password, password).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
@@ -95,7 +96,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             // setup
             IEncryptionProvider encryptionProvider = Substitute.For<IEncryptionProvider>();
 
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
@@ -120,7 +121,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
                     DateTime dtBefore = DateTime.UtcNow;
-                    HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+                    var hostEntity = new SubstituteBuilder<HostEntity>()
+                        .WithRandomProperties()
+                        .WithProperty(x => x.Host, RandomData.Internet.IPAddress().ToString())
+                        .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                        .WithProperty(x => x.KeyFingerprint, String.Empty)
+                        .WithProperty(x => x.Created, dtBefore)
+                        .Build();
 
                     HostEntity result = createHostCommand.ExecuteAsync(dbContext, hostEntity).GetAwaiter().GetResult();
 

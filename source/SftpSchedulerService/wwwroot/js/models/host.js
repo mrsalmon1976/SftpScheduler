@@ -3,10 +3,13 @@
         this.hashId = '';
         this.name = '';
         this.host = '';
-        this.port = 22;
+        this.port = 0;
         this.userName = '';
         this.password = '';
         this.keyFingerprint = '';
+        this.protocol = 0;
+        this.protocolName = '';
+        this.ftpsMode = 0;
 
         // these default to true, as you don't want the screen showing everything is invalid at first pass
         this.isHostValid = true;

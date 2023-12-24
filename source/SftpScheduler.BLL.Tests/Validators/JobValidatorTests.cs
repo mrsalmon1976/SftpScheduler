@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using System.Data;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Validators
 {
@@ -22,7 +23,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_ValidObject_NoValidationExceptionThrown()
         {
             int hostId = Faker.RandomNumber.Next(1, 100);
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithId(hostId).Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Id, hostId).Build();
             JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithHostId(hostId).Build();
 
             IDbContext dbContext = Substitute.For<IDbContext>();

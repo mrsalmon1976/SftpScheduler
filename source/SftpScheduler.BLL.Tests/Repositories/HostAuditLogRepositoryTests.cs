@@ -4,6 +4,7 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
         public void GetByAllHostAsync_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             dbContext.QueryAsync<HostEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { hostEntity });
             
             IHostAuditLogRepository hostAuditLogRepository = new HostAuditLogRepository();

@@ -9,7 +9,11 @@ CREATE TABLE IF NOT EXISTS Host (
 	KeyFingerprint TEXT NULL,
 	Created TEXT NOT NULL
 );
-
+--**-- Added transfer protocol to hosts
+ALTER TABLE Host ADD COLUMN Protocol INTEGER DEFAULT 0;
+--**-- Added mode for FTPS
+ALTER TABLE Host ADD COLUMN FtpsMode INTEGER DEFAULT 0;
+--**-- 
 CREATE TABLE IF NOT EXISTS HostAuditLog (
 	Id INTEGER PRIMARY KEY,
 	HostId INTEGER NOT NULL,
@@ -38,7 +42,17 @@ CREATE TABLE IF NOT EXISTS Job (
 	Created TEXT NOT NULL,
 	FOREIGN KEY(HostId) REFERENCES Host(Id)
 );
-
+--**-- #23 added RestartOnFailure column
+ALTER TABLE Job ADD COLUMN RestartOnFailure INTEGER DEFAULT 0;
+--**-- #20 added zipping capability
+ALTER TABLE Job ADD COLUMN ZipBeforeUpload INTEGER DEFAULT 0;
+--**-- #21 file mask
+ALTER TABLE Job ADD COLUMN FileMask TEXT DEFAULT NULL;
+--**-- #30 PreserveTimestamp 
+ALTER TABLE Job ADD COLUMN PreserveTimestamp INTEGER DEFAULT 1;
+--**-- #30 TransferMode
+ALTER TABLE Job ADD COLUMN TransferMode INTEGER DEFAULT 0;
+--**-- 
 CREATE TABLE IF NOT EXISTS JobLog (
 	Id INTEGER PRIMARY KEY,
 	JobId INTEGER NOT NULL,
@@ -139,7 +153,6 @@ CREATE TABLE IF NOT EXISTS JobFileLog (
 );
 CREATE INDEX IF NOT EXISTS IX_JobFileLog_JobId ON JobFileLog (JobId);
 
---**-- #23 added RestartOnFailure column
-ALTER TABLE Job ADD COLUMN RestartOnFailure INTEGER DEFAULT 0;
+
 
 

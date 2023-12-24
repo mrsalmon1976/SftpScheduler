@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
@@ -24,7 +26,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             HostRepository hostRepo = Substitute.For<HostRepository>();
 
             HostViewModel[] hostViewModels = { new HostViewModelBuilder().WithRandomProperties().Build() };
-            HostEntity[] hostEntities = { new HostEntityBuilder().Build() };
+            HostEntity[] hostEntities = { new SubstituteBuilder<HostEntity>().Build() };
 
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);
 
@@ -48,8 +50,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             HostRepository hostRepo = Substitute.For<HostRepository>();
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
 
-            HostEntity hostEntity1 = new HostEntityBuilder().WithId(111).Build();
-            HostEntity hostEntity2 = new HostEntityBuilder().WithId(222).Build();
+            var hostEntity1 = new SubstituteBuilder<HostEntity>().WithProperty(x => x.Id, 111).Build();
+            var hostEntity2 = new SubstituteBuilder<HostEntity>().WithProperty(x => x.Id, 222).Build();
             HostEntity[] hostEntities = { hostEntity1, hostEntity2 };
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);
 

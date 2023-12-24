@@ -8,6 +8,7 @@ using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Tests.Builders.Repositories;
 using SftpScheduler.BLL.Utility;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Services.Job
 {
@@ -61,9 +62,9 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             jobEntityNew.HostId = jobEntityNew.HostId + 1;
 
             HostRepository hostRepo = new HostRepositoryBuilder().Build();  
-            HostEntity hostEntityOld = new HostEntityBuilder().WithId(jobEntityOld.HostId).Build();
+            HostEntity hostEntityOld = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Id, jobEntityOld.HostId).Build();
             hostRepo.GetByIdAsync(dbContext, hostEntityOld.Id).Returns(Task.FromResult(hostEntityOld));
-            HostEntity hostEntityNew = new HostEntityBuilder().WithId(jobEntityNew.HostId).Build();
+            HostEntity hostEntityNew = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Id, jobEntityNew.HostId).Build();
             hostRepo.GetByIdAsync(dbContext, hostEntityNew.Id).Returns(Task.FromResult(hostEntityNew));
             string userName = Guid.NewGuid().ToString();
 
@@ -258,8 +259,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             // setup
             IDbContext dbContext = new DbContextBuilder().Build();
 
-            HostEntity hostEntityOld = new HostEntityBuilder().WithRandomProperties().Build();
-            HostEntity hostEntityNew = new HostEntityBuilder().WithRandomProperties().Build();
+            HostEntity hostEntityOld = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
+            HostEntity hostEntityNew = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             HostRepository hostRepo = new HostRepositoryBuilder().Build();
             hostRepo.GetByIdAsync(dbContext, hostEntityOld.Id).Returns(Task.FromResult(hostEntityOld)!);

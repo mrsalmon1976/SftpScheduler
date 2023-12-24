@@ -43,6 +43,8 @@
             this.host.userName = hostData.userName;
             this.host.password = '';
             this.host.keyFingerprint = hostData.keyFingerprint;
+            this.host.protocol = hostData.protocol;
+            this.host.ftpsMode = (hostData.ftpsMode ? hostData.ftpsMode : 0);
             this.host.validate();
             this.isLoading = false;
         },

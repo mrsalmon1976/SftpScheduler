@@ -2,6 +2,7 @@
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [Test]
         public void Validate_ValidObject_NoValidationExceptionThrown()
         {
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = CreateValidHostBuilder().Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid);
@@ -27,7 +28,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase("    ")]
         public void Validate_InValidObjectWithNoName_ExceptionThrown(string name)
         {
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithName(name).Build();
+            var hostEntity = CreateValidHostBuilder().WithProperty(x => x.Name, name).Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -39,7 +40,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         [TestCase("    ")]
         public void Validate_InValidObjectWithNoHost_ExceptionThrown(string host)
         {
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithHost(host).Build();
+            var hostEntity = CreateValidHostBuilder().WithProperty(x => x.Host, host).Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -47,12 +48,11 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [TestCase(-1)]
-        [TestCase(0)]
         [TestCase(65536)]
         [TestCase(101010)]
         public void Validate_InValidObjectWithInvalidPort_ExceptionThrown(int port)
         {
-            var hostEntity = new HostEntityBuilder().WithRandomProperties().WithPort(port).Build();
+            var hostEntity = CreateValidHostBuilder().WithProperty(x => x.Port, port).Build();
             HostValidator hostValidator = new HostValidator();
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
@@ -69,6 +69,15 @@ namespace SftpScheduler.BLL.Tests.Validators
             var validationResult = hostValidator.Validate(hostEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(3));
+        }
+
+        private SubstituteBuilder<HostEntity> CreateValidHostBuilder()
+        {
+            return new SubstituteBuilder<HostEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.KeyFingerprint, String.Empty)
+                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Host, RandomData.Internet.IPAddress().ToString());
         }
 
     }

@@ -8,6 +8,7 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
@@ -45,7 +46,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = Substitute.For<IMapper>();
             ICreateHostCommand createHostCommand = Substitute.For<ICreateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
             mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModel);
@@ -68,7 +69,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             ICreateHostCommand createHostCommand = Substitute.For<ICreateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             HostViewModel hostViewModelExpected = new HostViewModelBuilder().WithRandomProperties().Build();
-            HostEntity hostEntity = new HostEntityBuilder().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
             mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModelExpected);

@@ -1,4 +1,5 @@
-﻿using SftpScheduler.BLL.DataAnnotations;
+﻿using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,7 +31,7 @@ namespace SftpScheduler.BLL.Models
         public virtual string Host { get; set; }
 
         [Required]
-        [Range(1, 65535)]
+        [Range(0, 65535)]
         public virtual int? Port { get; set; }
 
         public virtual string? Username { get; set; }
@@ -41,5 +42,10 @@ namespace SftpScheduler.BLL.Models
         public virtual string KeyFingerprint {  get; set; }
 
         public virtual DateTime Created { get; set; }
+
+        public virtual TransferProtocol Protocol { get; set; }
+
+        public virtual FtpsMode FtpsMode { get; set; }
+
     }
 }
