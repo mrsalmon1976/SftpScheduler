@@ -88,6 +88,62 @@ namespace SftpScheduler.BLL.Tests.Repositories
 
         #endregion
 
+        #region GetAllFailingAsync Tests
+
+        [Test]
+        public void GetAllFailingAsync_IntegrationNoRecords_ReturnsEmptyEnum()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllFailingAsync(dbContext).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(0));
+                }
+            }
+        }
+
+        [Test]
+        public void GetAllFailingAsync_IntegrationWithEnabledAndDisabledJobs_ReturnsAllJobs()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id, isEnabled: true);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity1.Id, JobStatus.Failed);
+
+                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id, isEnabled: true);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity2.Id, JobStatus.Success);
+
+                    JobEntity jobEntity3 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id, isEnabled: false);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity3.Id, JobStatus.Failed);
+
+                    JobEntity jobEntity4 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id, isEnabled: false);
+                    dbIntegrationTestHelper.CreateJobLogEntity(dbContext, jobEntity4.Id, JobStatus.Success);
+
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllFailingAsync(dbContext).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(2));
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity1.Id), Is.Not.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity2.Id), Is.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity3.Id), Is.Not.Null);
+                    Assert.That(result.SingleOrDefault(x => x.Id == jobEntity4.Id), Is.Null);
+                }
+            }
+        }
+
+        #endregion
+
         #region GetAllFailingActiveAsync Tests
 
         [Test]

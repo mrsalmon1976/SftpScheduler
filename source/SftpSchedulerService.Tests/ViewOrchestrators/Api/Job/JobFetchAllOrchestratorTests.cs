@@ -7,6 +7,7 @@ using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
@@ -76,6 +77,35 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
 
             Assert.That(jobViewModelResult.NextRunTime, Is.EqualTo(nextFireTime.ToLocalTime()));
         }
+
+        [Test]
+        public void Execute_JobsFound_HydratesIsFailing()
+        {
+            IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
+            IMapper mapper = AutoMapperTestHelper.CreateMapper();
+            JobRepository jobRepo = Substitute.For<JobRepository>();
+
+            JobEntity jobEntitySuccess = new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 1).Build();
+            JobEntity jobEntityFailing = new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 2).Build();
+            JobEntity[] jobEntities = { jobEntitySuccess, jobEntityFailing };
+            JobEntity[] failingJobEntities = { jobEntityFailing };
+
+            jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
+            jobRepo.GetAllFailingAsync(Arg.Any<IDbContext>()).Returns(failingJobEntities);
+
+            // execute
+            JobFetchAllOrchestrator jobFetchAllProvider = new JobFetchAllOrchestrator(dbContextFactory, mapper, jobRepo, Substitute.For<ISchedulerFactory>());
+            var result = jobFetchAllProvider.Execute().Result as OkObjectResult;
+
+            List<JobViewModel> jobViewModelResult = ((IEnumerable<JobViewModel>)result.Value).ToList();
+
+
+            // assert
+            jobRepo.Received(1).GetAllFailingAsync(Arg.Any<IDbContext>()).GetAwaiter().GetResult();
+            Assert.That(jobViewModelResult[0].IsFailing, Is.False);
+            Assert.That(jobViewModelResult[1].IsFailing, Is.True);
+        }
+
 
         [Test]
         public void Execute_JobsFoundAndDisabled_TriggerNotLoaded()

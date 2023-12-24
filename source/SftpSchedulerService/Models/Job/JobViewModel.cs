@@ -46,5 +46,7 @@ namespace SftpSchedulerService.Models.Job
         public DateTime? NextRunTime { get; set; }
 
         public bool RestartOnFailure { get; set; }
+
+        public bool IsFailing { get; set; }
     }
 }

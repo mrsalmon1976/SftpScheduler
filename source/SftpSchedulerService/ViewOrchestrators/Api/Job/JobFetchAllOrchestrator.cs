@@ -34,6 +34,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 var jobEntities = await _jobRepository.GetAllAsync(dbContext);
+                var failingJobEntities = await _jobRepository.GetAllFailingAsync(dbContext);
                 var result = _mapper.Map<JobEntity[], JobViewModel[]>(jobEntities.ToArray());
                 var scheduler = await _schedulerFactory.GetScheduler();
 
@@ -48,6 +49,8 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
                             jobViewModel.NextRunTime = trigger.GetNextFireTimeUtc()?.LocalDateTime;
                         }
                     }
+
+                    jobViewModel.IsFailing = failingJobEntities.Any(x => x.Id == jobViewModel.Id);
                 }
 
                 return new OkObjectResult(result);

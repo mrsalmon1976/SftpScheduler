@@ -24,7 +24,7 @@ namespace SftpScheduler.BLL.Models
             this.Created = DateTime.UtcNow;
         }
 
-        public virtual int Id { get; internal set; }
+        public virtual int Id { get; set; }
 
         [Required]
         public virtual string Name { get; set; }

@@ -23,7 +23,8 @@
                         <th width="18">Type</th>
                         <th>Name</th>
                         <th>Schedule</th>
-                        <th>Status</th>
+                        <th width="40">Status</th>
+                        <th width="40">Enabled</th>
                         <th>Next Run Time</th>
                         <th>Actions</th>
                     </tr>
@@ -40,8 +41,13 @@
                             <br />
                             <span class="text-xs text-info">{{ job.scheduleInWords }}</span>
                         </td>
-                        <td>
-                            {{ (job.isEnabled ? 'Enabled' : 'Disabled') }}
+                        <td align="center">
+                            <i v-if="job.isFailing" class="fa fa-circle-xmark" title="Last execution failed" style="color: red;"></i>
+                            <i v-if="!job.isFailing" class="fa fa-circle-check" title="Last execution succeeded" style="color: green;"></i>
+                        </td>
+                        <td align="center">
+                            <i v-if="!job.isEnabled" class="fa fa-circle-xmark" title="Job is current disabled" style="color: red;"></i>
+                            <i v-if="job.isEnabled" class="fa fa-circle-check" title="Job is currently enabled" style="color: green;"></i>
                         </td>
                         <td>{{ formatDateTime(job.nextRunTime) }}</td>
                         <td>
