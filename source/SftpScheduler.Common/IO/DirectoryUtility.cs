@@ -24,6 +24,8 @@ namespace SftpScheduler.Common.IO
 
         bool Exists(string? path);
 
+        void EnsureExists(string path);
+
         string[] GetFiles(string sourceDirectory, SearchOption searchOption, string searchPattern = "*.*");
 
     }
@@ -130,6 +132,14 @@ namespace SftpScheduler.Common.IO
         public virtual bool Exists(string? path)
         {
             return Directory.Exists(path);
+        }
+
+        public virtual void EnsureExists(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         public string[] GetFiles(string sourceDirectory, SearchOption searchOption, string searchPattern = "*.*")

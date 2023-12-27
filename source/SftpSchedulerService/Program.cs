@@ -69,6 +69,7 @@ try
     builder.Services.AddScoped<IDirectoryUtility, DirectoryUtility>();
     builder.Services.AddScoped<IFileUtility, FileUtility>();
     builder.Services.AddScoped<IFileTransferService, FileTransferService>();
+    builder.Services.AddScoped<IUploadCompressionService>((sp) => new UploadCompressionService(appSettings.TempDataDirectory, sp.GetService<IDirectoryUtility>()!, sp.GetService<IFileUtility>()!));
     builder.Services.AddScoped<IPasswordProvider, PasswordProvider>();
     builder.Services.AddScoped<IEncryptionProvider, EncryptionProvider>();
     builder.Services.AddScoped<ISessionWrapperFactory, SessionWrapperFactory>();

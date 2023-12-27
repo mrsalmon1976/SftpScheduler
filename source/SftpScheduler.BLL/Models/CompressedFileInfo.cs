@@ -14,12 +14,5 @@ namespace SftpScheduler.BLL.Models
 
         public string? CompressedFilePath { get; set; }
 
-        public bool IsCompressed
-        {
-            get
-            {
-                return (CompressedFilePath != null);
-            }
-        }
     }
 }

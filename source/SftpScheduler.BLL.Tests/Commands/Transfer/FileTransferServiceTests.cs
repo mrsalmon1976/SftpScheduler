@@ -321,8 +321,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .WithProperty(x => x.LocalFilePaths, newFiles)
                 .Build();
 
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
+
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(fileWrap: fileWrap);
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService, fileWrap: fileWrap);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 
@@ -332,6 +334,98 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 fileWrap.Received(1).Move(file, Arg.Any<string>(), false);
             }
         }
+
+        [Test]
+        public void UploadFiles_CompressionCalled()
+        {
+            // setup
+            List<string> newFiles = CreateLocalFileList(1, false);
+            string localPath = newFiles[0];
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            sessionWrapper.PutFiles(Arg.Any<string>(), Arg.Any<UploadOptions>()).Returns(1);
+
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
+            CompressedFileInfo compressedFileInfo = new SubstituteBuilder<CompressedFileInfo>().WithRandomProperties().Build();
+            IUploadCompressionService uploadCompressionService = new SubstituteBuilder<IUploadCompressionService>().Build();
+            uploadCompressionService.PrepareUploadFile(localPath, options.CompressionMode).Returns(compressedFileInfo);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService);
+            fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
+
+            // assert
+            uploadCompressionService.Received(1).PrepareUploadFile(localPath, options.CompressionMode);
+            uploadCompressionService.Received(1).RemoveCompressedFile(compressedFileInfo);
+        }
+
+        [Test]
+        public void UploadFiles_FileCompressed_UploadsCompressedFile()
+        {
+            // setup
+            List<string> newFiles = CreateLocalFileList(1, false);
+            string localPath = newFiles[0];
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            sessionWrapper.PutFiles(Arg.Any<string>(), Arg.Any<UploadOptions>()).Returns(1);
+
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
+            CompressedFileInfo compressedFileInfo = new SubstituteBuilder<CompressedFileInfo>().WithRandomProperties().Build();
+            IUploadCompressionService uploadCompressionService = new SubstituteBuilder<IUploadCompressionService>().Build();
+            uploadCompressionService.PrepareUploadFile(localPath, options.CompressionMode).Returns(compressedFileInfo);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService);
+            fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
+
+            // assert
+            sessionWrapper.Received(1).PutFiles(compressedFileInfo.CompressedFilePath!, options);
+        }
+
+        [Test]
+        public void UploadFiles_FileNotCompressed_UploadsOriginalFile()
+        {
+            // setup
+            List<string> newFiles = CreateLocalFileList(1, false);
+            string localPath = newFiles[0];
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            sessionWrapper.PutFiles(Arg.Any<string>(), Arg.Any<UploadOptions>()).Returns(1);
+
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
+            CompressedFileInfo compressedFileInfo = new SubstituteBuilder<CompressedFileInfo>()
+                .WithRandomProperties()
+                .WithProperty(x => x.CompressedFilePath, null)
+                .Build();
+            IUploadCompressionService uploadCompressionService = new SubstituteBuilder<IUploadCompressionService>().Build();
+            uploadCompressionService.PrepareUploadFile(localPath, options.CompressionMode).Returns(compressedFileInfo);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService);
+            fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
+
+            // assert
+            sessionWrapper.Received(1).PutFiles(localPath, options);
+        }
+
 
         [Test]
         public void UploadFiles_FilesAvailableForUploadAndRenameExists_MarkedAsUploadedWithSuffix()
@@ -359,8 +453,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .WithProperty(x => x.LocalFilePaths, newFiles)
                 .Build();
 
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
+
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(fileWrap: fileWrap);
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService, fileWrap: fileWrap);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 
@@ -385,8 +481,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .WithProperty(x => x.LocalFilePaths, newFiles)
                 .Build();
 
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
+
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileLogCommand);
+            IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileLogCommand, uploadCompressionService: uploadCompressionService);
             fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
@@ -409,6 +507,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             ISessionWrapper sessionWrapper = new SubstituteBuilder<ISessionWrapper>().Build();
             sessionWrapper.PutFiles(Arg.Any<string>(), Arg.Any<UploadOptions>()).Returns(1);
 
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
+
 
             int fileLength = Faker.RandomNumber.Next(1, 1000);
 			IFileUtility fileWrap = Substitute.For<IFileUtility>();
@@ -428,7 +528,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .Build();
 
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(fileWrap: fileWrap, createJobFileLogCommand: createJobFileLogCommand);
+            IFileTransferService fileTransferService = CreateFileTransferService(fileWrap: fileWrap, createJobFileLogCommand: createJobFileLogCommand, uploadCompressionService: uploadCompressionService);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
@@ -458,6 +558,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             directoryWrap.EnumerateFiles(localPath).Returns(newFiles);
 
             IFileUtility fileWrap = Substitute.For<IFileUtility>();
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
 
             UploadOptions options = new SubstituteBuilder<UploadOptions>()
                 .WithRandomProperties()
@@ -466,7 +567,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .Build();
 
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService, directoryWrap: directoryWrap, fileWrap: fileWrap);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
@@ -490,8 +591,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             UploadOptions options = new SubstituteBuilder<UploadOptions>().WithRandomProperties().WithProperty(x => x.LocalFilePaths, newFiles).Build();
 
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
+
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
+            IFileTransferService fileTransferService = CreateFileTransferService(uploadCompressionService: uploadCompressionService, directoryWrap: directoryWrap);
             fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
@@ -515,6 +618,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 			directoryWrap.EnumerateFiles(localPath).Returns(newFiles);
 
 			ICreateJobFileLogCommand createJobFileCmd = Substitute.For<ICreateJobFileLogCommand>();
+            IUploadCompressionService uploadCompressionService = CreatePreparedUploadCompressionService();
 
             UploadOptions options = new SubstituteBuilder<UploadOptions>()
                 .WithRandomProperties()
@@ -522,7 +626,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .Build();
 
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileCmd, directoryWrap: directoryWrap);
+            IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileCmd, uploadCompressionService: uploadCompressionService, directoryWrap: directoryWrap);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 			// assert
@@ -582,13 +686,26 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         }
 
 
-        private IFileTransferService CreateFileTransferService(ILogger<FileTransferService>? logger = null, ICreateJobFileLogCommand? createJobFileLogCommand = null, IDirectoryUtility? directoryWrap = null, IFileUtility? fileWrap = null)
+        private IFileTransferService CreateFileTransferService(ILogger<FileTransferService>? logger = null
+            , ICreateJobFileLogCommand? createJobFileLogCommand = null
+            , IUploadCompressionService? uploadCompressionService = null
+            , IDirectoryUtility? directoryWrap = null
+            , IFileUtility? fileWrap = null)
         {
             return new FileTransferService(logger ?? Substitute.For<ILogger<FileTransferService>>()
                 , createJobFileLogCommand ?? Substitute.For<ICreateJobFileLogCommand>()
-				, directoryWrap ?? Substitute.For<IDirectoryUtility>()
+                , uploadCompressionService ?? Substitute.For<IUploadCompressionService>()
+                , directoryWrap ?? Substitute.For<IDirectoryUtility>()
                 , fileWrap ?? Substitute.For<IFileUtility>()
                 );
+        }
+
+        private IUploadCompressionService CreatePreparedUploadCompressionService()
+        {
+            CompressedFileInfo compressedFileInfo = new SubstituteBuilder<CompressedFileInfo>().Build();
+            IUploadCompressionService uploadCompressionService = new SubstituteBuilder<IUploadCompressionService>().Build();
+            uploadCompressionService.PrepareUploadFile(Arg.Any<string>(), Arg.Any<CompressionMode>()).Returns(compressedFileInfo);
+            return uploadCompressionService;
         }
 
         #endregion

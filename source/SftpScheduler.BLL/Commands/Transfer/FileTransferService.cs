@@ -25,16 +25,22 @@ namespace SftpScheduler.BLL.Commands.Transfer
     {
         private readonly ILogger<FileTransferService> _logger;
 		private readonly ICreateJobFileLogCommand _createJobFileLogCommand;
-		private readonly IDirectoryUtility _dirUtility;
+        private readonly IUploadCompressionService _uploadCompressionService;
+        private readonly IDirectoryUtility _dirUtility;
         private readonly IFileUtility _fileUtility;
 
         public const string UploadNamePattern = "^*.uploaded_?\\d?\\d?\\d?$";
 
-        public FileTransferService(ILogger<FileTransferService> logger, ICreateJobFileLogCommand createJobFileLogCommand, IDirectoryUtility dirUtility, IFileUtility fileUtility)
+        public FileTransferService(ILogger<FileTransferService> logger
+            , ICreateJobFileLogCommand createJobFileLogCommand
+            , IUploadCompressionService uploadCompressionService
+            , IDirectoryUtility dirUtility
+            , IFileUtility fileUtility)
         {
             _logger = logger;
 			_createJobFileLogCommand = createJobFileLogCommand;
-			_dirUtility = dirUtility;
+            _uploadCompressionService = uploadCompressionService;
+            _dirUtility = dirUtility;
             _fileUtility = fileUtility;
         }
 
@@ -125,9 +131,11 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 string? folder = Path.GetDirectoryName(filePath);
                 DateTime startDate = DateTime.Now;
 
-                string fileToUpload = filePath;
-
+                CompressedFileInfo compressedFileInfo = _uploadCompressionService.PrepareUploadFile(filePath, options.CompressionMode);
+                string fileToUpload = (compressedFileInfo.CompressedFilePath ?? filePath);
 				int uploadedCount = sessionWrapper.PutFiles(fileToUpload, options);
+                _uploadCompressionService.RemoveCompressedFile(compressedFileInfo);
+
                 if (uploadedCount < 1)
                 {
                     _logger.LogInformation("File {file} not uploaded: does not match mask or other upload option(s)", fileToUpload);

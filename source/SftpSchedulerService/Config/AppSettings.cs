@@ -119,6 +119,15 @@ namespace SftpSchedulerService.Config
             }
         }
 
+        public virtual string TempDataDirectory
+        {
+            get
+            {
+                return Path.Combine(BaseDirectory, "TempData");
+            }
+        }
+
+
         public virtual int UpdateCheckIntervalInMinutes
         {
             get
