@@ -15,7 +15,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" id="tab-host-detail" data-toggle="pill" href="#tab-host-detail-content" role="tab" aria-controls="tab-host-detail-content" aria-selected="true">Details</a>
                 </li>
-                <li class="nav-item">
+                <li v-if="isEdit" class="nav-item">
                     <a class="nav-link" id="tab-host-auditlogs" data-toggle="pill" href="#tab-host-auditlogs-content" role="tab" aria-controls="tab-host-auditlogs-content" aria-selected="false">Audit Logs</a>
                 </li>
             </ul>

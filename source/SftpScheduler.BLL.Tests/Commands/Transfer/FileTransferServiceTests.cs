@@ -6,6 +6,7 @@ using SftpScheduler.Common.IO;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Commands.Job;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Commands.Transfer
 {
@@ -17,7 +18,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void DownloadFiles_NoFiles_Exits()
         {
-            // setup
+            // setup``
             DownloadOptions options = CreateDownloadOptions();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
             sessionWrapper.ListDirectory(options.RemotePath).Returns(Enumerable.Empty<RemoteFileInfo>());
@@ -29,7 +30,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             //assert
             sessionWrapper.Received(1).ListDirectory(options.RemotePath);
-            sessionWrapper.DidNotReceive().GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
+            sessionWrapper.DidNotReceive().GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string?>());
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             //assert
             sessionWrapper.Received(1).ListDirectory(options.RemotePath);
-            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string?>());
 
         }
 
@@ -75,7 +76,31 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             fileTransferService.DownloadFiles(sessionWrapper, dbContext, options);
 
             // assert
-            sessionWrapper.Received(1).GetFiles(remoteFileName, Arg.Any<string>(), deleteAfterDownload);
+            sessionWrapper.Received(1).GetFiles(remoteFileName, Arg.Any<string>(), deleteAfterDownload, Arg.Any<string?>());
+        }
+
+        [TestCase("")]
+        [TestCase("*.log")]
+        public void DownloadFiles_FileMaskSupplied_IncludedInGetFiles(string fileMask)
+        {
+            // setup
+            DownloadOptions options = new SubstituteBuilder<DownloadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.FileMask, fileMask)
+                .Build();
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            var remoteFiles = this.CreateRemoteFileList(1, options.RemotePath, false);
+            sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService();
+            fileTransferService.DownloadFiles(sessionWrapper, dbContext, options);
+
+            // assert
+            sessionWrapper.Received(1).GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), fileMask);
         }
 
         [Test]
@@ -96,7 +121,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             fileTransferService.DownloadFiles(sessionWrapper, dbContext, options);
 
             // assert
-            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), true);
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), true, Arg.Any<string?>());
             sessionWrapper.DidNotReceive().MoveFile(Arg.Any<string>(), Arg.Any<string>());
         }
 
@@ -119,7 +144,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             fileTransferService.DownloadFiles(sessionWrapper, dbContext, options);
 
             // assert
-            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), false);
+            sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), false, Arg.Any<string?>());
             sessionWrapper.Received(fileCount).MoveFile(Arg.Any<string>(), Arg.Any<string>());
 
             foreach (RemoteFileInfo downloadFile in remoteFiles)
@@ -273,6 +298,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void UploadFiles_FilesAvailableForUpload_MarkedAsUploaded()
         {
+            // setup
             List<string> newFiles = CreateLocalFileList(Faker.RandomNumber.Next(6, 9), false);
 
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
@@ -285,9 +311,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 			IDbContext dbContext = Substitute.For<IDbContext>();
 			IFileUtility fileWrap = Substitute.For<IFileUtility>();
 
-            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
 
-			UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 
@@ -320,9 +350,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string expectedRename2 = localFileName.Replace(localFileExt, $".uploaded_1{localFileExt}");
             fileWrap.Exists(expectedRename1).Returns(true);
 
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
-			UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 
@@ -355,9 +389,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 logEntity = ci.ArgAt<JobFileLogEntity>(1);
 			});
 
-			// execute
-			IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap, createJobFileLogCommand: createJobFileLogCommand);
-			UploadOptions options = new UploadOptions(jobId, newFiles, remotePath, false);
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId)
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap, createJobFileLogCommand: createJobFileLogCommand);
 			fileTransferService.UploadFiles(Substitute.For<ISessionWrapper>(), dbContext, options);
 
             // assert
@@ -367,7 +406,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 			Assert.That(logEntity.FileLength, Is.EqualTo(fileLength));
 			Assert.That(logEntity.StartDate, Is.GreaterThanOrEqualTo(testStartDate));
 			Assert.That(logEntity.EndDate, Is.GreaterThanOrEqualTo(logEntity.StartDate));
-		}
+
+            createJobFileLogCommand.Received(1).ExecuteAsync(dbContext, logEntity);
+
+        }
 
 
 		[Test]
@@ -385,16 +427,21 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             IFileUtility fileWrap = Substitute.For<IFileUtility>();
 
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.RemotePath, remotePath)
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
-            UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
-            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), remotePath, false);
+            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), remotePath, options.RestartOnFailure, Arg.Any<string?>());
             foreach (string file in newFiles)
             {
-                sessionWrapper.Received(1).PutFiles(file, remotePath, false);
+                sessionWrapper.Received(1).PutFiles(file, remotePath, options.RestartOnFailure, Arg.Any<string?>());
             }
         }
 
@@ -405,22 +452,51 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             List<string> newFiles = CreateLocalFileList(1, false);
 
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
-            string remotePath = $"/{Path.GetRandomFileName()}/";
             IDbContext dbContext = Substitute.For<IDbContext>();
 
             IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.EnumerateFiles(Arg.Any<string>()).Returns(newFiles);
 
-            IFileUtility fileWrap = Substitute.For<IFileUtility>();
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .WithProperty(x => x.RestartOnFailure, restartOnFailure)
+                .Build();
 
             // execute
-            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap, fileWrap: fileWrap);
-            UploadOptions options = new UploadOptions(1, newFiles, remotePath, restartOnFailure);
+            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
             fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
             // assert
-            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), Arg.Any<string>(), restartOnFailure);
+            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), Arg.Any<string>(), options.RestartOnFailure, Arg.Any<string?>());
         }
+
+        [TestCase("")]
+        [TestCase("*.txt")]
+        public void UploadFiles_WithFileMask_PutFilesCalledWithFileMask(string fileMask)
+        {
+            List<string> newFiles = CreateLocalFileList(1, false);
+
+            ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
+            IDbContext dbContext = Substitute.For<IDbContext>();
+
+            IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
+            directoryWrap.EnumerateFiles(Arg.Any<string>()).Returns(newFiles);
+
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .WithProperty(x => x.FileMask, fileMask)
+                .Build();
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(directoryWrap: directoryWrap);
+            fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
+
+            // assert
+            sessionWrapper.Received(newFiles.Count).PutFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), fileMask);
+        }
+
 
         [Test]
 		public void UploadFiles_FilesAvailableForUpload_JobFileLogCommandExecuted()
@@ -437,9 +513,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
 			ICreateJobFileLogCommand createJobFileCmd = Substitute.For<ICreateJobFileLogCommand>();
 
-			// execute
-			IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileCmd, directoryWrap: directoryWrap);
-			UploadOptions options = new UploadOptions(1, newFiles, remotePath, false);
+            UploadOptions options = new SubstituteBuilder<UploadOptions>()
+                .WithRandomProperties()
+                .WithProperty(x => x.LocalFilePaths, newFiles)
+                .Build();
+
+            // execute
+            IFileTransferService fileTransferService = CreateFileTransferService(createJobFileLogCommand: createJobFileCmd, directoryWrap: directoryWrap);
 			fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
 
 			// assert
@@ -449,12 +529,16 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
 		#region Private Methods
 
-		private DownloadOptions CreateDownloadOptions(int jobId = 0, string remotePath = "/Test/", string localPath = "C:\\Temp", bool deleteAfterDownload = false, string? remoteArchivePath = null)
+		private DownloadOptions CreateDownloadOptions(int jobId = 0, string remotePath = "/Test/", string localPath = "C:\\Temp", bool deleteAfterDownload = false, string? remoteArchivePath = null, string? fileMask = null)
         {
-            return new DownloadOptions(jobId, localPath, remotePath)
+            return new DownloadOptions()
             {
+                JobId = jobId,
+                RemotePath = remotePath,
+                LocalPath = localPath,
                 DeleteAfterDownload = deleteAfterDownload,
-                RemoteArchivePath = remoteArchivePath
+                RemoteArchivePath = remoteArchivePath,
+                FileMask = fileMask ?? String.Empty
             };
         }
 

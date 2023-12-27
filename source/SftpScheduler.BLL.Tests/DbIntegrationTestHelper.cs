@@ -98,7 +98,10 @@ namespace SftpScheduler.BLL.Tests
                 .WithIsEnabled(isEnabled)
                 .Build();
 
-            string sql = @"INSERT INTO Job (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, IsEnabled, Created) VALUES (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @IsEnabled, @Created)";
+            string sql = @"INSERT INTO Job 
+                (Name, HostId, Type, Schedule, ScheduleInWords, LocalPath, RemotePath, DeleteAfterDownload, RemoteArchivePath, LocalCopyPaths, IsEnabled, Created, RestartOnFailure, CompressionMode, FileMask, PreserveTimestamp, TransferMode) 
+                VALUES 
+                (@Name, @HostId, @Type, @Schedule, @ScheduleInWords, @LocalPath, @RemotePath, @DeleteAfterDownload, @RemoteArchivePath, @LocalCopyPaths, @IsEnabled, @Created, @RestartOnFailure, @CompressionMode, @FileMask, @PreserveTimestamp, @TransferMode)";
             dbContext.ExecuteNonQueryAsync(sql, jobEntity).GetAwaiter().GetResult();
 
             sql = @"select last_insert_rowid()";

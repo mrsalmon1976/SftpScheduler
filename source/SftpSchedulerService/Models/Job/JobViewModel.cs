@@ -1,5 +1,6 @@
 ﻿using SftpScheduler.BLL.Data;
 using SftpSchedulerService.Utilities;
+using System.IO.Compression;
 
 namespace SftpSchedulerService.Models.Job
 {
@@ -48,5 +49,15 @@ namespace SftpSchedulerService.Models.Job
         public bool RestartOnFailure { get; set; }
 
         public bool IsFailing { get; set; }
+
+        public CompressionMode CompressionMode { get; set; }
+
+        public string? FileMask { get; set; }
+
+        public bool PreserveTimestamp { get; set; }
+
+        public TransferMode TransferMode { get; set; }
+
+
     }
 }

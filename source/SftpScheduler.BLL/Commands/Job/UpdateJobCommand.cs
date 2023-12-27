@@ -54,6 +54,10 @@ namespace SftpScheduler.BLL.Commands.Job
                 , LocalCopyPaths = @LocalCopyPaths
                 , IsEnabled = @IsEnabled
                 , RestartOnFailure = @RestartOnFailure
+                , CompressionMode = @CompressionMode
+                , FileMask = @FileMask
+                , PreserveTimestamp = @PreserveTimestamp
+                , TransferMode = @TransferMode
                 WHERE Id = @Id";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 
@@ -63,7 +67,6 @@ namespace SftpScheduler.BLL.Commands.Job
             {
                 await dbContext.ExecuteNonQueryAsync(sql, jobAuditLogEntity);
             }
-
 
             await base.UpdateJobSchedule(_schedulerFactory, jobEntity);
 

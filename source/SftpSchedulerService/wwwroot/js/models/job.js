@@ -13,6 +13,10 @@
         this.isEnabled = true;
         this.restartOnFailure = false;
         this.isFailing = false;
+        this.compressionMode = 0;
+        this.fileMask = '';
+        this.preserveFilestamp = true;
+        this.transferMode = 0;
 
         // these default to true, as you don't want the screen showing everything is invalid at first pass
         this.isNameValid = true;

@@ -9,15 +9,16 @@ namespace SftpScheduler.BLL.Models
 {
     public class DownloadOptions
     {
-        public DownloadOptions(int jobId, string localPath, string remotePath) 
+        public DownloadOptions() 
         {
-            this.JobId = jobId;
-            this.LocalPath = localPath;
-            this.RemotePath = remotePath;
+            this.LocalPath = String.Empty;
+            this.RemotePath = String.Empty;
             this.LocalCopyPaths = new List<string>();
-        }    
+            this.FileMask = String.Empty;  
+        }
 
         public int JobId { get; set; }
+
         public string LocalPath { get; set; }
 
         public string RemotePath { get; set; }
@@ -27,5 +28,7 @@ namespace SftpScheduler.BLL.Models
         public bool DeleteAfterDownload { get; set; }
 
         public List<string> LocalCopyPaths { get; private set; }
+
+        public string FileMask { get; set; }
     }
 }

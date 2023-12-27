@@ -18,13 +18,13 @@
                 <li class="nav-item">
                     <a class="nav-link active" id="tab-job-detail" data-toggle="pill" href="#tab-job-detail-content" role="tab" aria-controls="tab-job-detail-content" aria-selected="true">Details</a>
                 </li>
-                <li class="nav-item">
+                <li v-if="isEdit" class="nav-item">
                     <a class="nav-link" id="tab-job-logs" data-toggle="pill" href="#tab-job-logs-content" role="tab" aria-controls="tab-job-logs-content" aria-selected="false">Logs</a>
                 </li>
-                <li class="nav-item">
+                <li v-if="isEdit" class="nav-item">
                     <a class="nav-link" id="tab-job-filelogs" data-toggle="pill" href="#tab-job-filelogs-content" role="tab" aria-controls="tab-job-filelogs-content" aria-selected="false">File Logs</a>
                 </li>
-                <li class="nav-item">
+                <li v-if="isEdit" class="nav-item">
                     <a class="nav-link" id="tab-job-auditlogs" data-toggle="pill" href="#tab-job-auditlogs-content" role="tab" aria-controls="tab-job-auditlogs-content" aria-selected="false">Audit Logs</a>
                 </li>
             </ul>
@@ -36,7 +36,7 @@
                     <form class="form-horizontal">
                         <div class="form-group row">
                             <label for="job-type" class="col-sm-2 col-form-label">Type</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()">
                                     <option value="0"></option>
                                     <option value="1">@JobType.Download</option>
@@ -68,8 +68,38 @@
                                 <input type="text" v-model="schedule" class="form-control" id="job-schedule" placeholder="0 0/15 * ? * * *" autocomplete="false">
                                 <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
                             </div>
+                            <div class="col-sm-1">
+                                <a href="https://www.freeformatter.com/cron-expression-generator-quartz.html" target="_blank" data-toggle="tooltip" 
+                                    title="Cron expressions allow for an extremely flexible scheduling system. If you are unfamiliar with 
+                                    creating cron expressions, click this icon for a free online expression generator."><i class="fa fa-circle-question"></i></a>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-transfer-mode" class="col-sm-2 col-form-label">Transfer Mode</label>
                             <div class="col-sm-2">
-                                <a href="https://www.freeformatter.com/cron-expression-generator-quartz.html" target="_blank" class="text-sm">Help!!</a>
+                                <select v-model.number="job.transferMode" class="form-control" id="job-transfer-mode">
+                                    <option value="0">Binary</option>
+                                    <option value="1">Ascii</option>
+                                    <option value="2">Automatic</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">&nbsp;</div>
+                            <div class="col-sm-1">
+                                <a href="javascript:void(0);" data-toggle="tooltip" title="This option allows you to select the mode of transfer.  ASCII 
+                                    should only be selected when the job will only transfer text files and you want the format of the file 
+                                    appropriate for the target system.  Binary mode will transfer an identical copy of the file and should 
+                                    be used for most jobs."><i class="fa fa-circle-question"></i></a>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="job-file-mask" class="col-sm-2 col-form-label">File Mask</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="job.fileMask" class="form-control" id="job-file-mask" />
+                            </div>
+                            <div class="col-sm-1">
+                                <a href="javascript:void(0);" data-toggle="tooltip"
+                                   title="Use the asterisk [*] as a wildcard, so [*.txt] will result in only files with a [.txt] extension being transferred. 
+                                        Set to blank or [*.*] to transfer all files."><i class="fa fa-circle-question"></i></a>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -117,9 +147,43 @@
                                     <div class="form-check">
                                         <input type="checkbox" v-model="job.restartOnFailure" class="form-check-input" id="job-restart-on-failure" />
                                     </div><br />
+                                </div>
+                                <div class="col-sm-1">
+                                    <a href="javascript:void(0);" data-toggle="tooltip" title="When checked, uploads will restart from the beginning 
+                                        on job failure. This should only be turned on where servers or remote permissions do not support resuming transfers.">
+                                        <i class="fa fa-circle-question"></i></a>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="job-preserve-timestamp" class="col-sm-2 col-form-label">Preserve Timestamp</label>
+                                <div class="col-sm-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" v-model="job.preserveTimestamp" class="form-check-input" id="job-preserve-timestamp" />
+                                    </div><br />
+                                </div>
+                                <div class="col-sm-1">
+                                    <a href="javascript:void(0);" data-toggle="tooltip" title="Turn this off when server permissions prevent the timestamp 
+                                        of the file being updated after upload.  By default, this should be left on.">
+                                        <i class="fa fa-circle-question"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="job-compression-mode" class="col-sm-2 col-form-label">Compression Mode</label>
+                                <div class="col-sm-4">
+                                    <select v-model.number="job.compressionMode" class="form-control" id="job-compression-mode">
+                                        <option value="0">None</option>
+                                        <option value="1">Zip</option>
+                                    </select>
                                     <span class="feedback">
-                                        When checked, uploads will restart from the beginning on job failure. This should only be turned on where servers or remote permissions do not support resuming transfers.
+                                        
                                     </span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <a href="javascript:void(0);" data-toggle="tooltip" title="If a compression mode is set, 
+                                        a compressed copy of the file will be uploaded.  The compressed copy will be removed 
+                                        from the local folder after upload.  Files with an extension matching the selected compression mode
+                                        will not be compressed (e.g. a zip file will not be zipped again)."><i class="fa fa-circle-question"></i></a>
                                 </div>
                             </div>
                         </div>

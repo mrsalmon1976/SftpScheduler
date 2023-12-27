@@ -86,9 +86,17 @@
             this.job.localCopyPaths = jobData.localCopyPaths;
             this.job.isEnabled = jobData.isEnabled;
             this.job.restartOnFailure = jobData.restartOnFailure;
+            this.job.compressionMode = jobData.compressionMode;
+            this.job.fileMask = jobData.fileMask;
+            this.job.preserveTimestamp = jobData.preserveTimestamp;
+            this.job.transferMode = jobData.transferMode;
+
             this.job.validate();
 
             this.schedule = jobData.schedule;
+            Vue.nextTick(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            })
 
         },
         async loadFileLogs() {
@@ -150,10 +158,13 @@
     mounted: function () {
         this.isLoading = true;
         this.loadHosts();
-
         this.job.hashId = this.$el.parentElement.getAttribute('data-job-id');
         if (this.job.hashId == '') {
             UiHelpers.setPageHeader('Create New Job');
+            Vue.nextTick(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            })
+
         }
         else { 
             this.isEdit = true;
@@ -165,5 +176,6 @@
             this.setLogReloadInterval();
         }
         this.isLoading = false;
+
     }
 }).mount('#app-job')

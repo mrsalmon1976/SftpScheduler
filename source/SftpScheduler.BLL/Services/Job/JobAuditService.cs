@@ -74,6 +74,22 @@ namespace SftpScheduler.BLL.Services.Job
             {
                 changes.Add(new JobAuditLogEntity(hostId, "RestartOnFailure", HumanizeBoolean(currentJobEntity.RestartOnFailure), HumanizeBoolean(updatedJobEntity.RestartOnFailure), userName));
             }
+            if (currentJobEntity.CompressionMode != updatedJobEntity.CompressionMode)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "CompressionMode", currentJobEntity.CompressionMode.ToString(), updatedJobEntity.CompressionMode.ToString(), userName));
+            }
+            if (currentJobEntity.FileMask != updatedJobEntity.FileMask)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "FileMask", currentJobEntity.FileMask, updatedJobEntity.FileMask, userName));
+            }
+            if (currentJobEntity.PreserveTimestamp != updatedJobEntity.PreserveTimestamp)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "PreserveTimestamp", HumanizeBoolean(currentJobEntity.PreserveTimestamp), HumanizeBoolean(updatedJobEntity.PreserveTimestamp), userName));
+            }
+            if (currentJobEntity.TransferMode != updatedJobEntity.TransferMode)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "TransferMode", currentJobEntity.TransferMode.ToString(), updatedJobEntity.TransferMode.ToString(), userName));
+            }
 
             return changes;
         }

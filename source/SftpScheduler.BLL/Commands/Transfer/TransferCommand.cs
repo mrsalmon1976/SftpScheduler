@@ -72,7 +72,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     }
                     else
                     {
-                        UploadOptions options = new UploadOptions(jobId, filesToTransfer, jobEntity.RemotePath, jobEntity.RestartOnFailure);
+                        UploadOptions options = BuildUploadOptions(jobEntity, filesToTransfer);
                         _fileTransferService.UploadFiles(sessionWrapper, dbContext, options);
                     }
 
@@ -88,12 +88,30 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         private DownloadOptions BuildDownloadOptions(JobEntity jobEntity)
         {
-            DownloadOptions options = new DownloadOptions(jobEntity.Id, jobEntity.LocalPath, jobEntity.RemotePath) 
+            DownloadOptions options = new DownloadOptions()
             {
+                JobId = jobEntity.Id, 
+                LocalPath = jobEntity.LocalPath, 
+                RemotePath = jobEntity.RemotePath,
                 DeleteAfterDownload = jobEntity.DeleteAfterDownload,
-                RemoteArchivePath = jobEntity.RemoteArchivePath
+                RemoteArchivePath = jobEntity.RemoteArchivePath,
+                FileMask = jobEntity.FileMask ?? String.Empty
             };
             options.LocalCopyPaths.AddRange((jobEntity.LocalCopyPaths ?? String.Empty).Split(';').Where(x => x.Length > 0));
+            return options;
+        }
+
+        private UploadOptions BuildUploadOptions(JobEntity jobEntity, IEnumerable<string> filesToTransfer)
+        {
+            UploadOptions options = new UploadOptions()
+            {
+                JobId = jobEntity.Id,
+                RemotePath = jobEntity.RemotePath,
+                RestartOnFailure = jobEntity.RestartOnFailure,
+                FileMask = jobEntity.FileMask,
+                PreserveTimestamp = jobEntity.PreserveTimestamp
+            };
+            options.LocalFilePaths.AddRange(filesToTransfer);
             return options;
         }
 

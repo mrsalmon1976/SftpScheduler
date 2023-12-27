@@ -56,7 +56,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 DateTime startDate = DateTime.Now;
 
 				// get the files - note the DeleteAfterDownload option is used here so files are removed by WinSCP
-				sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload);
+				sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload, options.FileMask);
                 _logger.LogInformation("Downloaded file {remoteFileName} to {localPath}", remoteFile.FullName, localFilePath);
 
                 // archive file remotely
@@ -121,7 +121,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 DateTime startDate = DateTime.Now;
 
 
-				sessionWrapper.PutFiles(file, options.RemotePath, options.RestartOnFailure);
+				sessionWrapper.PutFiles(file, options.RemotePath, options.RestartOnFailure, options.FileMask);
 
                 string destFilePath = GetUniqueFileName(folder, fileNameWithoutExt, ".uploaded", extension);
                 _fileWrap.Move(file, destFilePath, false);

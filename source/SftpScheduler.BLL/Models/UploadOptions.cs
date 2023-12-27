@@ -9,12 +9,11 @@ namespace SftpScheduler.BLL.Models
 {
     public class UploadOptions
     {
-        public UploadOptions(int jobId, IEnumerable<string> localFilePaths, string remotePath, bool restartOnFailure) 
+        public UploadOptions() 
         {
-            this.JobId = jobId;
-			this.LocalFilePaths = new List<string>(localFilePaths);
-			this.RemotePath = remotePath;
-            this.RestartOnFailure = restartOnFailure;
+			this.LocalFilePaths = new List<string>();
+            this.RemotePath = String.Empty;
+            this.PreserveTimestamp = true;
         }    
 
         public int JobId { get; set; }
@@ -24,6 +23,10 @@ namespace SftpScheduler.BLL.Models
 		public string RemotePath { get; set; }
 
         public bool RestartOnFailure { get; set; }
+
+        public string? FileMask { get; set; }
+
+        public bool PreserveTimestamp { get; set; } 
 
     }
 }

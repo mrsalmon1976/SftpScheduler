@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS Job (
 );
 --**-- #23 added RestartOnFailure column
 ALTER TABLE Job ADD COLUMN RestartOnFailure INTEGER DEFAULT 0;
---**-- #20 added zipping capability
-ALTER TABLE Job ADD COLUMN ZipBeforeUpload INTEGER DEFAULT 0;
+--**-- #20 added compression capability
+ALTER TABLE Job ADD COLUMN CompressionMode INTEGER DEFAULT 0;
 --**-- #21 file mask
 ALTER TABLE Job ADD COLUMN FileMask TEXT DEFAULT NULL;
 --**-- #30 PreserveTimestamp 

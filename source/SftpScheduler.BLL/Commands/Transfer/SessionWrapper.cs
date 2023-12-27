@@ -16,7 +16,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Close();
 
-        void GetFiles(string remotePath, string localPath, bool remove);
+        void GetFiles(string remotePath, string localPath, bool remove, string? fileMask);
 
         IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath);
 
@@ -24,7 +24,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Open();
 
-        void PutFiles(string localPath, string remotePath, bool restartOnFailure);
+        void PutFiles(string localPath, string remotePath, bool restartOnFailure, string? fileMask);
 
         string ScanFingerprint(string algorithm);
     }
@@ -55,9 +55,14 @@ namespace SftpScheduler.BLL.Commands.Transfer
             }
         }
 
-        public void GetFiles(string remotePath, string localPath, bool remove)
+        public void GetFiles(string remotePath, string localPath, bool remove, string? fileMask)
         {
-            TransferOperationResult result = _session.GetFiles(remotePath, localPath, remove);
+            TransferOptions options = new TransferOptions();
+            if (!String.IsNullOrEmpty(fileMask))
+            {
+                options.FileMask = fileMask;
+            }
+            TransferOperationResult result = _session.GetFiles(remotePath, localPath, remove, options);
             result.Check();
         }
 
@@ -87,12 +92,17 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         }
 
-        public void PutFiles(string localPath, string remotePath, bool restartOnFailure)
+        public void PutFiles(string localPath, string remotePath, bool restartOnFailure, string? fileMask, bool preserveTimestamp)
         {
             TransferOptions options = new TransferOptions();
+            options.PreserveTimestamp = preserveTimestamp;
             if (restartOnFailure)
             {
                 options.ResumeSupport.State = TransferResumeSupportState.Off;
+            }
+            if (!String.IsNullOrEmpty(fileMask))
+            {
+                options.FileMask = fileMask;
             }
 
             TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false, options);

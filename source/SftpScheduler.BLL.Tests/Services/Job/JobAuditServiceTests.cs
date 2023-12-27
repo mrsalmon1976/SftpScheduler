@@ -252,6 +252,90 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "RestartOnFailure", "True", "False");
         }
 
+        [Test]
+        public void CompareJobs_CompressionModeChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new DbContextBuilder().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.CompressionMode, CompressionMode.None).Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.CompressionMode = CompressionMode.Zip;
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "CompressionMode", "None", "Zip");
+        }
+
+        [Test]
+        public void CompareJobs_FileMaskChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new DbContextBuilder().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.FileMask, "*.old").Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.FileMask = "*.new";
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "FileMask", "*.old", "*.new");
+        }
+
+        [Test]
+        public void CompareJobs_PreserveTimestampChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new DbContextBuilder().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.PreserveTimestamp, true).Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.PreserveTimestamp = false;
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "PreserveTimestamp", "True", "False");
+        }
+
+
+        [Test]
+        public void CompareJobs_TransferModeChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new DbContextBuilder().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.TransferMode, TransferMode.Binary).Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.TransferMode = TransferMode.Automatic;
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "TransferMode", "Binary", "Automatic");
+        }
 
         [Test]
         public void CompareJobs_AllPropertiesChanged_AuditRecordsCreated()
@@ -268,24 +352,39 @@ namespace SftpScheduler.BLL.Tests.Services.Job
 
 
             string userName = Guid.NewGuid().ToString();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties()
-                .WithHostId(hostEntityOld.Id)
-                .WithType(JobType.Download)
-                .WithDeleteAfterDownload(true)
-                .WithLocalCopyPaths(Guid.NewGuid().ToString())
-                .WithIsEnabled(true)
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
+                .WithProperty(x => x.Name, Guid.NewGuid().ToString())
+                .WithProperty(x => x.HostId, hostEntityOld.Id)
+                .WithProperty(x => x.Type, JobType.Download)
+                .WithProperty(x => x.Schedule, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalPath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.RemotePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.DeleteAfterDownload, true)
+                .WithProperty(x => x.RemoteArchivePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalCopyPaths, Guid.NewGuid().ToString())
+                .WithProperty(x => x.IsEnabled, true)
+                .WithProperty(x => x.RestartOnFailure, true)
+                .WithProperty(x => x.CompressionMode, CompressionMode.Zip)
+                .WithProperty(x => x.FileMask, "*.OLD")
+                .WithProperty(x => x.PreserveTimestamp, false)
+                .WithProperty(x => x.TransferMode, TransferMode.Ascii)
                 .Build();
-            JobEntity jobEntityNew = new JobEntityBuilder()
-                .WithName(Guid.NewGuid().ToString())
-                .WithHostId(hostEntityNew.Id)
-                .WithType(JobType.Upload)
-                .WithSchedule(Guid.NewGuid().ToString())
-                .WithLocalPath(Guid.NewGuid().ToString())
-                .WithRemotePath(Guid.NewGuid().ToString())
-                .WithDeleteAfterDownload(false)
-                .WithRemoteArchivePath(Guid.NewGuid().ToString())
-                .WithLocalCopyPaths(Guid.NewGuid().ToString())
-                .WithIsEnabled(false)
+            JobEntity jobEntityNew = new SubstituteBuilder<JobEntity>()
+                .WithProperty(x => x.Name, Guid.NewGuid().ToString())
+                .WithProperty(x => x.HostId, hostEntityNew.Id)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .WithProperty(x => x.Schedule, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalPath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.RemotePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.DeleteAfterDownload, false)
+                .WithProperty(x => x.RemoteArchivePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalCopyPaths, Guid.NewGuid().ToString())
+                .WithProperty(x => x.IsEnabled, false)
+                .WithProperty(x => x.RestartOnFailure, false)
+                .WithProperty(x => x.CompressionMode, CompressionMode.None)
+                .WithProperty(x => x.FileMask, "*.NEW")
+                .WithProperty(x => x.PreserveTimestamp, true)
+                .WithProperty(x => x.TransferMode, TransferMode.Automatic)
                 .Build();
 
             // execute 
@@ -293,7 +392,7 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
 
             // assert
-            Assert.That(result.Count(), Is.EqualTo(10));
+            Assert.That(result.Count(), Is.EqualTo(15));
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "Name"), jobEntityOld.Id, "Name", jobEntityOld.Name, jobEntityNew.Name);
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "Host"), jobEntityOld.Id, "Host", $"{hostEntityOld.Name}", $"{hostEntityNew.Name}");
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "JobType"), jobEntityOld.Id, "JobType", jobEntityOld.Type.ToString(), jobEntityNew.Type.ToString());
@@ -304,8 +403,13 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "RemoteArchivePath"), jobEntityOld.Id, "RemoteArchivePath", jobEntityOld.RemoteArchivePath!, jobEntityNew.RemoteArchivePath!);
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "LocalCopyPaths"), jobEntityOld.Id, "LocalCopyPaths", jobEntityOld.LocalCopyPaths!, jobEntityNew.LocalCopyPaths!);
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "Enabled"), jobEntityOld.Id, "Enabled", "True", "False");
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "RestartOnFailure"), jobEntityOld.Id, "RestartOnFailure", "True", "False");
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "CompressionMode"), jobEntityOld.Id, "CompressionMode", jobEntityOld.CompressionMode.ToString(), jobEntityNew.CompressionMode.ToString());
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "FileMask"), jobEntityOld.Id, "FileMask", jobEntityOld.FileMask!, jobEntityNew.FileMask!);
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "PreserveTimestamp"), jobEntityOld.Id, "PreserveTimestamp", "False", "True");
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "TransferMode"), jobEntityOld.Id, "TransferMode", jobEntityOld.TransferMode.ToString(), jobEntityNew.TransferMode.ToString());
         }
-    
+
 
         [Test]
         public void CompareJobs_PropertiesChanged_UserNameCorrectlySet()

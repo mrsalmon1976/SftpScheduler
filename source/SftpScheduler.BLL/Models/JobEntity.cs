@@ -22,6 +22,11 @@ namespace SftpScheduler.BLL.Models
             this.LocalPath = String.Empty;
             this.IsEnabled = true;
             this.Created = DateTime.UtcNow;
+            this.RestartOnFailure = false;
+            this.CompressionMode = CompressionMode.None;
+            this.FileMask = String.Empty;
+            this.PreserveTimestamp = true;
+            this.TransferMode = TransferMode.Binary;
         }
 
         public virtual int Id { get; set; }
@@ -61,6 +66,15 @@ namespace SftpScheduler.BLL.Models
         public virtual DateTime Created { get; internal set; }
 
         public bool RestartOnFailure { get; set; }
+
+        public CompressionMode CompressionMode { get; set; }
+
+        public string? FileMask { get; set; }
+
+        public bool PreserveTimestamp { get; set; }
+
+        public TransferMode TransferMode { get; set; }
+
 
         public virtual IEnumerable<string> LocalCopyPathsAsEnumerable()
         {
