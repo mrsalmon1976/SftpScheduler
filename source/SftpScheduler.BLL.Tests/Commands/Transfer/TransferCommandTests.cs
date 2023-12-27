@@ -7,11 +7,13 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinSCP;
 
 namespace SftpScheduler.BLL.Tests.Commands.Transfer
 {
@@ -82,7 +84,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         }
 
         [Test]
-        public void Execute_DownloadJob_DownloadsCorrectly()
+        public void Execute_DownloadJob_DownloadsWithCorrectOptions()
         {
             int jobId = Faker.RandomNumber.Next(10, 100);
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
@@ -90,11 +92,22 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithType(JobType.Download).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.Id, jobId)
+                .WithProperty(x => x.Type, JobType.Download)
+                .Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
             IFileTransferService fileTransferService = Substitute.For<IFileTransferService>();
+
+            DownloadOptions? optionsReceived = null;
+            fileTransferService.When(x => x.DownloadFiles(sessionWrapper, dbContext, Arg.Any<DownloadOptions>())).Do(ci =>
+            {
+                optionsReceived = ci.ArgAt<DownloadOptions>(2);
+            });
+
 
             // execute
             ITransferCommand transferCommand = CreateTransferCommand(sessionWrapperFactory, fileTransferService, jobRepository: jobRepo);
@@ -102,10 +115,18 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 
             // assert
             fileTransferService.Received(1).DownloadFiles(sessionWrapper, dbContext, Arg.Any<DownloadOptions>());
+            Assert.That(optionsReceived, Is.Not.Null);
+            Assert.That(optionsReceived.JobId, Is.EqualTo(jobId));
+            Assert.That(optionsReceived.LocalPath, Is.EqualTo(jobEntity.LocalPath));
+            Assert.That(optionsReceived.RemotePath, Is.EqualTo(jobEntity.RemotePath));
+            Assert.That(optionsReceived.DeleteAfterDownload, Is.EqualTo(jobEntity.DeleteAfterDownload));
+            Assert.That(optionsReceived.RemoteArchivePath, Is.EqualTo(jobEntity.RemoteArchivePath));
+            Assert.That(optionsReceived.FileMask, Is.EqualTo(jobEntity.FileMask));
+            Assert.That(optionsReceived.TransferMode, Is.EqualTo(jobEntity.TransferMode));
         }
 
         [Test]
-        public void Execute_UploadJob_UploadsCorrectly()
+        public void Execute_UploadJob_UploadsWithCorrectOptions()
         {
             int jobId = Faker.RandomNumber.Next(10, 100);    
             ISessionWrapperFactory sessionWrapperFactory = Substitute.For<ISessionWrapperFactory>();
@@ -113,7 +134,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithType(JobType.Upload).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.Id, jobId)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
@@ -137,6 +162,10 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
 			Assert.That(optionsReceived.JobId, Is.EqualTo(jobId));
 			Assert.That(optionsReceived.RemotePath, Is.EqualTo(jobEntity.RemotePath));
             Assert.That(optionsReceived.RestartOnFailure, Is.EqualTo(jobEntity.RestartOnFailure));
+            Assert.That(optionsReceived.FileMask, Is.EqualTo(jobEntity.FileMask));
+            Assert.That(optionsReceived.PreserveTimestamp, Is.EqualTo(jobEntity.PreserveTimestamp));
+            Assert.That(optionsReceived.TransferMode, Is.EqualTo(jobEntity.TransferMode));
+            Assert.That(optionsReceived.CompressionMode, Is.EqualTo(jobEntity.CompressionMode));
         }
 
         [Test]

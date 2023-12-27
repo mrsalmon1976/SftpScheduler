@@ -25,17 +25,17 @@ namespace SftpScheduler.BLL.Commands.Transfer
     {
         private readonly ILogger<FileTransferService> _logger;
 		private readonly ICreateJobFileLogCommand _createJobFileLogCommand;
-		private readonly IDirectoryUtility _directoryWrap;
-        private readonly IFileUtility _fileWrap;
+		private readonly IDirectoryUtility _dirUtility;
+        private readonly IFileUtility _fileUtility;
 
         public const string UploadNamePattern = "^*.uploaded_?\\d?\\d?\\d?$";
 
-        public FileTransferService(ILogger<FileTransferService> logger, ICreateJobFileLogCommand createJobFileLogCommand, IDirectoryUtility directoryWrap, IFileUtility fileWrap)
+        public FileTransferService(ILogger<FileTransferService> logger, ICreateJobFileLogCommand createJobFileLogCommand, IDirectoryUtility dirUtility, IFileUtility fileUtility)
         {
             _logger = logger;
 			_createJobFileLogCommand = createJobFileLogCommand;
-			_directoryWrap = directoryWrap;
-            _fileWrap = fileWrap;
+			_dirUtility = dirUtility;
+            _fileUtility = fileUtility;
         }
 
         public void DownloadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, DownloadOptions options)
@@ -55,8 +55,13 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 string localFilePath = Path.Combine(options.LocalPath, fileName);
                 DateTime startDate = DateTime.Now;
 
-				// get the files - note the DeleteAfterDownload option is used here so files are removed by WinSCP
-				sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options.DeleteAfterDownload, options.FileMask);
+				// get the files - note that if options.DeleteAfterDownload is set to true, the file will automatically be deleted by the client
+				int downloadedCount = sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options);
+                if (downloadedCount < 1)
+                {
+                    _logger.LogInformation("Remote file {remoteFileName} not downloaded: does not match mask or other download option(s)", remoteFile.FullName);
+                    continue;
+                }
                 _logger.LogInformation("Downloaded file {remoteFileName} to {localPath}", remoteFile.FullName, localFilePath);
 
                 // archive file remotely
@@ -73,7 +78,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     string fileNameWithoutExt = Path.GetFileNameWithoutExtension(localFilePath);
                     string extension = Path.GetExtension(localFilePath);
                     string fileCopyPath = GetUniqueFileName(localCopyPath, fileNameWithoutExt, String.Empty, extension);
-                    _fileWrap.Copy(localFilePath, fileCopyPath);
+                    _fileUtility.Copy(localFilePath, fileCopyPath);
                 }
 
 				// log the transfer
@@ -81,7 +86,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 				fileLog.JobId = options.JobId;
 				fileLog.StartDate = startDate;
 				fileLog.EndDate = DateTime.Now;
-                fileLog.FileLength = _fileWrap.GetFileSize(localFilePath);
+                fileLog.FileLength = _fileUtility.GetFileSize(localFilePath);
                 fileLog.FileName = fileName;
                 _createJobFileLogCommand.ExecuteAsync(dbContext, fileLog);
 			}
@@ -89,7 +94,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         public IEnumerable<string> UploadFilesAvailable(string localPath)
         {
-            IEnumerable<string> files = _directoryWrap.EnumerateFiles(localPath);
+            IEnumerable<string> files = _dirUtility.EnumerateFiles(localPath);
             List<string> newFiles = new List<string>();
             Regex regEx = new Regex(UploadNamePattern, RegexOptions.IgnoreCase);
 
@@ -112,27 +117,33 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         public void UploadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, UploadOptions options)
         {
-            foreach (string file in options.LocalFilePaths)
+            foreach (string filePath in options.LocalFilePaths)
             {
-                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(file);
-				string fileName = Path.GetFileName(file);
-				string extension = Path.GetExtension(file);
-                string? folder = Path.GetDirectoryName(file);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(filePath);
+				string fileName = Path.GetFileName(filePath);
+				string extension = Path.GetExtension(filePath);
+                string? folder = Path.GetDirectoryName(filePath);
                 DateTime startDate = DateTime.Now;
 
+                string fileToUpload = filePath;
 
-				sessionWrapper.PutFiles(file, options.RemotePath, options.RestartOnFailure, options.FileMask);
+				int uploadedCount = sessionWrapper.PutFiles(fileToUpload, options);
+                if (uploadedCount < 1)
+                {
+                    _logger.LogInformation("File {file} not uploaded: does not match mask or other upload option(s)", fileToUpload);
+                    continue;
+                }
 
                 string destFilePath = GetUniqueFileName(folder, fileNameWithoutExt, ".uploaded", extension);
-                _fileWrap.Move(file, destFilePath, false);
-                _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", file, destFilePath);
+                _fileUtility.Move(filePath, destFilePath, false);
+                _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", filePath, destFilePath);
 
 				// log the transfer
 				JobFileLogEntity fileLog = new JobFileLogEntity();
 				fileLog.JobId = options.JobId;
 				fileLog.StartDate = startDate;
 				fileLog.EndDate = DateTime.Now;
-				fileLog.FileLength = _fileWrap.GetFileSize(destFilePath);
+				fileLog.FileLength = _fileUtility.GetFileSize(destFilePath);
 				fileLog.FileName = fileName;
 				_createJobFileLogCommand.ExecuteAsync(dbContext, fileLog);
 
@@ -144,7 +155,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
             string destFilePath = $"{folder}\\{fileName}{fileNameSuffix}{extension}";
             int fileSuffix = 1;
 
-            while (_fileWrap.Exists(destFilePath))
+            while (_fileUtility.Exists(destFilePath))
             {
                 destFilePath = $"{folder}\\{fileName}{fileNameSuffix}_{fileSuffix}{extension}";
                 fileSuffix++;

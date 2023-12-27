@@ -1,9 +1,11 @@
-﻿using SftpScheduler.BLL.Models;
+﻿using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using WinSCP;
 
 namespace SftpScheduler.BLL.Commands.Transfer
@@ -16,7 +18,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Close();
 
-        void GetFiles(string remotePath, string localPath, bool remove, string? fileMask);
+        int GetFiles(string remotePath, string localPath, DownloadOptions downloadOptions);
 
         IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath);
 
@@ -24,7 +26,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         void Open();
 
-        void PutFiles(string localPath, string remotePath, bool restartOnFailure, string? fileMask);
+        int PutFiles(string localFilePath, UploadOptions uploadOptions);
 
         string ScanFingerprint(string algorithm);
     }
@@ -55,15 +57,17 @@ namespace SftpScheduler.BLL.Commands.Transfer
             }
         }
 
-        public void GetFiles(string remotePath, string localPath, bool remove, string? fileMask)
+        public int GetFiles(string remotePath, string localPath, DownloadOptions downloadOptions)
         {
-            TransferOptions options = new TransferOptions();
-            if (!String.IsNullOrEmpty(fileMask))
+            TransferOptions transferOptions = new TransferOptions();
+            transferOptions.TransferMode = MapTransferMode(downloadOptions.TransferMode);
+            if (!String.IsNullOrEmpty(downloadOptions.FileMask))
             {
-                options.FileMask = fileMask;
+                transferOptions.FileMask = downloadOptions.FileMask;
             }
-            TransferOperationResult result = _session.GetFiles(remotePath, localPath, remove, options);
+            TransferOperationResult result = _session.GetFiles(remotePath, localPath, downloadOptions.DeleteAfterDownload, transferOptions);
             result.Check();
+            return result.Transfers.Count;
         }
 
         public IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath)
@@ -92,21 +96,23 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         }
 
-        public void PutFiles(string localPath, string remotePath, bool restartOnFailure, string? fileMask, bool preserveTimestamp)
+        public int PutFiles(string localPath, UploadOptions uploadOptions)
         {
-            TransferOptions options = new TransferOptions();
-            options.PreserveTimestamp = preserveTimestamp;
-            if (restartOnFailure)
+            TransferOptions transferOptions = new TransferOptions();
+            transferOptions.PreserveTimestamp = uploadOptions.PreserveTimestamp;
+            transferOptions.TransferMode = MapTransferMode(uploadOptions.TransferMode);
+            if (uploadOptions.RestartOnFailure)
             {
-                options.ResumeSupport.State = TransferResumeSupportState.Off;
+                transferOptions.ResumeSupport.State = TransferResumeSupportState.Off;
             }
-            if (!String.IsNullOrEmpty(fileMask))
+            if (!String.IsNullOrEmpty(uploadOptions.FileMask))
             {
-                options.FileMask = fileMask;
+                transferOptions.FileMask = uploadOptions.FileMask;
             }
 
-            TransferOperationResult transferResult = _session.PutFiles(localPath, remotePath, false, options);
+            TransferOperationResult transferResult = _session.PutFiles(localPath, uploadOptions.RemotePath, false, transferOptions);
             transferResult.Check();
+            return transferResult.Transfers.Count;
         }
 
         public string ScanFingerprint(string algorithm)
@@ -122,6 +128,21 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 ProgressCallback(progress);
             }
 
+        }
+
+        private WinSCP.TransferMode MapTransferMode(Data.TransferMode transferMode)
+        {
+            switch (transferMode)
+            {
+                case Data.TransferMode.Binary:
+                    return WinSCP.TransferMode.Binary;
+                case Data.TransferMode.Automatic:
+                    return WinSCP.TransferMode.Automatic;
+                case Data.TransferMode.Ascii:
+                    return WinSCP.TransferMode.Ascii;
+            }
+
+            throw new NotSupportedException($"Unsupported transfermode {transferMode}");
         }
 
         public void Dispose()

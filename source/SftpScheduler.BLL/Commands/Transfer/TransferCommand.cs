@@ -95,7 +95,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 RemotePath = jobEntity.RemotePath,
                 DeleteAfterDownload = jobEntity.DeleteAfterDownload,
                 RemoteArchivePath = jobEntity.RemoteArchivePath,
-                FileMask = jobEntity.FileMask ?? String.Empty
+                FileMask = jobEntity.FileMask ?? String.Empty,
+                TransferMode = jobEntity.TransferMode
             };
             options.LocalCopyPaths.AddRange((jobEntity.LocalCopyPaths ?? String.Empty).Split(';').Where(x => x.Length > 0));
             return options;
@@ -109,7 +110,9 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 RemotePath = jobEntity.RemotePath,
                 RestartOnFailure = jobEntity.RestartOnFailure,
                 FileMask = jobEntity.FileMask,
-                PreserveTimestamp = jobEntity.PreserveTimestamp
+                PreserveTimestamp = jobEntity.PreserveTimestamp,
+                TransferMode = jobEntity.TransferMode,
+                CompressionMode = jobEntity.CompressionMode
             };
             options.LocalFilePaths.AddRange(filesToTransfer);
             return options;

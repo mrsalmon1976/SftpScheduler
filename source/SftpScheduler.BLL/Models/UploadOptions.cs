@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SftpScheduler.BLL.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -27,6 +28,10 @@ namespace SftpScheduler.BLL.Models
         public string? FileMask { get; set; }
 
         public bool PreserveTimestamp { get; set; } 
+
+        public TransferMode TransferMode { get; set; }
+
+        public CompressionMode CompressionMode { get; set; }    
 
     }
 }
