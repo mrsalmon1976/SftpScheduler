@@ -37,7 +37,7 @@
                         <div class="form-group row">
                             <label for="job-type" class="col-sm-2 col-form-label">Type</label>
                             <div class="col-sm-2">
-                                <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()">
+                                <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()" @@change="onTypeChange">
                                     <option value="0"></option>
                                     <option value="1">@JobType.Download</option>
                                     <option value="2">@JobType.Upload</option>
@@ -69,9 +69,13 @@
                                 <span class="invalid-feedback" :class="{ 'valid-feedback' : job.isScheduleValid }">{{ scheduleInWords }}</span>
                             </div>
                             <div class="col-sm-1">
-                                <a href="https://www.freeformatter.com/cron-expression-generator-quartz.html" target="_blank" data-toggle="tooltip" 
-                                    title="Cron expressions allow for an extremely flexible scheduling system. If you are unfamiliar with 
-                                    creating cron expressions, click this icon for a free online expression generator."><i class="fa fa-circle-question"></i></a>
+                                <a href="javascript:void(0)" data-toggle="tooltip" 
+                                    title="Cron expressions allow for an extremely flexible scheduling system. If you are unfamiliar with creating cron expressions, click the information icon for a free online expression generator.">
+                                    <i class="fa fa-circle-question"></i>
+                                </a>
+                                &nbsp;
+                                <a href="https://www.freeformatter.com/cron-expression-generator-quartz.html" target="_blank" 
+                                   title="Go to freeformatter.com to build your cron expression"><i class="fa fa-circle-info"></i></a>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -85,10 +89,10 @@
                             </div>
                             <div class="col-sm-2">&nbsp;</div>
                             <div class="col-sm-1">
-                                <a href="javascript:void(0);" data-toggle="tooltip" title="This option allows you to select the mode of transfer.  ASCII 
-                                    should only be selected when the job will only transfer text files and you want the format of the file 
-                                    appropriate for the target system.  Binary mode will transfer an identical copy of the file and should 
-                                    be used for most jobs."><i class="fa fa-circle-question"></i></a>
+                                <a href="javascript:void(0);" data-toggle="tooltip" 
+                                    title="This option allows you to select the mode of transfer.  ASCII should only be selected when the job will only transfer text files and you want the format of the file appropriate for the target system.  Binary mode will transfer an identical copy of the file and should be used for most jobs.">
+                                    <i class="fa fa-circle-question"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -98,8 +102,9 @@
                             </div>
                             <div class="col-sm-1">
                                 <a href="javascript:void(0);" data-toggle="tooltip"
-                                   title="Use the asterisk [*] as a wildcard, so [*.txt] will result in only files with a [.txt] extension being transferred. 
-                                        Set to blank or [*.*] to transfer all files."><i class="fa fa-circle-question"></i></a>
+                                   title="Use the asterisk [*] as a wildcard, so [*.txt] will result in only files with a [.txt] extension being transferred. Set to blank or [*.*] to transfer all files.">
+                                   <i class="fa fa-circle-question"></i>
+                               </a>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -149,8 +154,8 @@
                                     </div><br />
                                 </div>
                                 <div class="col-sm-1">
-                                    <a href="javascript:void(0);" data-toggle="tooltip" title="When checked, uploads will restart from the beginning 
-                                        on job failure. This should only be turned on where servers or remote permissions do not support resuming transfers.">
+                                    <a href="javascript:void(0);" data-toggle="tooltip" 
+                                        title="When checked, uploads will restart from the beginning on job failure. This should only be turned on where servers or remote permissions do not support resuming transfers.">
                                         <i class="fa fa-circle-question"></i></a>
                                 </div>
                             </div>
@@ -162,8 +167,8 @@
                                     </div><br />
                                 </div>
                                 <div class="col-sm-1">
-                                    <a href="javascript:void(0);" data-toggle="tooltip" title="Turn this off when server permissions prevent the timestamp 
-                                        of the file being updated after upload.  By default, this should be left on.">
+                                    <a href="javascript:void(0);" data-toggle="tooltip" 
+                                        title="Turn this off when server permissions prevent the timestamp of the file being updated after upload.  By default, this should be left on.">
                                         <i class="fa fa-circle-question"></i>
                                     </a>
                                 </div>
@@ -175,15 +180,12 @@
                                         <option value="0">None</option>
                                         <option value="1">Zip</option>
                                     </select>
-                                    <span class="feedback">
-                                        
-                                    </span>
                                 </div>
                                 <div class="col-sm-1">
-                                    <a href="javascript:void(0);" data-toggle="tooltip" title="If a compression mode is set, 
-                                        a compressed copy of the file will be uploaded.  The compressed copy will be removed 
-                                        from the local folder after upload.  Files with an extension matching the selected compression mode
-                                        will not be compressed (e.g. a zip file will not be zipped again)."><i class="fa fa-circle-question"></i></a>
+                                    <a href="javascript:void(0);" data-toggle="tooltip" 
+                                        title="If a compression mode is set, a compressed copy of the file will be uploaded.  The compressed copy will be removed from the local folder after upload.  Files with an extension matching the selected compression mode will not be compressed (e.g. a zip file will not be zipped again).">
+                                        <i class="fa fa-circle-question"></i>
+                                     </a>
                                 </div>
                             </div>
                         </div>

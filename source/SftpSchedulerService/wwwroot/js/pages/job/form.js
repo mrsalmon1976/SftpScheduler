@@ -117,6 +117,9 @@
 
             this.logs = result.data;
         },
+        onTypeChange() {
+            $('[data-toggle="tooltip"]').tooltip();
+        },
         setLogReloadInterval() {
             var that = this;
             setInterval(function () {
