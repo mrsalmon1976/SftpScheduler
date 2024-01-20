@@ -10,7 +10,7 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 # Features
 
 - Create a singular set of hosts
-- Supports SFTP and FTPS
+- Supports SFTP, FTPS and FTP
 - Passwords are encrypted
 - Flexible scheduling via CRON
 - Create multiple upload jobs, monitoring local folders
