@@ -8,10 +8,10 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
-using SftpScheduler.BLL.Tests.Builders.Commands.Setting;
 using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Security;
+using SftpScheduler.Test.Common;
 using static Dapper.SqlMapper;
 
 namespace SftpScheduler.BLL.Tests.Config
@@ -156,7 +156,7 @@ namespace SftpScheduler.BLL.Tests.Config
 		{
 			// setup 
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
 			// execute
 			IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
@@ -174,10 +174,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			// setup 
 			string newValue = Guid.NewGuid().ToString();
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, "old", newValue).Result;
 
 			// assert
@@ -193,10 +193,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			string newEncryptedValue = Guid.NewGuid().ToString();
 			IDbContext dbContext = new DbContextBuilder().Build();
 			IEncryptionProvider encryptionProvider = new EncryptionProviderBuilder().WithEncryptReturns(newValue, newEncryptedValue).Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, encryptionProvider: encryptionProvider, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, encryptionProvider: encryptionProvider, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, "old", newValue).Result;
 
 			// assert
@@ -213,10 +213,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			string[] oldValues = oldValue.Split(',');
 			string[] newValues = newValue.Split(',');
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, oldValues, newValues).Result;
 
 			// assert
@@ -232,10 +232,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			string[] oldValues = oldValue.Split(',');
 			string[] newValues = newValue.Split(',');
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, oldValues, newValues).Result;
 
 			// assert
@@ -249,10 +249,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			// setup 
 			int newValue = Faker.RandomNumber.Next();
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, newValue, newValue).Result;
 
 			// assert
@@ -266,10 +266,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			// setup 
 			int newValue = Faker.RandomNumber.Next(100, 1000);
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, 1, newValue).Result;
 
 			// assert
@@ -283,10 +283,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			// setup 
 			bool newValue = (Faker.RandomNumber.Next(1, 2) == 1);
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, newValue, newValue).Result;
 
 			// assert
@@ -300,10 +300,10 @@ namespace SftpScheduler.BLL.Tests.Config
 			// setup 
 			bool newValue = true;
 			IDbContext dbContext = new DbContextBuilder().Build();
-			IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new UpsertGlobalUserSettingCommandBuilder().Build();
+            IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, upsertGlobalUserSettingCommand: upsertGlobalUserSettingCommand);
 			bool result = provider.UpdateChangedValue(dbContext, settingKey, !newValue, newValue).Result;
 
 			// assert

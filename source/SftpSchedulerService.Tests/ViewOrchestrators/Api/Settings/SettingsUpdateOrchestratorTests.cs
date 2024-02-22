@@ -3,19 +3,14 @@ using SftpScheduler.BLL.Commands.Notification;
 using SftpScheduler.BLL.Commands.Setting;
 using SftpScheduler.BLL.Config;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Tests.Builders.Commands.Notification;
 using SftpScheduler.BLL.Tests.Builders.Config;
 using SftpScheduler.BLL.Tests.Builders.Data;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Models.Settings;
 using SftpSchedulerService.Tests.Builders.Config;
 using SftpSchedulerService.Tests.Builders.Models.Settings;
 using SftpSchedulerService.ViewOrchestrators.Api.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 {
@@ -86,7 +81,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 				.WithUpdateChangedValueReturns(dbContext, GlobalUserSettingKey.DigestTime, digestTimeOld, digestTimeNew, true)
 				.Build();
 			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestTime(digestTimeNew).Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+			IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
@@ -111,10 +106,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 				.WithUpdateChangedValueReturns(dbContext, GlobalUserSettingKey.DigestDays, Arg.Any<string[]>(), Arg.Any<string[]>(), true)
 				.Build();
 			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestDays(digestDaysNew).Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+            IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
 
-			// execute
-			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
+            // execute
+            var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
@@ -134,10 +129,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 				.WithUpdateChangedValueReturns(dbContext, GlobalUserSettingKey.DigestDays, Arg.Any<string[]>(), Arg.Any<string[]>(), true)
 				.Build();
 			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestDays(digestDaysNew).Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+            IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
 
-			// execute
-			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
+            // execute
+            var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
@@ -152,10 +147,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
 			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().Build();
 			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+            IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
 
-			// execute
-			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
+            // execute
+            var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
