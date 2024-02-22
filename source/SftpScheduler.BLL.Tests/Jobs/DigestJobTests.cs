@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 using Quartz;
 using SftpScheduler.BLL.Config;
@@ -13,7 +12,6 @@ using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Config;
 using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpScheduler.BLL.Tests.Builders.Net;
 using SftpScheduler.BLL.Tests.Builders.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Utility;
 using SftpScheduler.BLL.Utility;
@@ -52,7 +50,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 
-            ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
 
 			// execute
 			DigestJob digestJob = CreateDigestJob(dbContextFactory, jobRepo: jobRepo, smtpClient: smtpClient);
@@ -88,8 +86,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, Faker.Lorem.Paragraph()).Build();
-			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
 				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
@@ -128,8 +126,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
-			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
 				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
@@ -165,7 +163,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
             IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
-            ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
             IUserRepository userRepo  = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 
             IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
@@ -206,8 +204,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
-			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
 				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
@@ -257,8 +255,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
-			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
 				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
@@ -297,8 +295,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 			IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
-			ISmtpClientWrapper smtpClient = new SmtpClientWrapperBuilder().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
+            ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
 				.WithSmtpHost("mailhost")
 				.WithBuildDefaultMailMessageReturns(mailMessage)
 				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
