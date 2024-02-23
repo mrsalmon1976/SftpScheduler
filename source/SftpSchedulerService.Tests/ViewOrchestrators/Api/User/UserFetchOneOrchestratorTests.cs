@@ -4,6 +4,7 @@ using NSubstitute;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.User;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
 
@@ -35,7 +36,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         {
             // setup
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(Arg.Any<string>()).Returns(userEntity);
 
             // execute

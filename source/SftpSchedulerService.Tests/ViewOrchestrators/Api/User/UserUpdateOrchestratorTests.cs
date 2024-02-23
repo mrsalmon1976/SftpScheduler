@@ -8,6 +8,7 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.User;
 using SftpSchedulerService.Tests.Builders.Models.User;
 using SftpSchedulerService.ViewOrchestrators.Api.User;
@@ -52,7 +53,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
         public void Execute_OnSave_ReturnsResultWithId()
         {
             UserViewModel userViewModel = new UserViewModelBuilder().WithRandomProperties().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            string userId = Guid.NewGuid().ToString();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.Id, userId).Build();
 
             IUpdateUserCommand updateUserCmd = Substitute.For<IUpdateUserCommand>();
             updateUserCmd.ExecuteAsync(Arg.Any<UserManager<UserEntity>>(), Arg.Any<UserEntity>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>()).Returns(userEntity);
@@ -63,12 +65,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.User
             UserViewModel resultModel = result.Value as UserViewModel;
             Assert.That(resultModel, Is.Not.Null);
             Assert.That(resultModel.Id, Is.Not.EqualTo(userViewModel.Id));
-
-            Guid gval;
-            if (!Guid.TryParse(resultModel.Id, out gval))
-            {
-                Assert.Fail("User view model Id not set to Guid value");
-            }
+            Assert.That(resultModel.Id, Is.EqualTo(userId));
         }
 
         private IUserUpdateOrchestrator CreateOrchestrator(UserManager<UserEntity>? userManager = null, IUpdateUserCommand? updateUserCommand = null)

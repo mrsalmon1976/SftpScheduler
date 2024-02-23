@@ -73,8 +73,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			List<UserEntity> adminUsers = new List<UserEntity>
 			{
-				new UserEntityBuilder().WithRandomProperties().Build()
-			};
+                new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.Email, "test@sftpscheduler.test").Build()
+            };
 
 			MailMessage mailMessage = new MailMessage();
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
@@ -113,8 +113,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			List<UserEntity> adminUsers = new List<UserEntity>
 			{
-				new UserEntityBuilder().WithRandomProperties().Build()
-			};
+                new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.Email, "test@sftpscheduler.test").Build()
+            };
 
 			MailMessage mailMessage = new MailMessage();
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
@@ -154,9 +154,11 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             int adminCount = Faker.RandomNumber.Next(2, 10);
             List<UserEntity> adminUsers = new List<UserEntity>();
+			DateTimeOffset? lockoutEnd = DateTimeOffset.MaxValue;
             for (int i = 0; i < adminCount; i++)
             {
-                adminUsers.Add(new UserEntityBuilder().WithRandomProperties().WithLockoutEnabled(true).Build());
+				UserEntity user = new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.LockoutEnd, lockoutEnd).Build();
+                adminUsers.Add(user);
             };
 
             IDbContext dbContext = new DbContextBuilder().Build();
@@ -190,8 +192,11 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			int adminCount = Faker.RandomNumber.Next(2, 10);
 			List<UserEntity> adminUsers = new List<UserEntity>();
-			for (int i=0; i< adminCount; i++) {
-				adminUsers.Add(new UserEntityBuilder().WithRandomProperties().WithLockoutEnabled(false).Build());
+            DateTimeOffset? lockoutEnd = null;
+            for (int i=0; i< adminCount; i++) 
+			{
+                UserEntity user = new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.Email, $"test{i}@sftpscheduler.test").WithProperty(x => x.LockoutEnd, lockoutEnd).Build();
+                adminUsers.Add(user);
 			};
 
 			MailMessage mailMessage = new MailMessage();
@@ -240,8 +245,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			List<UserEntity> adminUsers = new List<UserEntity>
 			{
-				new UserEntityBuilder().WithRandomProperties().Build()
-			};
+                new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.Email, "test@sftpscheduler.test").Build()
+            };
 
 			MailMessage mailMessage = new MailMessage();
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
@@ -282,8 +287,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			List<UserEntity> adminUsers = new List<UserEntity>
 			{
-				new UserEntityBuilder().WithRandomProperties().Build()
-			};
+				new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.Email, "test@sftpscheduler.test").Build()
+            };
 
 			MailMessage mailMessage = new MailMessage();
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
@@ -328,5 +333,6 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			return new DigestJob(logger, dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, userSettingProvider);
 		}
 
-	}
+
+    }
 }

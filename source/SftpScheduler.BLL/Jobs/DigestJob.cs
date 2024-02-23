@@ -59,7 +59,7 @@ namespace SftpScheduler.BLL.Jobs
 			}
 
 			var admins = await _userRepository.GetUsersInRoleAsync(UserRoles.Admin);
-			var adminEmailAddresses = String.Join(',', admins.Where(x => x.LockoutEnabled == false).Select(x => x.Email));
+			var adminEmailAddresses = String.Join(',', admins.Where(x => x.LockoutEnd == null || x.LockoutEnd < DateTime.UtcNow).Select(x => x.Email));
 
 			// if there are no admin mail addresses set, then exit
 			if (String.IsNullOrWhiteSpace(adminEmailAddresses))

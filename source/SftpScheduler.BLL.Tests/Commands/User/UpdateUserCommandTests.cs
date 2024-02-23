@@ -8,6 +8,7 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Identity;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Commands.User
 {
@@ -18,7 +19,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_ValidationFails_ThrowsDataValidationException()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
 
             IUserValidator userValidator = Substitute.For<IUserValidator>();
             userValidator.Validate(userManager, userEntity).Returns(new ValidationResult("failed"));
@@ -44,7 +45,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_UpdateUserFails_ThrowsDataValidationException()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             userManager.UpdateAsync(Arg.Any<UserEntity>()).Returns(Task.FromResult(IdentityResult.Failed()));
@@ -69,7 +70,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_RolesUnchanged_NoUpdatesApplied()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             string[] existingRoles = { UserRoles.User };
@@ -91,7 +92,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_RoleRemoved_UpdatesCorrectly()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             string[] existingRoles = { UserRoles.Admin, UserRoles.User };
@@ -113,7 +114,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_RoleRemovalFails_ThrowsException()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             string[] existingRoles = { UserRoles.Admin, UserRoles.User };
@@ -142,7 +143,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_RoleAdded_UpdatesCorrectly()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             string[] existingRoles = { UserRoles.User };
@@ -164,7 +165,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_RoleAdditionFails_ThrowsException()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             string[] existingRoles = { UserRoles.User };
@@ -193,7 +194,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_PasswordSupplied_UpdatesPasswordCorrectly()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
             string password = Guid.NewGuid().ToString();
             string token = Guid.NewGuid().ToString();
@@ -218,7 +219,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_PasswordSuppliedButFails_ThrowsException()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
             string password = Guid.NewGuid().ToString();
             string token = Guid.NewGuid().ToString();
@@ -251,7 +252,7 @@ namespace SftpScheduler.BLL.Tests.Commands.User
         public void ExecuteAsync_SuccessfulUpdate_ReturnsUpdatedUserEntity()
         {
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
             userManager.FindByIdAsync(userEntity.Id).Returns(userEntity);
 
             string[] roles = { UserRoles.User };
