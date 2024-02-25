@@ -45,7 +45,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IMapper mapper = Substitute.For<IMapper>();
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
@@ -69,7 +69,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             JobViewModel jobViewModelExpected = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModelExpected);

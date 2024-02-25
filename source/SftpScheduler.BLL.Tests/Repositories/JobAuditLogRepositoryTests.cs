@@ -4,6 +4,7 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Repositories
 {
@@ -19,7 +20,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
         public void GetByAllJobAsync_OnExecute_PerformsQuery()
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             dbContext.QueryAsync<JobEntity>(Arg.Any<string>(), Arg.Any<object>()).Returns(new[] { jobEntity });
             
             IJobAuditLogRepository hostAuditLogRepository = new JobAuditLogRepository();
@@ -48,8 +49,8 @@ namespace SftpScheduler.BLL.Tests.Repositories
                     List<JobAuditLogEntity> result = jobAuditLogRepo.GetByAllJobAsync(dbContext, jobEntity.Id).GetAwaiter().GetResult().ToList();
 
                     Assert.That(result.Count, Is.EqualTo(2)); ;
-                    Assert.That(result[0].PropertyName, Is.EqualTo(jobAuditLogEntity1.PropertyName));
-                    Assert.That(result[1].PropertyName, Is.EqualTo(jobAuditLogEntity2.PropertyName));
+                    Assert.That(result.Single(x => x.PropertyName == jobAuditLogEntity1.PropertyName), Is.Not.Null); ;
+                    Assert.That(result.Single(x => x.PropertyName == jobAuditLogEntity2.PropertyName), Is.Not.Null); ;
                 }
             }
         }

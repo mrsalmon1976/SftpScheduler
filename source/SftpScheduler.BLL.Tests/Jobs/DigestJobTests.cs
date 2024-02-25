@@ -67,7 +67,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			// setup
 			IEnumerable<JobEntity> failingJobs = new List<JobEntity>
 			{
-				new JobEntityBuilder().WithRandomProperties().Build()
+				new SubstituteBuilder < JobEntity >().WithRandomProperties().Build()
 			};
 
 			List<UserEntity> adminUsers = new List<UserEntity>
@@ -110,7 +110,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			// setup
 			IEnumerable<JobEntity> failingJobs = new List<JobEntity>
 			{
-				new JobEntityBuilder().WithRandomProperties().Build()
+				new SubstituteBuilder < JobEntity >().WithRandomProperties().Build()
 			};
 
 			List<UserEntity> adminUsers = new List<UserEntity>
@@ -156,7 +156,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
         public void Execute_FailingJobs_DisabledAdministratorsNotEmailed()
         {
 			// setup
-			IEnumerable<JobEntity> failingJobs = new[] { new JobEntityBuilder().WithRandomProperties().Build() };
+			IEnumerable<JobEntity> failingJobs = new[] { new SubstituteBuilder<JobEntity>().WithRandomProperties().Build() };
 
             int adminCount = Faker.RandomNumber.Next(2, 10);
             List<UserEntity> adminUsers = new List<UserEntity>();
@@ -195,7 +195,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			// setup
 			IEnumerable<JobEntity> failingJobs = new List<JobEntity>
 			{
-				new JobEntityBuilder().WithRandomProperties().Build()
+				new SubstituteBuilder < JobEntity >().WithRandomProperties().Build()
 			};
 
 			int adminCount = Faker.RandomNumber.Next(2, 10);
@@ -247,13 +247,13 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			// setup
 			IEnumerable<JobEntity> failingJobs = new List<JobEntity>
 			{
-				new JobEntityBuilder().WithRandomProperties().Build()
+				new SubstituteBuilder < JobEntity >().WithRandomProperties().Build()
 			};
 
 			List<JobEntity> recentlyFailedJobs = new List<JobEntity>
 			{
-				new JobEntityBuilder().WithRandomProperties().Build(),
-				new JobEntityBuilder().WithRandomProperties().Build()
+				new SubstituteBuilder < JobEntity >().WithRandomProperties().Build(),
+				new SubstituteBuilder < JobEntity >().WithRandomProperties().Build()
 			};
 
 			List<UserEntity> adminUsers = new List<UserEntity>
@@ -298,7 +298,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			// setup
 			IEnumerable<JobEntity> failingJobs = new List<JobEntity>
 			{
-				new JobEntityBuilder().WithRandomProperties().Build()
+				new SubstituteBuilder<JobEntity>().WithRandomProperties().Build()
 			};
 
 			List<UserEntity> adminUsers = new List<UserEntity>

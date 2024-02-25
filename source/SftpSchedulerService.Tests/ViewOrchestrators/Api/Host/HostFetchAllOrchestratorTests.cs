@@ -54,8 +54,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);
 
             // set up some job counts
-            HostJobCountEntity hostJobCountEntity1 = new HostJobCountEntityBuilder().WithHostId(hostEntity1.Id).Build();
-            HostJobCountEntity hostJobCountEntity2 = new HostJobCountEntityBuilder().WithHostId(hostEntity2.Id).Build();
+            HostJobCountEntity hostJobCountEntity1 = new SubstituteBuilder<HostJobCountEntity>().WithProperty(x => x.HostId, hostEntity1.Id).Build();
+            HostJobCountEntity hostJobCountEntity2 = new SubstituteBuilder<HostJobCountEntity>().WithProperty(x => x.HostId, hostEntity2.Id).Build();
             HostJobCountEntity[] hostJobCountEntities = { hostJobCountEntity1, hostJobCountEntity2 };
             hostRepo.GetAllJobCountsAsync(Arg.Any<IDbContext>()).Returns(hostJobCountEntities);
 

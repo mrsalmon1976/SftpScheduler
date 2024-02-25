@@ -4,6 +4,7 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             int newEntityId = Faker.RandomNumber.Next();
 
             dbContext.ExecuteScalarAsync<int>(Arg.Any<string>()).Returns(newEntityId);
@@ -40,7 +41,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
 
 
             // execute

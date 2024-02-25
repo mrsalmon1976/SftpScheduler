@@ -44,8 +44,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
             string userName = Guid.NewGuid().ToString();
 
-            HostAuditLogEntity hostAuditLogEntity1 = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostEntity.Id).Build();
-            HostAuditLogEntity hostAuditLogEntity2 = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostEntity.Id).Build();
+            HostAuditLogEntity hostAuditLogEntity1 = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostEntity.Id).Build();
+            HostAuditLogEntity hostAuditLogEntity2 = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostEntity.Id).Build();
             IEnumerable<HostAuditLogEntity> auditLogEntities = new HostAuditLogEntity[] { hostAuditLogEntity1, hostAuditLogEntity2 };
             IHostAuditService hostAuditService = new HostAuditServiceBuilder().WithCompareHostsReturns(Arg.Any<HostEntity>(), Arg.Any<HostEntity>(), userName, auditLogEntities).Build();
 

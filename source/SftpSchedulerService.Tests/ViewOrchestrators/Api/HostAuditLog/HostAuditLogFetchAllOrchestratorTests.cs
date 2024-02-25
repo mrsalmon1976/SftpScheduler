@@ -29,7 +29,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.HostAuditLog
             string hostHash = UrlUtils.Encode(hostId);
 
             HostAuditLogViewModel[] viewModels = { new SubstituteBuilder<HostAuditLogViewModel>().WithRandomProperties().WithProperty(x => x.HostId, hostId).Build() };
-            HostAuditLogEntity[] hostAuditLogEntities = { new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostId).Build() };
+            HostAuditLogEntity[] hostAuditLogEntities = { new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostId).Build() };
 
             hostAuditLogRepo.GetByAllHostAsync(dbContext, hostId).Returns(hostAuditLogEntities);
 

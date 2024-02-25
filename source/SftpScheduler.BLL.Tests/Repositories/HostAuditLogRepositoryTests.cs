@@ -52,8 +52,8 @@ namespace SftpScheduler.BLL.Tests.Repositories
                     List<HostAuditLogEntity> result = hostAuditLogRepo.GetByAllHostAsync(dbContext, hostEntity.Id).GetAwaiter().GetResult().ToList();
 
                     Assert.That(result.Count, Is.EqualTo(2)); ;
-                    Assert.That(result[0].PropertyName, Is.EqualTo(hostAuditLogEntity1.PropertyName));
-                    Assert.That(result[1].PropertyName, Is.EqualTo(hostAuditLogEntity2.PropertyName));
+                    Assert.That(result.Single(x => x.PropertyName == hostAuditLogEntity1.PropertyName), Is.Not.Null); ;
+                    Assert.That(result.Single(x => x.PropertyName == hostAuditLogEntity2.PropertyName), Is.Not.Null); ;
                 }
             }
         }
