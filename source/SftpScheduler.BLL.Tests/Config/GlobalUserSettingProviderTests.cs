@@ -8,8 +8,6 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
-using SftpScheduler.BLL.Tests.Builders.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Security;
 using SftpScheduler.Test.Common;
 using static Dapper.SqlMapper;
 
@@ -27,10 +25,11 @@ namespace SftpScheduler.BLL.Tests.Config
 			IEnumerable<GlobalUserSettingEntity> settingEntities = Enumerable.Empty<GlobalUserSettingEntity>();
 
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-            GlobalUserSettingRepository settingRepo = new GlobalUserSettingRepositoryBuilder().WithGetAllAsyncReturns(dbContext, settingEntities).Build();
+            GlobalUserSettingRepository settingRepo = new SubstituteBuilder<GlobalUserSettingRepository>().Build();
+			settingRepo.GetAllAsync(dbContext).Returns(settingEntities);
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
 			DayOfWeek[] result = provider.DigestDays;
 
 			// assert
@@ -51,10 +50,11 @@ namespace SftpScheduler.BLL.Tests.Config
 			};
 
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-            GlobalUserSettingRepository settingRepo = new GlobalUserSettingRepositoryBuilder().WithGetAllAsyncReturns(dbContext, settingEntities).Build();
+            GlobalUserSettingRepository settingRepo = new SubstituteBuilder<GlobalUserSettingRepository>().Build();
+            settingRepo.GetAllAsync(dbContext).Returns(settingEntities);
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
 			DayOfWeek[] result = provider.DigestDays;
 
 			// assert
@@ -72,10 +72,11 @@ namespace SftpScheduler.BLL.Tests.Config
 			IEnumerable<GlobalUserSettingEntity> settingEntities = Enumerable.Empty<GlobalUserSettingEntity>();
 
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-            GlobalUserSettingRepository settingRepo = new GlobalUserSettingRepositoryBuilder().WithGetAllAsyncReturns(dbContext, settingEntities).Build();
+            GlobalUserSettingRepository settingRepo = new SubstituteBuilder<GlobalUserSettingRepository>().Build();
+            settingRepo.GetAllAsync(dbContext).Returns(settingEntities);
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
 			int result = provider.DigestTime;
 
 			// assert
@@ -93,10 +94,11 @@ namespace SftpScheduler.BLL.Tests.Config
 			};
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-			GlobalUserSettingRepository settingRepo = new GlobalUserSettingRepositoryBuilder().WithGetAllAsyncReturns(dbContext, settingEntities).Build();
+            GlobalUserSettingRepository settingRepo = new SubstituteBuilder<GlobalUserSettingRepository>().Build();
+            settingRepo.GetAllAsync(dbContext).Returns(settingEntities);
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
 			int result = provider.DigestTime;
 
 			// assert
@@ -114,10 +116,11 @@ namespace SftpScheduler.BLL.Tests.Config
 			IEnumerable<GlobalUserSettingEntity> settingEntities = Enumerable.Empty<GlobalUserSettingEntity>();
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-			GlobalUserSettingRepository settingRepo = new GlobalUserSettingRepositoryBuilder().WithGetAllAsyncReturns(dbContext, settingEntities).Build();
+            GlobalUserSettingRepository settingRepo = new SubstituteBuilder<GlobalUserSettingRepository>().Build();
+            settingRepo.GetAllAsync(dbContext).Returns(settingEntities);
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
 			int result = provider.SmtpPort;
 
 			// assert
@@ -135,10 +138,11 @@ namespace SftpScheduler.BLL.Tests.Config
 			};
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-			GlobalUserSettingRepository settingRepo = new GlobalUserSettingRepositoryBuilder().WithGetAllAsyncReturns(dbContext, settingEntities).Build();
+            GlobalUserSettingRepository settingRepo = new SubstituteBuilder<GlobalUserSettingRepository>().Build();
+            settingRepo.GetAllAsync(dbContext).Returns(settingEntities);
 
-			// execute
-			IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
+            // execute
+            IGlobalUserSettingProvider provider = CreateProvider(dbContext: dbContext, globalUserSettingRepo: settingRepo);
 			int result = provider.SmtpPort;
 
 			// assert
@@ -191,7 +195,8 @@ namespace SftpScheduler.BLL.Tests.Config
 			string newValue = Guid.NewGuid().ToString();
 			string newEncryptedValue = Guid.NewGuid().ToString();
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-			IEncryptionProvider encryptionProvider = new EncryptionProviderBuilder().WithEncryptReturns(newValue, newEncryptedValue).Build();
+			IEncryptionProvider encryptionProvider = new SubstituteBuilder<IEncryptionProvider>().Build();
+			encryptionProvider.Encrypt(newValue).Returns(newEncryptedValue);
             IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand = new SubstituteBuilder<IUpsertGlobalUserSettingCommand>().Build();
 
             // execute

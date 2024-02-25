@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using System.Data;
 using SftpScheduler.Test.Common;
 

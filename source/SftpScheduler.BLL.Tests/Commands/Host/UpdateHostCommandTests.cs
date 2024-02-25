@@ -7,8 +7,6 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
 using SftpScheduler.BLL.Services.Host;
-using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpScheduler.BLL.Tests.Builders.Services.Host;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 
@@ -47,7 +45,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
             HostAuditLogEntity hostAuditLogEntity1 = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostEntity.Id).Build();
             HostAuditLogEntity hostAuditLogEntity2 = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostEntity.Id).Build();
             IEnumerable<HostAuditLogEntity> auditLogEntities = new HostAuditLogEntity[] { hostAuditLogEntity1, hostAuditLogEntity2 };
-            IHostAuditService hostAuditService = new HostAuditServiceBuilder().WithCompareHostsReturns(Arg.Any<HostEntity>(), Arg.Any<HostEntity>(), userName, auditLogEntities).Build();
+            IHostAuditService hostAuditService = new SubstituteBuilder<IHostAuditService>().Build();
+            hostAuditService.CompareHosts(Arg.Any<HostEntity>(), Arg.Any<HostEntity>(), userName).Returns(auditLogEntities);
 
             // execute
             UpdateHostCommand command = CreateCommand(hostValidator: hostValidator, hostAuditService: hostAuditService);

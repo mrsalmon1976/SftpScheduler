@@ -3,7 +3,6 @@ using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Caching;
 using SftpSchedulerService.Models.Notification;

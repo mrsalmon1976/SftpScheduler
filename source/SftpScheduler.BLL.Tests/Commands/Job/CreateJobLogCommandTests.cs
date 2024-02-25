@@ -3,7 +3,6 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;

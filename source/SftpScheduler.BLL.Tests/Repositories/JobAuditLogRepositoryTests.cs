@@ -3,7 +3,6 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Repositories

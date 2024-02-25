@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 using System;

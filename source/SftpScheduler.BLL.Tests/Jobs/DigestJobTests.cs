@@ -9,7 +9,6 @@ using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 using System.Net.Mail;
@@ -76,7 +75,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
             };
 
 			MailMessage mailMessage = new MailMessage();
-			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
+			SmtpHost smtpHost = new SubstituteBuilder<SmtpHost>().WithRandomProperties().Build();
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
@@ -119,7 +118,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
             };
 
 			MailMessage mailMessage = new MailMessage();
-			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
+			SmtpHost smtpHost = new SubstituteBuilder<SmtpHost>().WithRandomProperties().Build();
 			string emailBody = Faker.Lorem.Paragraph();
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
@@ -208,8 +207,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			};
 
 			MailMessage mailMessage = new MailMessage();
-			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
-			string emailBody = Faker.Lorem.Paragraph();
+            SmtpHost smtpHost = new SubstituteBuilder<SmtpHost>().WithRandomProperties().Build();
+            string emailBody = Faker.Lorem.Paragraph();
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
@@ -262,7 +261,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
             };
 
 			MailMessage mailMessage = new MailMessage();
-			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
+			SmtpHost smtpHost = new SubstituteBuilder<SmtpHost>().WithRandomProperties().Build();
 			string emailBody = DigestJob.RecentlyFailedJobsTag;
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
@@ -307,7 +306,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
             };
 
 			MailMessage mailMessage = new MailMessage();
-			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
+			SmtpHost smtpHost = new SubstituteBuilder<SmtpHost>().WithRandomProperties().Build();
 			string emailBody = DigestJob.RecentlyFailedJobsTag;
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();

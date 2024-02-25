@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Identity;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.User;
 using SftpSchedulerService.ViewOrchestrators.Api.User;

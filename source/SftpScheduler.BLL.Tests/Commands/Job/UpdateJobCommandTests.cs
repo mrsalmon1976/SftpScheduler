@@ -9,9 +9,7 @@ using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Validators;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Services.Job;
-using SftpScheduler.BLL.Tests.Builders.Services.Job;
 using SftpScheduler.Test.Common;
 using WinSCP;
 
@@ -317,9 +315,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             JobAuditLogEntity jobAuditLogEntity2 = new SubstituteBuilder<JobAuditLogEntity>().WithRandomProperties().WithProperty(x => x.JobId, jobEntity.Id).Build();
             IEnumerable<JobAuditLogEntity> auditLogEntities = new JobAuditLogEntity[] { jobAuditLogEntity1, jobAuditLogEntity2 };
 
-            IJobAuditService jobAuditService = new JobAuditServiceBuilder()
-                .WithCompareHostsReturns(dbContext, Arg.Any<JobEntity>(), Arg.Any<JobEntity>(), userName, auditLogEntities)
-                .Build();
+            IJobAuditService jobAuditService = new SubstituteBuilder<IJobAuditService>().Build();
+            jobAuditService.CompareJobs(dbContext, Arg.Any<JobEntity>(), Arg.Any<JobEntity>(), userName).Returns(auditLogEntities);
 
             // execute
             UpdateJobCommand command = CreateCommand(jobValidator: jobValidator, jobAuditService: jobAuditService);

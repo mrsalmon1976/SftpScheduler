@@ -4,7 +4,6 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Services.Job;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 
@@ -238,7 +237,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         {
             // setup
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
-            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.DeleteAfterDownload, true).Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties()
+                .WithProperty(x => x.RestartOnFailure, true).Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.RestartOnFailure = false;
             string userName = Guid.NewGuid().ToString();

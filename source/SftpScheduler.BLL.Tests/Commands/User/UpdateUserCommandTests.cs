@@ -6,7 +6,6 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Identity;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 

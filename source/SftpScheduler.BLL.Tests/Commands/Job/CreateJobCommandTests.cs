@@ -15,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job

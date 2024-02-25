@@ -1,6 +1,5 @@
 ﻿using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 using static Quartz.Logging.OperationName;
@@ -127,9 +126,9 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobFileLogEntity CreateJobFileLogEntity(IDbContext dbContext, int jobId)
         {
-            JobFileLogEntity jobFileLog = new JobFileLogEntityBuilder().WithRandomProperties()
-                .WithJobId(jobId)
-                .WithStartDate(DateTime.Now)
+            JobFileLogEntity jobFileLog = new SubstituteBuilder<JobFileLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId)
+                .WithProperty(x => x.StartDate, DateTime.Now)
                 .Build();
 
             string sql = @"INSERT INTO JobFileLog (JobId, FileName, FileLength, StartDate, EndDate) VALUES (@JobId, @FileName, @FileLength, @StartDate, @EndDate)";
@@ -144,10 +143,10 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobLogEntity CreateJobLogEntity(IDbContext dbContext, int jobId, string status = JobStatus.InProgress)
         {
-            JobLogEntity jobLog = new JobLogEntityBuilder().WithRandomProperties()
-                .WithJobId(jobId)
-                .WithStatus(status)
-                .WithStartDate(DateTime.Now)
+            JobLogEntity jobLog = new SubstituteBuilder<JobLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId)
+                .WithProperty(x => x.Status, status)
+                .WithProperty(x => x.StartDate, DateTime.Now)
                 .Build();
 
             if (jobLog.Status != JobStatus.InProgress)

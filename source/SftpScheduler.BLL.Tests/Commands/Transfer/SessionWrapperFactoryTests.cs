@@ -5,7 +5,6 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Security;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using System.Security.Cryptography;
 using WinSCP;
