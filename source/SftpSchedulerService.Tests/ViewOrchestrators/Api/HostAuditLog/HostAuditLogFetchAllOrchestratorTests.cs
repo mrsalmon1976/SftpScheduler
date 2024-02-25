@@ -6,7 +6,6 @@ using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.HostAuditLog;
-using SftpSchedulerService.Tests.Builders.Models.HostAuditLog;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog;
 
@@ -29,7 +28,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.HostAuditLog
             int hostId = Faker.RandomNumber.Next(1, 100);
             string hostHash = UrlUtils.Encode(hostId);
 
-            HostAuditLogViewModel[] viewModels = { new HostAuditLogViewModelBuilder().WithRandomProperties().WithHostId(hostId).Build() };
+            HostAuditLogViewModel[] viewModels = { new SubstituteBuilder<HostAuditLogViewModel>().WithRandomProperties().WithProperty(x => x.HostId, hostId).Build() };
             HostAuditLogEntity[] hostAuditLogEntities = { new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostId).Build() };
 
             hostAuditLogRepo.GetByAllHostAsync(dbContext, hostId).Returns(hostAuditLogEntities);

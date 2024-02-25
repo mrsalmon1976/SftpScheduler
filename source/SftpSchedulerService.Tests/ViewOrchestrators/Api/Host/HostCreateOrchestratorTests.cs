@@ -6,11 +6,9 @@ using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
-using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -27,7 +25,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             ICreateHostCommand createHostCommand = Substitute.For<ICreateHostCommand>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
 
             createHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
@@ -45,7 +43,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             ICreateHostCommand createHostCommand = Substitute.For<ICreateHostCommand>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
@@ -67,8 +65,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             ICreateHostCommand createHostCommand = Substitute.For<ICreateHostCommand>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
-            HostViewModel hostViewModelExpected = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
+            HostViewModel hostViewModelExpected = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
             mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);

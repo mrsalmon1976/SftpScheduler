@@ -9,7 +9,6 @@ using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -28,7 +27,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
-            JobViewModel[] jobViewModels = { new JobViewModelBuilder().WithRandomProperties().Build()        };
+            JobViewModel[] jobViewModels = { new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build()        };
             JobEntity[] jobEntities = { new JobEntityBuilder().WithRandomProperties().Build() };
 
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);

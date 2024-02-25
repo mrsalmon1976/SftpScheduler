@@ -10,7 +10,6 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpScheduler.BLL.Tests.Builders.Utility;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 using System.Net.Mail;
@@ -87,7 +86,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
             userRepo.GetUsersInRoleAsync(UserRoles.Admin).Returns(adminUsers);
-            ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, Faker.Lorem.Paragraph()).Build();
+            ResourceUtils resourceUtils = new SubstituteBuilder<ResourceUtils>().Build();
+			resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate).Returns(Faker.Lorem.Paragraph());
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
             IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
                 .WithProperty(x => x.SmtpHost, "mailhost")
@@ -129,7 +129,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
 			userRepo.GetUsersInRoleAsync(UserRoles.Admin).Returns(adminUsers);
-			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
+            ResourceUtils resourceUtils = new SubstituteBuilder<ResourceUtils>().Build();
+            resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate).Returns(emailBody);
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
 
 			IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
@@ -217,7 +218,9 @@ namespace SftpScheduler.BLL.Tests.Jobs
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
             userRepo.GetUsersInRoleAsync(UserRoles.Admin).Returns(adminUsers);
-            ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
+            ResourceUtils resourceUtils = new SubstituteBuilder<ResourceUtils>().Build();
+            resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate).Returns(emailBody);
+
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
 
             IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
@@ -271,7 +274,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
             userRepo.GetUsersInRoleAsync(UserRoles.Admin).Returns(adminUsers);
-            ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
+            ResourceUtils resourceUtils = new SubstituteBuilder<ResourceUtils>().Build();
+            resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate).Returns(emailBody);
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
             IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
                 .WithProperty(x => x.SmtpHost, "mailhost")
@@ -313,7 +317,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
             userRepo.GetUsersInRoleAsync(UserRoles.Admin).Returns(adminUsers);
-            ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
+            ResourceUtils resourceUtils = new SubstituteBuilder<ResourceUtils>().Build();
+            resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate).Returns(emailBody);
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
             IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
                 .WithProperty(x => x.SmtpHost, "mailhost")

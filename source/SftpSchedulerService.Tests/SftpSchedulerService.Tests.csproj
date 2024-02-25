@@ -28,7 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SftpScheduler.BLL.Tests.Builders\SftpScheduler.BLL.Tests.Builders.csproj" />
     <ProjectReference Include="..\SftpScheduler.Test.Common\SftpScheduler.Test.Common.csproj" />
-    <ProjectReference Include="..\SftpSchedulerService.Tests.Builders\SftpSchedulerService.Tests.Builders.csproj" />
     <ProjectReference Include="..\SftpSchedulerService\SftpSchedulerService.csproj" />
   </ItemGroup>
 

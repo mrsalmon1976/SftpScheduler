@@ -9,7 +9,6 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
-using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -26,7 +25,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 
             updateHostCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<HostEntity>(), Arg.Any<string>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
@@ -45,7 +44,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 
@@ -70,7 +69,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             dbContextFactory.GetDbContext().Returns(dbContext);
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 
@@ -95,7 +94,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
             dbContextFactory.GetDbContext().Returns(dbContext);
             IMapper mapper = Substitute.For<IMapper>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();
 

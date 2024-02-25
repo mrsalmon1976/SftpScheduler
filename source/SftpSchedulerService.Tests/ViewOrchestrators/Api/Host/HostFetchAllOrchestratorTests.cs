@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
@@ -8,7 +7,6 @@ using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
-using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -25,7 +23,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
             HostRepository hostRepo = Substitute.For<HostRepository>();
 
-            HostViewModel[] hostViewModels = { new HostViewModelBuilder().WithRandomProperties().Build() };
+            HostViewModel[] hostViewModels = { new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build() };
             HostEntity[] hostEntities = { new SubstituteBuilder<HostEntity>().Build() };
 
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);

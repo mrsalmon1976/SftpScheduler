@@ -4,7 +4,6 @@ using SftpScheduler.Common;
 using SftpScheduler.Common.IO;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.Tests.Builders.Config;
 using SftpSchedulerService.Workers;
 
 namespace SftpSchedulerService.Tests.Workers
@@ -37,7 +36,8 @@ namespace SftpSchedulerService.Tests.Workers
 			string updaterDirectory = Path.Combine(baseDirectory, UpdateConstants.UpdaterFolderName);
 			string searchPattern = "*" + UpdateConstants.UpdaterNewFileExtension;
 
-			AppSettings appSettings = new AppSettingsBuilder().WithBaseDirectory(baseDirectory).Build();
+			AppSettings appSettings = new SubstituteBuilder<AppSettings>().Build();
+			appSettings.BaseDirectory.Returns(baseDirectory);
             IDirectoryUtility dirUtility = new SubstituteBuilder<IDirectoryUtility>().Build();
 			dirUtility.Exists(updaterDirectory).Returns(true);
 			dirUtility.GetFiles(updaterDirectory, SearchOption.AllDirectories, searchPattern).Returns(Array.Empty<string>());
