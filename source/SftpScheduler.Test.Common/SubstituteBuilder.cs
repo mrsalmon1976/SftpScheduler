@@ -1,5 +1,6 @@
 ﻿using AutoBogus;
 using NSubstitute;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -27,7 +28,23 @@ namespace SftpScheduler.Test.Common
                 var property = memberSelectorExpression.Member as PropertyInfo;
                 if (property != null)
                 {
-                    property.SetValue(_instance, value, null);
+                    if (!property.CanWrite)
+                    {
+                        throw new InvalidOperationException("Unable to set property as it is readonly");
+                    }
+
+                    if (value == null)
+                    {
+                        property.SetValue(_instance, value, null);
+                    }
+                    else if (property.PropertyType.IsEnum)
+                    {
+                        property.SetValue(_instance, Enum.Parse(property.PropertyType, value.ToString()!));
+                    }
+                    else
+                    {
+                        property.SetValue(_instance, value, null);
+                    }
                 }
             }
 

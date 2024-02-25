@@ -19,13 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.BLL.Tests.Bui
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerService.Tests.Builders", "SftpSchedulerService.Tests.Builders\SftpSchedulerService.Tests.Builders.csproj", "{09BB3E25-4A05-45D9-997E-2AD7F2610513}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Common.Tests.Builders", "SftpScheduler.Common.Tests.Builders\SftpScheduler.Common.Tests.Builders.csproj", "{5F01056C-B312-4251-9748-36CB881BADB4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerServiceUpdater", "SftpSchedulerServiceUpdater\SftpSchedulerServiceUpdater.csproj", "{AB808B31-2D9F-4F0D-98BE-8BE13EAA4FA7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpSchedulerServiceUpdater.Tests", "SftpSchedulerServiceUpdater.Tests\SftpSchedulerServiceUpdater.Tests.csproj", "{F881322D-F779-4B2D-9965-BFA6CA932CDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpScheduler.Test.Common", "SftpScheduler.Test.Common\SftpScheduler.Test.Common.csproj", "{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpScheduler.Test.Common", "SftpScheduler.Test.Common\SftpScheduler.Test.Common.csproj", "{49B0BDB3-BD5E-481B-BFAB-EEE8A1AA85A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +63,6 @@ Global
 		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09BB3E25-4A05-45D9-997E-2AD7F2610513}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F01056C-B312-4251-9748-36CB881BADB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F01056C-B312-4251-9748-36CB881BADB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F01056C-B312-4251-9748-36CB881BADB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F01056C-B312-4251-9748-36CB881BADB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB808B31-2D9F-4F0D-98BE-8BE13EAA4FA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB808B31-2D9F-4F0D-98BE-8BE13EAA4FA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB808B31-2D9F-4F0D-98BE-8BE13EAA4FA7}.Release|Any CPU.ActiveCfg = Release|Any CPU

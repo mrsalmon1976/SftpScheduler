@@ -6,9 +6,9 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Job;
 using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
@@ -66,8 +66,9 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
         [Test]
         public void Execute_OnSave_ExecutesUpdateInTransaction()
         {
-            IDbContext dbContext = new DbContextBuilder().Build();
-            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
 
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateJobCommand updateJobCommand = Substitute.For<IUpdateJobCommand>();

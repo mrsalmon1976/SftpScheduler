@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Data;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
@@ -68,8 +65,9 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         [Test]
         public void Execute_OnSave_ExecutesCommandk()
         {
-            IDbContext dbContext = new DbContextBuilder().Build();
-            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             IMapper mapper = Substitute.For<IMapper>();
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
@@ -93,8 +91,9 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         public void Execute_OnSave_RunsInTransaction()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             IMapper mapper = Substitute.For<IMapper>();
             HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();

@@ -12,23 +12,23 @@ namespace SftpScheduler.BLL.Config
 {
 	public interface IGlobalUserSettingProvider
 	{
-		DayOfWeek[] DigestDays { get; }
+		DayOfWeek[] DigestDays { get; set; }
 
-		int DigestTime { get; }
+		int DigestTime { get; set; }
 
-		string SmtpHost { get; }
+		string SmtpHost { get; set; }
 
-		int SmtpPort { get; }
+		int SmtpPort { get; set; }
 
-		string SmtpUserName { get; }
+		string SmtpUserName { get; set; }
 
-		string SmtpPassword { get; }
+		string SmtpPassword { get; set; }
 
-		bool SmtpEnableSsl { get; }
+		bool SmtpEnableSsl { get; set; }
 
-		string SmtpFromName { get; }
+		string SmtpFromName { get; set; }
 
-		string SmtpFromEmail { get; }
+		string SmtpFromEmail { get; set; }
 
 		MailMessage BuildDefaultMailMessage();
 
@@ -70,24 +70,24 @@ namespace SftpScheduler.BLL.Config
 			this.LoadAllGlobalUserSettings();
 		}
 
-		public DayOfWeek[] DigestDays { get; private set; } = DefaultDigestDays;
+		public DayOfWeek[] DigestDays { get; set; } = DefaultDigestDays;
 
 
-		public int DigestTime { get; private set; }
+		public int DigestTime { get; set; }
 
-		public string SmtpHost { get; private set; } = String.Empty;
+		public string SmtpHost { get; set; } = String.Empty;
 
-		public int SmtpPort { get; private set; } = DefaultSmtpPort;
+		public int SmtpPort { get; set; } = DefaultSmtpPort;
 
-		public string SmtpUserName { get; private set; } = String.Empty;
+		public string SmtpUserName { get; set; } = String.Empty;
 
-		public string SmtpPassword { get; private set; } = String.Empty;
+		public string SmtpPassword { get; set; } = String.Empty;
 
-		public bool SmtpEnableSsl { get; private set; } = true;
+		public bool SmtpEnableSsl { get; set; } = true;
 
-		public string SmtpFromName { get; private set; } = String.Empty;
+		public string SmtpFromName { get; set; } = String.Empty;
 
-		public string SmtpFromEmail { get; private set; } = String.Empty;
+		public string SmtpFromEmail { get; set; } = String.Empty;
 
 		public MailMessage BuildDefaultMailMessage()
 		{

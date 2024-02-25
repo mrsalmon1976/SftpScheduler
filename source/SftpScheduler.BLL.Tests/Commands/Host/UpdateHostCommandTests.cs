@@ -7,16 +7,10 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
 using SftpScheduler.BLL.Services.Host;
-using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Tests.Builders.Services.Host;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Commands.Host
 {
@@ -44,7 +38,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_CreatesAuditLogs()
         {
             // setup 
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());

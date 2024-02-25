@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using NSubstitute;
 using SftpScheduler.Common.IO;
-using SftpScheduler.Common.Tests.Builders.IO;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.Tests.Builders.Config;
 
 namespace SftpSchedulerService.Tests.Config
 {
@@ -21,10 +20,9 @@ namespace SftpSchedulerService.Tests.Config
             settings.MaxConcurrentJobs = Faker.RandomNumber.Next(3, 20);
             string json = JsonConvert.SerializeObject(settings);
 
-            IFileUtility fileUtility = new FileUtilityBuilder()
-                .WithExistsReturns(Arg.Any<string>(), true)
-                .WithReadAllTextReturns(Arg.Any<string>(), json)
-                .Build();
+            IFileUtility fileUtility = new SubstituteBuilder<IFileUtility>().Build();
+            fileUtility.Exists(Arg.Any<string>()).Returns(true);
+            fileUtility.ReadAllText(Arg.Any<string>()).Returns(json);
 
             // execute
             IStartupSettingProvider provider = new StartupSettingProvider(Substitute.For<AppSettings>(), Substitute.For<IDirectoryUtility>(), fileUtility);
@@ -44,9 +42,8 @@ namespace SftpSchedulerService.Tests.Config
 			StartupSettings settings = new StartupSettings();
             settings.MaxConcurrentJobs = Faker.RandomNumber.Next(defaultValue * 2, defaultValue * 4);
 
-            IFileUtility fileUtility = new FileUtilityBuilder()
-                .WithExistsReturns(Arg.Any<string>(), false)
-                .Build();
+            IFileUtility fileUtility = new SubstituteBuilder<IFileUtility>().Build();
+            fileUtility.Exists(Arg.Any<string>()).Returns(false);
 
 			// execute
 			IStartupSettingProvider provider = new StartupSettingProvider(Substitute.For<AppSettings>(), Substitute.For<IDirectoryUtility>(), fileUtility);

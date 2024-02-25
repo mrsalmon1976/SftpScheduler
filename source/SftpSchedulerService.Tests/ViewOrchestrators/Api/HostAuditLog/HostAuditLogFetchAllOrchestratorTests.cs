@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.HostAuditLog;
 using SftpSchedulerService.Tests.Builders.Models.HostAuditLog;
 using SftpSchedulerService.Utilities;
@@ -23,8 +22,9 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.HostAuditLog
         [Test]
         public void Execute_OnFetch_ReturnsOk()
         {
-            IDbContext dbContext = new DbContextBuilder().Build();
-            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             IHostAuditLogRepository hostAuditLogRepo = Substitute.For<IHostAuditLogRepository>();
             int hostId = Faker.RandomNumber.Next(1, 100);
             string hostHash = UrlUtils.Encode(hostId);

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpScheduler.BLL.Config;
-using SftpScheduler.BLL.Tests.Builders.Config;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Models.Settings;
 using SftpSchedulerService.Tests.Builders.Config;
@@ -17,7 +17,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		{
 			// setup
 			StartupSettings startupSettings = new StartupSettingsBuilder().WithRandomProperties().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithRandomProperties().Build();
+			IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>().WithRandomProperties().Build();
 			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(startupSettings).Build();
 
 			// execute

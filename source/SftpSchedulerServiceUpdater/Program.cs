@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Web;
 using SftpSchedulerServiceUpdater;
 
-var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+var logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 var host = BootStrapper.CreateHostBuilder(args).Build();
 
 try

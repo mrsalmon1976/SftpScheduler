@@ -9,8 +9,6 @@ using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Config;
-using SftpScheduler.BLL.Tests.Builders.Data;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Tests.Builders.Repositories;
 using SftpScheduler.BLL.Tests.Builders.Utility;
@@ -28,7 +26,9 @@ namespace SftpScheduler.BLL.Tests.Jobs
 		{
 			// setup
 			IUserRepository userRepo = new UserRepositoryBuilder().Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpHost(String.Empty).Build();
+			IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+				.WithProperty(x => x.SmtpHost, String.Empty)
+				.Build();
 
 			// execute
 			DigestJob digestJob = CreateDigestJob(userRepo: userRepo, userSettingProvider: globalUserSettingProvider);
@@ -45,9 +45,10 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			// setup
 			IEnumerable<JobEntity> failingJobs = Enumerable.Empty<JobEntity>();
 
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
-			JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
+            JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
@@ -79,22 +80,23 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			MailMessage mailMessage = new MailMessage();
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
 
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 
 			IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, Faker.Lorem.Paragraph()).Build();
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
-            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithSmtpHost("mailhost")
-				.WithBuildDefaultMailMessageReturns(mailMessage)
-				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
-				.Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpHost, "mailhost")
+                .Build();
+            globalUserSettingProvider.BuildDefaultMailMessage().Returns(mailMessage);
+            globalUserSettingProvider.BuildSmtpHostFromSettings().Returns(smtpHost);
 
-			// execute
-			DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
+            // execute
+            DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
 			digestJob.Execute(Substitute.For<IJobExecutionContext>()).GetAwaiter().GetResult();
 
 			// assert
@@ -120,18 +122,20 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
 			string emailBody = Faker.Lorem.Paragraph();
 
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
-            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithSmtpHost("mailhost")
-				.WithBuildDefaultMailMessageReturns(mailMessage)
-				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
+
+			IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+				.WithProperty(x => x.SmtpHost, "mailhost")
 				.Build();
+			globalUserSettingProvider.BuildDefaultMailMessage().Returns(mailMessage);
+            globalUserSettingProvider.BuildSmtpHostFromSettings().Returns(smtpHost);
 
 			// execute
 			DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
@@ -161,15 +165,16 @@ namespace SftpScheduler.BLL.Tests.Jobs
                 adminUsers.Add(user);
             };
 
-            IDbContext dbContext = new DbContextBuilder().Build();
-            IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
             IUserRepository userRepo  = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 
-            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-                .WithSmtpHost("mailhost")
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpHost, "mailhost")
                 .Build();
 
 			// execute
@@ -203,18 +208,20 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
 			string emailBody = Faker.Lorem.Paragraph();
 
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
-            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithSmtpHost("mailhost")
-				.WithBuildDefaultMailMessageReturns(mailMessage)
-				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
-				.Build();
+
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpHost, "mailhost")
+                .Build();
+            globalUserSettingProvider.BuildDefaultMailMessage().Returns(mailMessage);
+            globalUserSettingProvider.BuildSmtpHostFromSettings().Returns(smtpHost);
 
 			// execute
 			DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
@@ -252,8 +259,9 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
 			string emailBody = DigestJob.RecentlyFailedJobsTag;
 
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Task.FromResult((IEnumerable<JobEntity>)recentlyFailedJobs));
@@ -261,14 +269,14 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
-            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithSmtpHost("mailhost")
-				.WithBuildDefaultMailMessageReturns(mailMessage)
-				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
-				.Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpHost, "mailhost")
+                .Build();
+            globalUserSettingProvider.BuildDefaultMailMessage().Returns(mailMessage);
+            globalUserSettingProvider.BuildSmtpHostFromSettings().Returns(smtpHost);
 
-			// execute
-			DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
+            // execute
+            DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
 			digestJob.Execute(Substitute.For<IJobExecutionContext>()).GetAwaiter().GetResult();
 
 			// assert
@@ -294,21 +302,22 @@ namespace SftpScheduler.BLL.Tests.Jobs
 			SmtpHost smtpHost = new SmtpHostBuilder().WithRandomProperties().Build();
 			string emailBody = DigestJob.RecentlyFailedJobsTag;
 
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IDbContextFactory dbContextFactory = new DbContextFactoryBuilder().WithDbContext(dbContext).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
+            dbContextFactory.GetDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 			IUserRepository userRepo = new UserRepositoryBuilder().WithGetUsersInRoleAsyncReturns(UserRoles.Admin, adminUsers).Build();
 			ResourceUtils resourceUtils = new ResourceUtilsBuilder().WithReadResourceReturns(ResourceKey.DigestEmailTemplate, emailBody).Build();
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
-            IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithSmtpHost("mailhost")
-				.WithBuildDefaultMailMessageReturns(mailMessage)
-				.WithBuildSmtpHostFromSettingsReturns(smtpHost)
-				.Build();
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpHost, "mailhost")
+                .Build();
+            globalUserSettingProvider.BuildDefaultMailMessage().Returns(mailMessage);
+            globalUserSettingProvider.BuildSmtpHostFromSettings().Returns(smtpHost);
 
-			// execute
-			DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
+            // execute
+            DigestJob digestJob = CreateDigestJob(dbContextFactory, resourceUtils, jobRepo, userRepo, smtpClient, globalUserSettingProvider);
 			digestJob.Execute(Substitute.For<IJobExecutionContext>()).GetAwaiter().GetResult();
 
 			// assert

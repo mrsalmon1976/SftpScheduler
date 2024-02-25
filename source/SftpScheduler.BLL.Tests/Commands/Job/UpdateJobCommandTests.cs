@@ -11,11 +11,8 @@ using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Services.Job;
-using SftpScheduler.BLL.Commands.Host;
-using SftpScheduler.BLL.Services.Host;
-using SftpScheduler.BLL.Tests.Builders.Data;
-using SftpScheduler.BLL.Tests.Builders.Services.Host;
 using SftpScheduler.BLL.Tests.Builders.Services.Job;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
 {
@@ -306,7 +303,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         public void Execute_ValidJob_CreatesAuditLogs()
         {
             // setup 
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             var jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
