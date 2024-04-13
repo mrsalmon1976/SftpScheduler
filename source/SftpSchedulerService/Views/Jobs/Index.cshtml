@@ -17,6 +17,14 @@
             <div v-if="jobs.length == 0">
                 No jobs have been created.  You will need to <a href="~/hosts/create">create at least one host</a> before you can add jobs.
             </div>
+            <form v-if="jobs.length > 0" class="form-horizontal">
+                <div class="form-group row">
+                    <label for="filter" class="col-sm-1 col-form-label">Filter</label>
+                    <div class="col-sm-3">
+                        <input id="filter" v-model="filter" type="text" class="form-control" />
+                    </div>
+                </div>
+            </form>
             <table class="table table-bordered" v-if="jobs.length > 0">
                 <thead>
                     <tr>
@@ -30,7 +38,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="job in jobs">
+                    <tr v-for="job in filteredJobs">
                         <td width="18" align="center">
                             <i v-if="job.type == JOBTYPE_DOWNLOAD" class="fa fa-download" title="Download"></i>
                             <i v-if="job.type == JOBTYPE_UPLOAD" class="fa fa-upload" title="Upload"></i>

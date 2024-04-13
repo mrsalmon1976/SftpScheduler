@@ -1,12 +1,19 @@
 ﻿createApp({
     data() {
         return {
+            filter: '',
+            filteredJobs: [],
             jobs: [],
             isLoading: true,
             selectedJob: new JobModel(),
             JOBTYPE_DOWNLOAD: JobTypes.Download,
             JOBTYPE_UPLOAD: JobTypes.Upload
         }
+    },
+    watch: {
+        filter: UiHelpers.debounce(function (text) {
+            this.updateFilter();
+        }, 100)
     },
     methods: {
         async deleteJob(jobIdHash) {
@@ -58,6 +65,7 @@
                 });
 
             this.jobs = result.data;
+            this.updateFilter();
             this.isLoading = false;
 
         },
@@ -86,6 +94,16 @@
                     that.isLoading = false;
                 });
 
+        },
+        updateFilter() {
+
+            if (this.filter.length == 0) {
+                this.filteredJobs = this.jobs;
+            }
+            else {
+                var that = this;
+                this.filteredJobs = this.jobs.filter((el) => el.name.toLowerCase().includes(that.filter));
+            }
         }
     },
     mounted: function () {

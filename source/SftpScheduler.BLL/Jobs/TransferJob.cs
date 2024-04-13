@@ -94,7 +94,7 @@ namespace SftpScheduler.BLL.Jobs
             {
                 throw new InvalidOperationException($"Invalid key name '{keyName}'");
             }
-            return Convert.ToInt32(tokens[tokens.Length - 1]);
+            return Convert.ToInt32(tokens[^1]);
         }
 
         public static string TriggerKeyName(int jobId)
