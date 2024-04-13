@@ -6,7 +6,6 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
@@ -35,7 +34,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             string[] availableFiles = { "C:\\Temp\\1.zip" };
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(availableFiles);
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithId(jobId).WithType(JobType.Upload).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.Id, jobId)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobId).Returns(Task.FromResult(jobEntity));
 
@@ -56,7 +59,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapperFactory.CreateSession(Arg.Any<HostEntity>()).Returns(sessionWrapper);
             IDbContext dbContext = Substitute.For<IDbContext>();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithId(jobId).WithType(JobType.Upload).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.Id, jobId)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, Arg.Any<int>()).Returns(Task.FromResult(jobEntity));
 
@@ -180,7 +187,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             fileTransferService.UploadFilesAvailable(Arg.Any<string>()).Returns(new string[] { "C:\\Temp\\1.zip" });
 
             int jobId = Faker.RandomNumber.Next();
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithId(jobId).WithType(JobType.Upload).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties()
+                .WithProperty(x => x.Id, jobId)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .Build();
             JobRepository jobRepo = Substitute.For<JobRepository>();
             jobRepo.GetByIdAsync(dbContext, jobEntity.Id).Returns(Task.FromResult(jobEntity));
 

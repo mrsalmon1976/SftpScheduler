@@ -3,8 +3,8 @@ using NSubstitute;
 using NUnit.Framework;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Tests.Builders.Identity;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Validators
 {
@@ -16,7 +16,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             // setup
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = null!;
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity!);
@@ -55,9 +55,9 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             // setup
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
 
-            UserEntity existingUserEntity = new UserEntityBuilder().WithRandomProperties().WithUserName(userEntity.UserName).Build();
+            UserEntity existingUserEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().WithProperty(x => x.UserName, userEntity.UserName).Build();
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity);
 
             // execute
@@ -74,7 +74,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         {
             // setup
             UserManager<UserEntity> userManager = new UserManagerBuilder().Build();
-            UserEntity userEntity = new UserEntityBuilder().WithRandomProperties().Build();
+            UserEntity userEntity = new SubstituteBuilder<UserEntity>().WithRandomProperties().Build();
 
             UserEntity existingUserEntity = null!;
             userManager.FindByNameAsync(userEntity.UserName).Returns(existingUserEntity!);

@@ -6,10 +6,8 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -28,8 +26,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
-            JobViewModel[] jobViewModels = { new JobViewModelBuilder().WithRandomProperties().Build()        };
-            JobEntity[] jobEntities = { new JobEntityBuilder().WithRandomProperties().Build() };
+            JobViewModel[] jobViewModels = { new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build()        };
+            JobEntity[] jobEntities = { new SubstituteBuilder<JobEntity>().WithRandomProperties().Build() };
 
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);
 
@@ -56,7 +54,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IScheduler scheduler = Substitute.For<IScheduler>();
             schedulerFactory.GetScheduler().Returns(scheduler);
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithIsEnabled(true).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.IsEnabled, true).Build();
             JobEntity[] jobEntities = { jobEntity };
 
             TriggerKey triggerKey = new TriggerKey(TransferJob.TriggerKeyName(jobEntity.Id), TransferJob.GroupName);
@@ -118,7 +116,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IScheduler scheduler = Substitute.For<IScheduler>();
             schedulerFactory.GetScheduler().Returns(scheduler);
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().WithIsEnabled(false).Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.IsEnabled, false).Build();
             JobEntity[] jobEntities = { jobEntity };
 
             jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(jobEntities);

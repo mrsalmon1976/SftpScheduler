@@ -5,8 +5,6 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Security;
-using SftpScheduler.BLL.Tests.Builders.Data;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
 
@@ -19,7 +17,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_ExecutesQuery()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
 
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();

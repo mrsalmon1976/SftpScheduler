@@ -6,10 +6,9 @@ using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -26,7 +25,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
 
             createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
@@ -44,8 +43,8 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
@@ -66,10 +65,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IMapper mapper = Substitute.For<IMapper>();
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
-            JobViewModel jobViewModelExpected = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
+            JobViewModel jobViewModelExpected = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
 
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModelExpected);

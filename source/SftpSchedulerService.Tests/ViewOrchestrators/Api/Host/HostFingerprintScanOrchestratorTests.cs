@@ -6,8 +6,8 @@ using NSubstitute.ExceptionExtensions;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
-using SftpSchedulerService.Tests.Builders.Models.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.Host;
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
@@ -18,7 +18,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         [Test]
         public void Execute_HostInvalid_ReturnsBadRequest()
         {
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             ValidationResult validationResult = new ValidationResult("error");
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(validationResult);
@@ -43,7 +43,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         [Test]
         public void Execute_ScanThrowsError_ReturnsBadRequest()
         {
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
@@ -67,7 +67,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         [Test]
         public void Execute_ScanSuccess_ReturnsAlgorithmResults()
         {
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 

@@ -7,16 +7,8 @@ using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Security;
 using SftpScheduler.BLL.Services.Host;
-using SftpScheduler.BLL.Tests.Builders.Data;
-using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpScheduler.BLL.Tests.Builders.Services.Host;
 using SftpScheduler.BLL.Validators;
 using SftpScheduler.Test.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Commands.Host
 {
@@ -44,16 +36,17 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
         public void Execute_ValidHost_CreatesAuditLogs()
         {
             // setup 
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IHostValidator hostValidator = Substitute.For<IHostValidator>();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             hostValidator.Validate(hostEntity).Returns(new ValidationResult());
             string userName = Guid.NewGuid().ToString();
 
-            HostAuditLogEntity hostAuditLogEntity1 = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostEntity.Id).Build();
-            HostAuditLogEntity hostAuditLogEntity2 = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostEntity.Id).Build();
+            HostAuditLogEntity hostAuditLogEntity1 = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostEntity.Id).Build();
+            HostAuditLogEntity hostAuditLogEntity2 = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostEntity.Id).Build();
             IEnumerable<HostAuditLogEntity> auditLogEntities = new HostAuditLogEntity[] { hostAuditLogEntity1, hostAuditLogEntity2 };
-            IHostAuditService hostAuditService = new HostAuditServiceBuilder().WithCompareHostsReturns(Arg.Any<HostEntity>(), Arg.Any<HostEntity>(), userName, auditLogEntities).Build();
+            IHostAuditService hostAuditService = new SubstituteBuilder<IHostAuditService>().Build();
+            hostAuditService.CompareHosts(Arg.Any<HostEntity>(), Arg.Any<HostEntity>(), userName).Returns(auditLogEntities);
 
             // execute
             UpdateHostCommand command = CreateCommand(hostValidator: hostValidator, hostAuditService: hostAuditService);

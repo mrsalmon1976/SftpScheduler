@@ -1,9 +1,8 @@
 ﻿using NSubstitute;
 using SftpScheduler.BLL.Identity;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.Tests.Builders.Models.Host;
-using SftpSchedulerService.Tests.Builders.Models.Job;
 using SftpSchedulerService.Utilities;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.JobAuditLog;
@@ -122,7 +121,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             // setup
             string[] roles = { UserRoles.Admin };
             IJobCreateOrchestrator orchestrator = Substitute.For<IJobCreateOrchestrator>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IJobCreateOrchestrator>(orchestrator);
 
             // execute
@@ -137,7 +136,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         {
             // setup
             IJobCreateOrchestrator orchestrator = Substitute.For<IJobCreateOrchestrator>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IJobCreateOrchestrator>(orchestrator);
 
             // execute
@@ -151,7 +150,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
         public void Post_CheckAllRoles(params string[] authorisedRoles)
         {
             IJobCreateOrchestrator orchestrator = Substitute.For<IJobCreateOrchestrator>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             ControllerTestHelper.CheckAllRoles<IJobCreateOrchestrator>(orchestrator, UrlPost, HttpMethod.Post, jobViewModel, authorisedRoles);
         }
 
@@ -168,7 +167,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
 
             string[] roles = { UserRoles.Admin };
             IJobUpdateOrchestrator orchestrator = Substitute.For<IJobUpdateOrchestrator>();
-            JobViewModel jobViewModel = new JobViewModelBuilder().WithRandomProperties().Build();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IJobUpdateOrchestrator>(orchestrator);
 
             // execute
@@ -186,7 +185,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             string url = String.Format(UrlPostUpdate, hashId);
 
             IJobUpdateOrchestrator orchestrator = Substitute.For<IJobUpdateOrchestrator>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var configureServices = ControllerTestHelper.CreateConfiguration<IJobUpdateOrchestrator>(orchestrator);
 
             // execute
@@ -203,7 +202,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             string url = String.Format(UrlPostUpdate, hashId);
 
             IJobUpdateOrchestrator orchestrator = Substitute.For<IJobUpdateOrchestrator>();
-            HostViewModel hostViewModel = new HostViewModelBuilder().WithRandomProperties().Build();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             ControllerTestHelper.CheckAllRoles<IJobUpdateOrchestrator>(orchestrator, url, HttpMethod.Post, hostViewModel, authorisedRoles);
         }
 

@@ -3,7 +3,7 @@ using NSubstitute;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Caching;
 using SftpSchedulerService.Models.Notification;
 using SftpSchedulerService.ViewOrchestrators.Api.Job;
@@ -55,7 +55,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             int failingJobCount = Faker.RandomNumber.Next(2, 7);
             for (int i=1; i<=failingJobCount; i++)
             {
-                failingJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(i).Build());
+                failingJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, i).Build());
             }
 
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(failingJobs);
@@ -143,7 +143,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             int warningJobCount = Faker.RandomNumber.Next(2, 7);
             for (int i = 1; i <= warningJobCount; i++)
             {
-                warningJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(i).Build());
+                warningJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, i).Build());
             }
 
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Enumerable.Empty<JobEntity>());
@@ -175,14 +175,14 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             int warningJobCount = Faker.RandomNumber.Next(2, 7);
             for (int i = 1; i <= warningJobCount; i++)
             {
-                warningJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(i).Build());
+                warningJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, i).Build());
             }
 
             List<JobEntity> failingJobs = new List<JobEntity>();
             int failingJobCount = Faker.RandomNumber.Next(2, 7);
             for (int i = 1; i <= failingJobCount; i++)
             {
-                failingJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(i + 100).Build());
+                failingJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, i + 100).Build());
             }
 
             int totalJobCount = failingJobCount + warningJobCount;
@@ -213,12 +213,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             dbContextFactory.GetDbContext().Returns(dbContext);
 
             List<JobEntity> failingJobs = new List<JobEntity>();
-            failingJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(1).Build());
-            failingJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(2).Build());
+            failingJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 1).Build());
+            failingJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 2).Build());
 
             List<JobEntity> warningJobs = new List<JobEntity>();
-            warningJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(2).Build());
-            warningJobs.Add(new JobEntityBuilder().WithRandomProperties().WithId(3).Build());
+            warningJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 2).Build());
+            warningJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 3).Build());
 
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(failingJobs);
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(warningJobs);

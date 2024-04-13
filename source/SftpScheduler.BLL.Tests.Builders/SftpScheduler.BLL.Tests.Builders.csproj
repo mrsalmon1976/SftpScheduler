@@ -15,8 +15,4 @@
     <ProjectReference Include="..\SftpScheduler.BLL\SftpScheduler.BLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>

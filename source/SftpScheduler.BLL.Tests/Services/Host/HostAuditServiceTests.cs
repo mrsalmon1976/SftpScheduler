@@ -2,7 +2,6 @@
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Services.Host;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 

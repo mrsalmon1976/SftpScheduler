@@ -4,9 +4,6 @@ using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Services.Job;
-using SftpScheduler.BLL.Tests.Builders.Data;
-using SftpScheduler.BLL.Tests.Builders.Models;
-using SftpScheduler.BLL.Tests.Builders.Repositories;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 
@@ -20,8 +17,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_NoPropertiesChanged_NoAuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity hostEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             string userName = Guid.NewGuid().ToString();
 
@@ -37,8 +34,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_NameChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity hostEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             hostEntityNew.Name = Guid.NewGuid().ToString();
             string userName = Guid.NewGuid().ToString();
@@ -56,12 +53,12 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_HostChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.HostId = jobEntityNew.HostId + 1;
 
-            HostRepository hostRepo = new HostRepositoryBuilder().Build();  
+            HostRepository hostRepo = new SubstituteBuilder<HostRepository>().Build();  
             HostEntity hostEntityOld = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Id, jobEntityOld.HostId).Build();
             hostRepo.GetByIdAsync(dbContext, hostEntityOld.Id).Returns(Task.FromResult(hostEntityOld));
             HostEntity hostEntityNew = new SubstituteBuilder<HostEntity>().WithRandomProperties().WithProperty(x => x.Id, jobEntityNew.HostId).Build();
@@ -81,8 +78,9 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_TypeChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().WithType(JobType.Download).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties()
+                .WithProperty(x => x.Type, JobType.Download).Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.Type = JobType.Upload;
             string userName = Guid.NewGuid().ToString();
@@ -100,8 +98,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_ScheduleChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.Schedule = Guid.NewGuid().ToString();
             string userName = Guid.NewGuid().ToString();
@@ -119,8 +117,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_LocalPathChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.LocalPath = Guid.NewGuid().ToString();
             string userName = Guid.NewGuid().ToString();
@@ -138,8 +136,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_RemotePathChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.RemotePath = Guid.NewGuid().ToString();
             string userName = Guid.NewGuid().ToString();
@@ -157,8 +155,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_DeleteAfterDownloadChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().WithDeleteAfterDownload(true).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.DeleteAfterDownload, true).Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.DeleteAfterDownload = false;
             string userName = Guid.NewGuid().ToString();
@@ -177,8 +175,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_RemoteArchivePathChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.RemoteArchivePath = Guid.NewGuid().ToString();
             string userName = Guid.NewGuid().ToString();
@@ -196,10 +194,10 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_LocalCopyPathsChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder()
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
                 .WithRandomProperties()
-                .WithLocalCopyPaths(Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalCopyPaths, Guid.NewGuid().ToString())
                 .Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.LocalCopyPaths = Guid.NewGuid().ToString();
@@ -218,8 +216,9 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_IsEnabledChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().WithIsEnabled(true).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
+                .WithRandomProperties().WithProperty(x => x.IsEnabled, true).Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.IsEnabled = false;
             string userName = Guid.NewGuid().ToString();
@@ -237,8 +236,9 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_RestartOnFailureChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties().WithRestartOnFailure(true).Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties()
+                .WithProperty(x => x.RestartOnFailure, true).Build();
             JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
             jobEntityNew.RestartOnFailure = false;
             string userName = Guid.NewGuid().ToString();
@@ -256,7 +256,7 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_CompressionModeChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.CompressionMode, CompressionMode.None).Build();
@@ -277,7 +277,7 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_FileMaskChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.FileMask, "*.old").Build();
@@ -298,7 +298,7 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_PreserveTimestampChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.PreserveTimestamp, true).Build();
@@ -320,7 +320,7 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_TransferModeChanged_AuditRecordCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.TransferMode, TransferMode.Binary).Build();
@@ -341,12 +341,12 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_AllPropertiesChanged_AuditRecordsCreated()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
 
             HostEntity hostEntityOld = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             HostEntity hostEntityNew = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
 
-            HostRepository hostRepo = new HostRepositoryBuilder().Build();
+            HostRepository hostRepo = new SubstituteBuilder<HostRepository>().Build();
             hostRepo.GetByIdAsync(dbContext, hostEntityOld.Id).Returns(Task.FromResult(hostEntityOld)!);
             hostRepo.GetByIdAsync(dbContext, hostEntityNew.Id).Returns(Task.FromResult(hostEntityNew)!);
 
@@ -415,25 +415,25 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         public void CompareJobs_PropertiesChanged_UserNameCorrectlySet()
         {
             // setup
-            IDbContext dbContext = new DbContextBuilder().Build();
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             string userName = Guid.NewGuid().ToString();
-            JobEntity jobEntityOld = new JobEntityBuilder().WithRandomProperties()
-                .WithHostId(1)
-                .WithType(JobType.Download)
-                .WithDeleteAfterDownload(true)
-                .WithIsEnabled(true)
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties()
+                .WithProperty(x => x.HostId, 1)
+                .WithProperty(x => x.Type, JobType.Download)
+                .WithProperty(x => x.DeleteAfterDownload, true)
+                .WithProperty(x => x.IsEnabled, true)
                 .Build();
-            JobEntity jobEntityNew = new JobEntityBuilder()
-                .WithName(Guid.NewGuid().ToString())
-                .WithHostId(2)
-                .WithType(JobType.Upload)
-                .WithSchedule(Guid.NewGuid().ToString())
-                .WithLocalPath(Guid.NewGuid().ToString())
-                .WithRemotePath(Guid.NewGuid().ToString())
-                .WithDeleteAfterDownload(false)
-                .WithRemoteArchivePath(Guid.NewGuid().ToString())
-                .WithLocalCopyPaths(Guid.NewGuid().ToString())
-                .WithIsEnabled(false)
+            JobEntity jobEntityNew = new SubstituteBuilder<JobEntity>()
+                .WithProperty(x => x.Name, Guid.NewGuid().ToString())
+                .WithProperty(x => x.HostId, 2)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .WithProperty(x => x.Schedule, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalPath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.RemotePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.DeleteAfterDownload, false)
+                .WithProperty(x => x.RemoteArchivePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalCopyPaths, Guid.NewGuid().ToString())
+                .WithProperty(x => x.IsEnabled, false)
                 .Build();
 
             // execute 

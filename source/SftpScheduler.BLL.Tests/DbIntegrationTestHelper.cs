@@ -1,6 +1,5 @@
 ﻿using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
 using SftpScheduler.BLL.Utility;
 using SftpScheduler.Test.Common;
 using static Quartz.Logging.OperationName;
@@ -44,9 +43,9 @@ namespace SftpScheduler.BLL.Tests
 
 		internal GlobalUserSettingEntity CreateGlobalUserSettingEntity(IDbContext dbContext, string id, string settingValue)
 		{
-			GlobalUserSettingEntity settingEntity = new GlobalUserSettingEntityBuilder()
-                .WithId(id)
-                .WithSettingValue(settingValue)
+			GlobalUserSettingEntity settingEntity = new SubstituteBuilder<GlobalUserSettingEntity>()
+                .WithProperty(x => x.Id, id)
+                .WithProperty(x => x.SettingValue, settingValue)
                 .Build();
 
 			string sql = @"INSERT INTO GlobalUserSetting (Id, SettingValue) VALUES (@Id, @SettingValue)";
@@ -79,7 +78,7 @@ namespace SftpScheduler.BLL.Tests
 
         internal HostAuditLogEntity CreateHostAuditLogEntity(IDbContext dbContext, int hostId)
         {
-            HostAuditLogEntity hostAuditLogEntity = new HostAuditLogEntityBuilder().WithRandomProperties().WithHostId(hostId).Build();
+            HostAuditLogEntity hostAuditLogEntity = new SubstituteBuilder<HostAuditLogEntity>().WithRandomProperties().WithProperty(x => x.HostId, hostId).Build();
 
             string sql = @"INSERT INTO HostAuditLog (HostId, PropertyName, FromValue, ToValue, UserName, Created) VALUES (@HostId, @PropertyName, @FromValue, @ToValue, @UserName, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, hostAuditLogEntity).GetAwaiter().GetResult();
@@ -93,9 +92,9 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobEntity CreateJobEntity(IDbContext dbContext, int hostId, bool isEnabled = true)
         {
-            JobEntity jobEntity = new JobEntityBuilder().WithRandomProperties()
-                .WithHostId(hostId)
-                .WithIsEnabled(isEnabled)
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties()
+                .WithProperty(x => x.HostId, hostId)
+                .WithProperty(x => x.IsEnabled, isEnabled)
                 .Build();
 
             string sql = @"INSERT INTO Job 
@@ -113,7 +112,7 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobAuditLogEntity CreateJobAuditLogEntity(IDbContext dbContext, int jobId)
         {
-            JobAuditLogEntity jobAuditLogEntity = new JobAuditLogEntityBuilder().WithRandomProperties().WithJobId(jobId).Build();
+            JobAuditLogEntity jobAuditLogEntity = new SubstituteBuilder<JobAuditLogEntity>().WithRandomProperties().WithProperty(x => x.JobId, jobId).Build();
 
             string sql = @"INSERT INTO JobAuditLog (JobId, PropertyName, FromValue, ToValue, UserName, Created) VALUES (@JobId, @PropertyName, @FromValue, @ToValue, @UserName, @Created)";
             dbContext.ExecuteNonQueryAsync(sql, jobAuditLogEntity).GetAwaiter().GetResult();
@@ -127,9 +126,9 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobFileLogEntity CreateJobFileLogEntity(IDbContext dbContext, int jobId)
         {
-            JobFileLogEntity jobFileLog = new JobFileLogEntityBuilder().WithRandomProperties()
-                .WithJobId(jobId)
-                .WithStartDate(DateTime.Now)
+            JobFileLogEntity jobFileLog = new SubstituteBuilder<JobFileLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId)
+                .WithProperty(x => x.StartDate, DateTime.Now)
                 .Build();
 
             string sql = @"INSERT INTO JobFileLog (JobId, FileName, FileLength, StartDate, EndDate) VALUES (@JobId, @FileName, @FileLength, @StartDate, @EndDate)";
@@ -144,10 +143,10 @@ namespace SftpScheduler.BLL.Tests
 
         internal JobLogEntity CreateJobLogEntity(IDbContext dbContext, int jobId, string status = JobStatus.InProgress)
         {
-            JobLogEntity jobLog = new JobLogEntityBuilder().WithRandomProperties()
-                .WithJobId(jobId)
-                .WithStatus(status)
-                .WithStartDate(DateTime.Now)
+            JobLogEntity jobLog = new SubstituteBuilder<JobLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId)
+                .WithProperty(x => x.Status, status)
+                .WithProperty(x => x.StartDate, DateTime.Now)
                 .Build();
 
             if (jobLog.Status != JobStatus.InProgress)

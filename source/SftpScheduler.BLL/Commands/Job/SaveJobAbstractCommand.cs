@@ -58,7 +58,6 @@ namespace SftpScheduler.BLL.Commands.Job
                 throw new DataValidationException("Job details supplied are invalid", validationResult);
             }
 
-            // set the cached/calculated values
             jobEntity.ScheduleInWords = CronExpressionDescriptor.ExpressionDescriptor.GetDescription(jobEntity.Schedule);
 
             // ensure remote paths are always suffixed and prefixed with "/"

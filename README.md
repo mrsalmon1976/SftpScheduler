@@ -10,14 +10,17 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 # Features
 
 - Create a singular set of hosts
+- Supports SFTP, FTPS and FTP
 - Passwords are encrypted
 - Flexible scheduling via CRON
 - Create multiple upload jobs, monitoring local folders
 - Create multiple download jobs, monitoring remote folders - download jobs can be configured to delete downloaded files, or move them into a remote archive path
 - Option to copy downloaded files into additional local folders
+- Zipping of files before upload
 - Full history of downloads and job success
-- Notifications for repeated failures, and configurable daily digest emails containing details of failing jobs from the past 24 hours
+- Notifications for repeated failures, and configurable daily digest emails containing details of failing jobs from the past 24 hours (requires SMTP server)
 - Configurable user list
+- Audit logs of host and job changes
 
 # Installation
 

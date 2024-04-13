@@ -8,7 +8,7 @@ using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -50,7 +50,8 @@ namespace SftpScheduler.BLL.Tests.Jobs
             TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
-            JobLogEntity jobLog = new JobLogEntityBuilder().WithRandomProperties().WithJobId(jobId).Build();
+            JobLogEntity jobLog = new SubstituteBuilder<JobLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId).Build();
             createJobLogCmd.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLog));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
@@ -72,7 +73,9 @@ namespace SftpScheduler.BLL.Tests.Jobs
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
 
-            JobLogEntity jobLog = new JobLogEntityBuilder().WithRandomProperties().WithJobId(jobId).Build();
+            JobLogEntity jobLog = new SubstituteBuilder<JobLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.JobId, jobId)
+                .Build();
             createJobLogCmd.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLog));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
@@ -97,11 +100,11 @@ namespace SftpScheduler.BLL.Tests.Jobs
             TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCmd, updateJobLogCompleteCommand: updateJobLogCompleteCmd, transferCommand: transferCommand);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
-
-            JobLogEntity jobLogEntity = new JobLogEntityBuilder().WithRandomProperties()
-                .WithId(Faker.RandomNumber.Next(1, 1000))
-                .WithJobId(jobId)
+            JobLogEntity jobLogEntity = new SubstituteBuilder<JobLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.Id, Faker.RandomNumber.Next(1, 1000))
+                .WithProperty(x => x.JobId, jobId)
                 .Build();
+
             createJobLogCmd.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLogEntity));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();
@@ -121,7 +124,10 @@ namespace SftpScheduler.BLL.Tests.Jobs
             TransferJob transferJob = CreateTransferJob(createJobLogCommand: createJobLogCommand, updateJobLogCompleteCommand: updateJobLogCompleteCommand);
             IJobExecutionContext jobExecutionContext = CreateJobExecutionContext(jobId);
 
-            JobLogEntity jobLogEntity = new JobLogEntityBuilder().WithRandomProperties().WithJobId(jobId).Build();
+            JobLogEntity jobLogEntity = new SubstituteBuilder<JobLogEntity>().WithRandomProperties()
+                .WithProperty(x => x.Id, Faker.RandomNumber.Next(1, 1000))
+                .WithProperty(x => x.JobId, jobId)
+                .Build();
             createJobLogCommand.ExecuteAsync(Arg.Any<IDbContext>(), jobId).Returns(Task.FromResult(jobLogEntity));
 
             transferJob.Execute(jobExecutionContext).GetAwaiter().GetResult();

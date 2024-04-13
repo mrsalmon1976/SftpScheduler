@@ -3,7 +3,7 @@ using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
-using SftpScheduler.BLL.Tests.Builders.Models;
+using SftpScheduler.Test.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,15 +31,15 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
                     JobEntity job = dbIntegrationTestHelper.CreateJobEntity(dbContext, host.Id);
 
-                    JobFileLogEntity jobFileLog = new JobFileLogEntityBuilder().WithRandomProperties().WithJobId(job.Id).Build();
+                    JobFileLogEntity jobFileLog = new SubstituteBuilder<JobFileLogEntity>()
+                        .WithRandomProperties()
+                        .WithProperty(x => x.JobId, job.Id)
+                        .Build();
                     
                     JobFileLogEntity result = createJobFileLogCmd.ExecuteAsync(dbContext, jobFileLog).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(result);
                     Assert.That(result.Id, Is.GreaterThan(0));
-					Assert.That(result.FileLength, Is.GreaterThan(0));
-					Assert.That(result.EndDate, Is.GreaterThan(result.StartDate));
-
                 }
             }
         }

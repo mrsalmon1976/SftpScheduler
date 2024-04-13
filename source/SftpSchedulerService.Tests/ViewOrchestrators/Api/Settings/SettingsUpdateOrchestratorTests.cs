@@ -3,19 +3,10 @@ using SftpScheduler.BLL.Commands.Notification;
 using SftpScheduler.BLL.Commands.Setting;
 using SftpScheduler.BLL.Config;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Tests.Builders.Commands.Notification;
-using SftpScheduler.BLL.Tests.Builders.Config;
-using SftpScheduler.BLL.Tests.Builders.Data;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Config;
 using SftpSchedulerService.Models.Settings;
-using SftpSchedulerService.Tests.Builders.Config;
-using SftpSchedulerService.Tests.Builders.Models.Settings;
 using SftpSchedulerService.ViewOrchestrators.Api.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 {
@@ -26,9 +17,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_StartupSettingsChanged_Saved()
 		{
 			// setup
-			StartupSettings startupSettings = new StartupSettingsBuilder().WithMaxConcurrentJobs(2).Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(startupSettings).Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithMaxConcurrentJobs(3).Build();
+            StartupSettings startupSettings = new SubstituteBuilder<StartupSettings>().WithProperty(x => x.MaxConcurrentJobs, 2).Build();
+
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+			startupSettingProvider.Load().Returns(startupSettings);
+
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>()
+				.WithProperty(x => x.MaxConcurrentJobs, 3).Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(startupSettingProvider: startupSettingProvider);
@@ -43,12 +38,14 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		{
 			// setup
 			int maxConcurrentJobs = Faker.RandomNumber.Next(1, 10);
-			StartupSettings startupSettings = new StartupSettingsBuilder().WithMaxConcurrentJobs(maxConcurrentJobs).Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(startupSettings).Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithMaxConcurrentJobs(maxConcurrentJobs).Build();
+			StartupSettings startupSettings = new SubstituteBuilder<StartupSettings>().WithProperty(x => x.MaxConcurrentJobs, maxConcurrentJobs).Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(startupSettings);
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>()
+                .WithProperty(x => x.MaxConcurrentJobs, maxConcurrentJobs).Build();
 
-			// execute
-			var orchestrator = CreateOrchestrator(startupSettingProvider: startupSettingProvider);
+            // execute
+            var orchestrator = CreateOrchestrator(startupSettingProvider: startupSettingProvider);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
@@ -60,10 +57,15 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_DigestTimeChanged_IsUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithDigestTime(1).Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestTime(2).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+			startupSettingProvider.Load().Returns(new StartupSettings());
+
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.DigestTime, 1)
+                .Build();
+
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.DigestTime, 2).Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -79,14 +81,18 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 			// setup
 			int digestTimeNew = Faker.RandomNumber.Next(2, 23);
 			int digestTimeOld = digestTimeNew - 1;
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithDigestTime(digestTimeOld)
-				.WithUpdateChangedValueReturns(dbContext, GlobalUserSettingKey.DigestTime, digestTimeOld, digestTimeNew, true)
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+				.WithProperty(x => x.DigestTime, digestTimeOld)
 				.Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestTime(digestTimeNew).Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+			globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestTime, digestTimeOld, digestTimeNew).Returns(true);
+
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>()
+                .WithProperty(x => x.DigestTime, digestTimeNew).Build();
+
+			IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
@@ -104,17 +110,21 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 			string[] digestDaysNewString = digestDaysNew.Select(x => x.ToString()).ToArray();
 			DayOfWeek[] digestDaysOld = { DayOfWeek.Monday, DayOfWeek.Tuesday };
 			string[] digestDaysOldString = digestDaysOld.Select(x => x.ToString()).ToArray();
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithDigestDays(digestDaysOld)
-				.WithUpdateChangedValueReturns(dbContext, GlobalUserSettingKey.DigestDays, Arg.Any<string[]>(), Arg.Any<string[]>(), true)
-				.Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestDays(digestDaysNew).Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
 
-			// execute
-			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.DigestDays, digestDaysOld)
+                .Build();
+			globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestDays, Arg.Any<string[]>(), Arg.Any<string[]>()).Returns(true);
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>()
+                .WithProperty(x => x.DigestDays, digestDaysNewString).Build();
+
+            IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
+
+            // execute
+            var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
@@ -126,18 +136,22 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		{
 			// setup
 			DayOfWeek[] digestDaysNew = { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Friday };
-			DayOfWeek[] digestDaysOld = { DayOfWeek.Monday, DayOfWeek.Tuesday };
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder()
-				.WithDigestDays(digestDaysOld)
-				.WithUpdateChangedValueReturns(dbContext, GlobalUserSettingKey.DigestDays, Arg.Any<string[]>(), Arg.Any<string[]>(), true)
-				.Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithDigestDays(digestDaysNew).Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+            string[] digestDaysNewString = digestDaysNew.Select(x => x.ToString()).ToArray();
+            DayOfWeek[] digestDaysOld = { DayOfWeek.Monday, DayOfWeek.Tuesday };
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.DigestDays, digestDaysOld)
+                .Build();
+            globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestDays, Arg.Any<string[]>(), Arg.Any<string[]>()).Returns(true);
 
-			// execute
-			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>()
+                .WithProperty(x => x.DigestDays, digestDaysNewString).Build();
+            IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
+
+            // execute
+            var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
@@ -148,14 +162,16 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_DigestTimeAndDigestDaysNotChanged_DigestJobNotUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().Build();
-			IUpsertDigestCommand upsertDigestCommand = new UpsertDigestCommandBuilder().Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>().Build();
 
-			// execute
-			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().Build();
+            IUpsertDigestCommand upsertDigestCommand = new SubstituteBuilder<IUpsertDigestCommand>().Build();
+
+            // execute
+            var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider, upsertDigestCommand: upsertDigestCommand);
 			orchestrator.Execute(globalSettingsViewModel);
 
 			// assert
@@ -168,10 +184,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 			// setup
 			string smtpHostNew = Guid.NewGuid().ToString();
 			string smtpHostOld = Guid.NewGuid().ToString(); ;
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpHost(smtpHostOld).Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpHost(smtpHostNew).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+				.WithProperty(x => x.SmtpHost, smtpHostOld)
+				.Build();
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpHost, smtpHostNew).Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -185,10 +204,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_SmtpPortChanged_IsUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpPort(1).Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpPort(2).Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpPort, 1)
+                .Build();
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpPort, 2).Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -202,10 +224,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_SmtpUserNameChanged_IsUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpUserName("oldname").Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpUserName("newname").Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpUserName, "oldname")
+                .Build();
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpUserName, "newname").Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -219,10 +244,14 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_SmtpPasswordChanged_IsUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpPassword("oldpass").Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpPassword("newpass").Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpPassword, "oldpass")
+                .Build();
+
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpPassword, "newpass").Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -235,11 +264,15 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		[Test]
 		public void Execute_SmtpEnableSslChanged_IsUpdated()
 		{
-			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpEnableSsl(true).Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpEnableSsl(false).Build();
+            // setup
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpEnableSsl, true)
+                .Build();
+
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpEnableSsl, false).Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -253,10 +286,13 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_SmtpFromNameChanged_IsUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpFromName("oldname").Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpFromName("newname").Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpFromName, "oldname")
+                .Build();
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpFromName, "newname").Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);
@@ -270,10 +306,14 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		public void Execute_SmtpFromEmailChanged_IsUpdated()
 		{
 			// setup
-			IDbContext dbContext = new DbContextBuilder().Build();
-			IStartupSettingProvider startupSettingProvider = new StartupSettingProviderBuilder().WithLoadReturns(new StartupSettings()).Build();
-			IGlobalUserSettingProvider globalUserSettingProvider = new GlobalUserSettingProviderBuilder().WithSmtpFromEmail("oldemail").Build();
-			GlobalSettingsViewModel globalSettingsViewModel = new GlobalSettingsViewModelBuilder().WithSmtpFromEmail("newemail").Build();
+			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
+            startupSettingProvider.Load().Returns(new StartupSettings());
+            IGlobalUserSettingProvider globalUserSettingProvider = new SubstituteBuilder<IGlobalUserSettingProvider>()
+                .WithProperty(x => x.SmtpFromEmail, "oldemail")
+                .Build();
+
+            GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>().WithProperty(x => x.SmtpFromEmail, "newemail").Build();
 
 			// execute
 			var orchestrator = CreateOrchestrator(dbContext: dbContext, globalUserSettingProvider: globalUserSettingProvider, startupSettingProvider: startupSettingProvider);

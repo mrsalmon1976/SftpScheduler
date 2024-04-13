@@ -2,9 +2,8 @@
 using NSubstitute;
 using SftpScheduler.Common;
 using SftpScheduler.Common.IO;
-using SftpScheduler.Common.Tests.Builders.IO;
+using SftpScheduler.Test.Common;
 using SftpSchedulerService.Config;
-using SftpSchedulerService.Tests.Builders.Config;
 using SftpSchedulerService.Workers;
 
 namespace SftpSchedulerService.Tests.Workers
@@ -17,7 +16,8 @@ namespace SftpSchedulerService.Tests.Workers
 		public void ExecuteCleanup_UpdaterFolderDoesNotExist_ExitsAndReturnsTrue()
 		{
 			// setup
-			IDirectoryUtility dirUtility = new DirectoryUtilityBuilder().WithExistsReturns(Arg.Any<string>(), false).Build();
+			IDirectoryUtility dirUtility = new SubstituteBuilder<IDirectoryUtility>().Build();
+            dirUtility.Exists(Arg.Any<string>()).Returns(false);
 
 			// execute
 			var workerService = CreateWorkerService(dirUtility: dirUtility);
@@ -36,12 +36,13 @@ namespace SftpSchedulerService.Tests.Workers
 			string updaterDirectory = Path.Combine(baseDirectory, UpdateConstants.UpdaterFolderName);
 			string searchPattern = "*" + UpdateConstants.UpdaterNewFileExtension;
 
-			AppSettings appSettings = new AppSettingsBuilder().WithBaseDirectory(baseDirectory).Build();
-			IDirectoryUtility dirUtility = new DirectoryUtilityBuilder()
-				.WithExistsReturns(updaterDirectory, true)
-				.WithGetFilesReturns(updaterDirectory, SearchOption.AllDirectories, searchPattern, Array.Empty<string>())
-				.Build();
-			IFileUtility fileUtility = new FileUtilityBuilder().Build();
+			AppSettings appSettings = new SubstituteBuilder<AppSettings>().Build();
+			appSettings.BaseDirectory.Returns(baseDirectory);
+            IDirectoryUtility dirUtility = new SubstituteBuilder<IDirectoryUtility>().Build();
+			dirUtility.Exists(updaterDirectory).Returns(true);
+			dirUtility.GetFiles(updaterDirectory, SearchOption.AllDirectories, searchPattern).Returns(Array.Empty<string>());
+				
+			IFileUtility fileUtility = new SubstituteBuilder<IFileUtility>().Build();
 
 			// execute
 			var workerService = CreateWorkerService(appSettings: appSettings, dirUtility: dirUtility, fileUtility: fileUtility);
@@ -60,11 +61,11 @@ namespace SftpSchedulerService.Tests.Workers
 			string[] files = { "C:\\Temp\\myfile1.txt.new", "C:\\Temp\\myfile2.pdf.new", "C:\\Temp\\myfile1.dll.new" };
 			string[] renamedFiles = files.Select(x => x.Replace(".new", "")).ToArray();
 
-			IDirectoryUtility dirUtility = new DirectoryUtilityBuilder()
-				.WithExistsReturns(Arg.Any<string>(), true)
-				.WithGetFilesReturns(Arg.Any<string>(), Arg.Any<SearchOption>(), Arg.Any<string>(), files)
-				.Build();
-			IFileUtility fileUtility = new FileUtilityBuilder().Build();
+            IDirectoryUtility dirUtility = new SubstituteBuilder<IDirectoryUtility>().Build();
+            dirUtility.Exists(Arg.Any<string>()).Returns(true);
+            dirUtility.GetFiles(Arg.Any<string>(), Arg.Any<SearchOption>(), Arg.Any<string>()).Returns(files);
+
+			IFileUtility fileUtility = new SubstituteBuilder<IFileUtility>().Build();
 
 			// execute
 			var workerService = CreateWorkerService(dirUtility: dirUtility, fileUtility: fileUtility);

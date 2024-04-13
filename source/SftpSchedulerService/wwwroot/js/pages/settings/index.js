@@ -25,6 +25,7 @@
             this.settings.smtpUserName = result.data.smtpUserName;
             this.settings.smtpFromName = result.data.smtpFromName;
             this.settings.smtpFromEmail = result.data.smtpFromEmail;
+            this.settings.smtpEnableSsl = result.data.smtpEnableSsl;
             this.isLoading = false;
         },
         openTestEmailDialog() {
