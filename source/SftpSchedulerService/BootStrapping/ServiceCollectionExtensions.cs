@@ -30,6 +30,7 @@ using SftpScheduler.BLL.Services.Host;
 using SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog;
 using SftpScheduler.BLL.Services.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.JobAuditLog;
+using SftpSchedulerService.ViewOrchestrators.Api.Report;
 
 namespace SftpSchedulerService.BootStrapping
 {
@@ -166,6 +167,8 @@ namespace SftpSchedulerService.BootStrapping
             services.AddScoped<IJobNotificationFetchAllOrchestrator, JobNotificationFetchAllOrchestrator>();
 
             services.AddScoped<ILoginPostOrchestrator, LoginPostOrchestrator>();
+
+            services.AddScoped<IReportJobsWithNoTransfersOrchestrator, ReportJobsWithNoTransfersOrchestrator>();
 
             services.AddScoped<IUpdateCheckOrchestrator, UpdateCheckOrchestrator>();
             services.AddScoped<IUpdateInstallOrchestrator, UpdateInstallOrchestrator>();

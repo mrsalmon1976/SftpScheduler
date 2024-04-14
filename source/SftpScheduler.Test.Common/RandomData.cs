@@ -8,8 +8,6 @@ namespace SftpScheduler.Test.Common
 {
     public static class RandomData
     {
-        private static Random _random = new Random();
-
         public static InternetRandomizer Internet { get; private set; } = new InternetRandomizer();
 
         public static NumberRandomizer Number{ get; private set; } = new NumberRandomizer();

@@ -124,11 +124,13 @@ namespace SftpScheduler.BLL.Tests
 
         }
 
-        internal JobFileLogEntity CreateJobFileLogEntity(IDbContext dbContext, int jobId)
+        internal JobFileLogEntity CreateJobFileLogEntity(IDbContext dbContext, int jobId, DateTime? startDate = null)
         {
+            startDate ??= DateTime.Now;
+
             JobFileLogEntity jobFileLog = new SubstituteBuilder<JobFileLogEntity>().WithRandomProperties()
                 .WithProperty(x => x.JobId, jobId)
-                .WithProperty(x => x.StartDate, DateTime.Now)
+                .WithProperty(x => x.StartDate, startDate)
                 .Build();
 
             string sql = @"INSERT INTO JobFileLog (JobId, FileName, FileLength, StartDate, EndDate) VALUES (@JobId, @FileName, @FileLength, @StartDate, @EndDate)";

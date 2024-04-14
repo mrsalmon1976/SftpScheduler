@@ -17,7 +17,7 @@
         }
         <li id="@elementId" class="nav-item">
             <a href="@url" class="nav-link @activeClass">
-                <i class="nav-icon fas @icon"></i>
+                <i class="nav-icon @icon"></i>
                 <p>@text</p> 
             </a>
         </li>
@@ -43,8 +43,8 @@
     <link rel="stylesheet" href="~/css/adminlte/adminlte.min.css">
     <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <environment-style href="~/css/custom.css" />
+    <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
     @*
-    <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
     *@
 </head>
@@ -106,14 +106,30 @@
             </a>
 
             <!-- Sidebar Menu -->
-            <nav class="mt-2">
+            <nav id="app-navigation" class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    @{
+                        RenderMenuItem("menu-dashboard", "Dashboard", "/dashboard", "fas fa-tachometer-alt", new string[] { UserRoles.User, UserRoles.Admin });
+                        RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fas fa-server", new string[] { UserRoles.Admin });
+                        RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fas fa-exchange-alt", new string[] { UserRoles.Admin });
+                    }
+                    <li id="menu-reports" class="nav-item" :class="reportMenuClasses">
+                        <a href="#" class="nav-link" :class="[reportMenuClasses.length == 0 ? '' : 'active']">
+                            <i class="nav-icon fas fa-file-contract"></i>
+                            <p>
+                                Reports
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview" :style="{ display: reportSubMenuStyle }">
+                            @{
+                                RenderMenuItem("menu-reports-notransfers", "Jobs without transfers", "/reports/notransfers", "fa-solid fa-chevron-right", new string[] { UserRoles.User, UserRoles.Admin });
+                            }
+                        </ul>
+                    </li>
                 @{
-                    RenderMenuItem("menu-dashboard", "Dashboard", "/dashboard", "fa-tachometer-alt", new string[] { UserRoles.User, UserRoles.Admin });
-                    RenderMenuItem("menu-hosts", "Hosts", "/hosts", "fa-server", new string[] { UserRoles.Admin });
-                    RenderMenuItem("menu-jobs", "Jobs", "/jobs", "fa-exchange-alt", new string[] { UserRoles.Admin });
-                    RenderMenuItem("menu-users", "Users", "/users", "fa-users", new string[] { UserRoles.Admin });
-                    RenderMenuItem("menu-settings", "Settings", "/settings", "fa-gear", new string[] { UserRoles.Admin });
+                        RenderMenuItem("menu-users", "Users", "/users", "fas fa-users", new string[] { UserRoles.Admin });
+                        RenderMenuItem("menu-settings", "Settings", "/settings", "fas fa-gear", new string[] { UserRoles.Admin });
                 }
             </ul>
             </nav>
@@ -166,13 +182,13 @@
 <script src="~/plugins/jquery/jquery.min.js"></script>
 <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/plugins/moment/moment.min.js"></script>
- @*
+<script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+@*
 <script src="plugins/chart.js/Chart.min.js"></script>
 <script src="plugins/sparklines/sparkline.js"></script>
 <script src="plugins/jqvmap/jquery.vmap.min.js"></script>
 <script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <script src="plugins/jquery-knob/jquery.knob.min.js"></script>
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
 <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
 *@

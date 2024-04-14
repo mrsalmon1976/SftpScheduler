@@ -83,5 +83,21 @@ namespace SftpScheduler.BLL.Repositories
 
         }
 
+        public virtual async Task<IEnumerable<JobEntity>> GetAllWithoutTransfersBetweenAsync(IDbContext dbContext, DateTime startDate, DateTime endDate)
+        {
+            const string sql = @"SELECT j.*
+                FROM Job j
+                WHERE Id NOT IN (
+	                Select JobId
+	                FROM JobFileLog jfl 
+	                WHERE jfl.StartDate >= @StartDate
+	                AND jfl.StartDate <= @EndDate
+                )
+                ORDER BY j.Name ASC";
+            const string DateFormat = "yyyy-MM-dd HH:mm:ss";
+            return await dbContext.QueryAsync<JobEntity>(sql, new { StartDate = startDate.ToString(DateFormat), EndDate = endDate.ToString(DateFormat) });
+
+        }
+
     }
 }

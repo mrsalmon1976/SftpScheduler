@@ -5,7 +5,7 @@ namespace SftpScheduler.Test.Common.Randomizers
     public class InternetRandomizer
     {
 
-        private static Random _random = new Random();
+        private static Random _random = new();
 
         public HttpMethod HttpMethod()
         {

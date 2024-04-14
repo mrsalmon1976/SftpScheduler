@@ -126,7 +126,7 @@ createApp({
 }).mount('#app-header')
 
 
-// menu island
+// top menu island
 createApp({
     data() {
         return {
@@ -175,4 +175,27 @@ createApp({
         this.loadJobNotifications(false);
     }
 }).mount('#app-menu')
+
+
+// navigation menu island
+createApp({
+    data() {
+        return {
+            reportMenuClasses: [],
+            reportSubMenuStyle: 'none'
+        }
+    },
+    methods: {
+        async syncMenu() {
+            var path = window.location.pathname;
+            if (path.indexOf('/reports/') == 0) {
+                this.reportMenuClasses = ['menu-open', 'menu-is-opening'];
+                this.reportSubMenuStyle = 'block';
+            }
+        }
+    },
+    mounted: function () {
+        this.syncMenu();
+    }
+}).mount('#app-navigation')
 

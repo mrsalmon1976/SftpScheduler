@@ -2,7 +2,6 @@
 using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Models.Host;
 using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.Models.Notification;
 using SftpSchedulerService.Models.User;
 
 namespace SftpSchedulerService.BootStrapping

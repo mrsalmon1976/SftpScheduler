@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.PageTitle = "Report : Jobs without transfers";
+}
+@section Scripts {
+    <environment-script src="~/js/models/job.js"></environment-script>
+    <environment-script src="~/js/pages/reports/notransfers.js"></environment-script>
+}
+<div id="app-reports-notransfers" v-cloak>
+    <div class="card">
+        <div class="card-body">
+            <form class="form-horizontal">
+                <div class="form-group row">
+                    <label for="filter" class="col-sm-1 col-form-label">Date range</label>
+                    <div class="col-sm-3">
+                        <input name="daterange" type="text" class="form-control" />
+                    </div>
+                </div>
+            </form>
+            <div v-if="jobs.length == 0">
+                There are no jobs without transfers in the selected date range.
+            </div>
+            <table class="table table-bordered" v-if="jobs.length > 0">
+                <thead>
+                    <tr>
+                        <th width="18">Type</th>
+                        <th>Name</th>
+                        <th width="40">Status</th>
+                        <th width="40">Enabled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="job in jobs">
+                        <td width="18" align="center">
+                            <i v-if="job.type == JOBTYPE_DOWNLOAD" class="fa fa-download" title="Download"></i>
+                            <i v-if="job.type == JOBTYPE_UPLOAD" class="fa fa-upload" title="Upload"></i>
+                        </td>
+                        <td><a :href="'/jobs/' + job.hashId">{{ job.name }}</a></td>
+                        <td align="center">
+                            <i v-if="job.isFailing" class="fa fa-circle-xmark" title="Last execution failed" style="color: red;"></i>
+                            <i v-if="!job.isFailing" class="fa fa-circle-check" title="Last execution succeeded" style="color: green;"></i>
+                        </td>
+                        <td align="center">
+                            <i v-if="!job.isEnabled" class="fa fa-circle-xmark" title="Job is current disabled" style="color: red;"></i>
+                            <i v-if="job.isEnabled" class="fa fa-circle-check" title="Job is currently enabled" style="color: green;"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="overlay dark" v-if="isLoading">
+            <i class="fa fa-2x fa-spin fa-spinner" data-fa-transform="rotate-45"></i>
+        </div>
+    </div>
+
+</div>
+

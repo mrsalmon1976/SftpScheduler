@@ -341,6 +341,114 @@ namespace SftpScheduler.BLL.Tests.Repositories
 
         #endregion
 
+        #region GetAllFailedSinceAsync Tests
+
+        [Test]
+        public void GetAllWithoutTransfersBetweenAsync_IntegrationNoRecords_ReturnsEmptyEnum()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllWithoutTransfersBetweenAsync(dbContext, DateTime.Now, DateTime.Now.AddDays(1)).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(0));
+                }
+            }
+        }
+
+        [Test]
+        public void GetAllWithoutTransfersBetweenAsync_IntegrationSomeJobsWithoutTransfers_ReturnsOnlyThoseWithoutTransfers()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+
+                    DateTime startDate = DateTime.Now.AddDays(-3);
+                    DateTime endDate = DateTime.Now.AddDays(-1);
+
+                    JobFileLogEntity jobFileLogEntityInRange1 = dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity1.Id, startDate.AddMilliseconds(1));
+                    JobFileLogEntity jobFileLogEntityInRange2 = dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity2.Id, endDate.AddMilliseconds(-1));
+
+                    JobFileLogEntity jobFileLogEntityOutOfRange1 = dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity1.Id, startDate.AddMilliseconds(-1));
+                    JobFileLogEntity jobFileLogEntityOutOfRange2 = dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity2.Id, endDate.AddMilliseconds(1));
+
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllWithoutTransfersBetweenAsync(dbContext, startDate, endDate).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(2));
+                    Assert.That(result.FirstOrDefault(x => x.Id == jobFileLogEntityInRange1.Id), Is.Not.Null);
+                    Assert.That(result.FirstOrDefault(x => x.Id == jobFileLogEntityInRange2.Id), Is.Not.Null);
+                }
+            }
+        }
+
+        [Test]
+        public void GetAllWithoutTransfersBetweenAsync_IntegrationAllJobsWithTransfers_ReturnsEmpty()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    JobEntity jobEntity1 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    JobEntity jobEntity2 = dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+
+                    DateTime startDate = DateTime.Now.AddDays(-3);
+                    DateTime endDate = DateTime.Now;
+
+                    dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity1.Id, startDate.AddMilliseconds(1));
+                    dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity1.Id, startDate.AddMilliseconds(2));
+                    dbIntegrationTestHelper.CreateJobFileLogEntity(dbContext, jobEntity2.Id, startDate.AddMilliseconds(3));
+
+
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllWithoutTransfersBetweenAsync(dbContext, startDate, endDate).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(0));
+                }
+            }
+        }
+
+        [Test]
+        public void GetAllWithoutTransfersBetweenAsync_IntegrationAllJobsWithoutTransfers_ReturnsAllJobs()
+        {
+            using (DbIntegrationTestHelper dbIntegrationTestHelper = new DbIntegrationTestHelper())
+            {
+                dbIntegrationTestHelper.CreateDatabase();
+
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                {
+                    HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+
+                    dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+                    dbIntegrationTestHelper.CreateJobEntity(dbContext, hostEntity.Id);
+
+                    DateTime startDate = DateTime.Now.AddDays(-3);
+                    DateTime endDate = DateTime.Now;
+
+                    JobRepository jobRepo = new JobRepository();
+                    JobEntity[] result = jobRepo.GetAllWithoutTransfersBetweenAsync(dbContext, startDate, endDate).Result.ToArray();
+
+                    Assert.That(result.Length, Is.EqualTo(2));
+                }
+            }
+        }
+
+        #endregion
         #region GetByIdAsync Tests
 
         [Test]
@@ -379,6 +487,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
         }
 
         #endregion
+
 
     }
 }
