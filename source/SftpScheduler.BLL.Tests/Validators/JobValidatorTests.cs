@@ -32,7 +32,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.Exists(jobEntity.LocalPath).Returns(true);
 
-            JobValidator jobValidator = CreateJobValidator(hostRepository, directoryWrap);
+            JobValidator jobValidator = CreateJobValidator(hostRepository, Substitute.For<JobRepository>(),directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid);
         }
@@ -82,7 +82,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             hostRepository.GetByIdAsync(dbContext, hostId).Returns(Task.FromResult(hostEntity));
 #pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
-            JobValidator jobValidator = CreateJobValidator(hostRepository, directoryWrap);
+            JobValidator jobValidator = CreateJobValidator(hostRepository, Substitute.For<JobRepository>(), directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
@@ -129,7 +129,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             IDbContext dbContext = Substitute.For<IDbContext>();
             IDirectoryUtility directoryWrap = Substitute.For<IDirectoryUtility>();
             directoryWrap.Exists(Arg.Any<string>()).Returns(false);
-            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), directoryWrap);
+            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), Substitute.For<JobRepository>(), directoryWrap);
             var validationResult = jobValidator.Validate(dbContext, jobEntity);
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
@@ -199,7 +199,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             dirWrap.Exists("C:\\Temp\\Folder1").Returns(true);
             dirWrap.Exists("C:\\Temp\\Folder2").Returns(true);
 
-            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), dirWrap);
+            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), Substitute.For<JobRepository>(), dirWrap);
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
 
             Assert.That(validationResult.IsValid, Is.True);
@@ -222,7 +222,7 @@ namespace SftpScheduler.BLL.Tests.Validators
             dirWrap.Exists("C:\\Temp\\Folder1").Returns(false);
             dirWrap.Exists("C:\\Temp\\Folder2").Returns(false);
 
-            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), dirWrap);
+            JobValidator jobValidator = CreateJobValidator(Substitute.For<HostRepository>(), Substitute.For<JobRepository>(), dirWrap);
             var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
 
             Assert.That(validationResult.IsValid, Is.False);
@@ -230,26 +230,102 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.ErrorMessages[0].Contains("Local copy path 'C:\\Temp\\Folder1' does not exist", StringComparison.InvariantCultureIgnoreCase));
         }
 
+        [TestCase("", "*.*")]
+        [TestCase(null, "*.*")]
+        [TestCase("*.*", "")]
+        [TestCase("*.*", null)]
+        [TestCase("*.txt", "*.txt")]
+        public void Validate_DownloadWithDuplicateHostAndRemotePathAndFileMask_ExceptionThrown(string existingFileMask, string newFileMask)
+        {
+            // setup
+            int hostId = new Random().Next(1, 100);
+            string remotePath = "/" + Guid.NewGuid().ToString() + "/";
+
+            JobEntity existingJobEntity = CreateValidJobEntityBuilder()
+                .WithProperty(x => x.HostId, hostId)
+                .WithProperty(x => x.RemotePath, remotePath)
+                .WithProperty(x => x.Type, JobType.Download)
+                .WithProperty(x => x.FileMask, existingFileMask)
+                .Build();
+
+            JobEntity newJobEntity = CreateValidJobEntityBuilder()
+                .WithProperty(x => x.HostId, hostId)
+                .WithProperty(x => x.RemotePath, remotePath)
+                .WithProperty(x => x.Type, JobType.Download)
+                .WithProperty(x => x.FileMask, newFileMask)
+                .Build();
+
+            JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
+            jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(new JobEntity[] { existingJobEntity });
+
+            // execute
+            JobValidator jobValidator = CreateJobValidator(jobRepo: jobRepo);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), newJobEntity);
+
+            // assert
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("Download job clashes with existing job", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        [TestCase("", "*.*")]
+        [TestCase(null, "*.*")]
+        [TestCase("*.*", "")]
+        [TestCase("*.*", null)]
+        [TestCase("*.txt", "*.txt")]
+        public void Validate_UploadWithDuplicateLocalPathAndFileMask_ExceptionThrown(string existingFileMask, string newFileMask)
+        {
+            // setup
+            int hostId = new Random().Next(1, 100);
+            string localPath = "\\\\myserver\\" + Guid.NewGuid().ToString() + "\\";
+
+            JobEntity existingJobEntity = CreateValidJobEntityBuilder()
+                .WithProperty(x => x.LocalPath, localPath)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .WithProperty(x => x.FileMask, existingFileMask)
+                .Build();
+
+            JobEntity newJobEntity = CreateValidJobEntityBuilder()
+                .WithProperty(x => x.LocalPath, localPath)
+                .WithProperty(x => x.Type, JobType.Upload)
+                .WithProperty(x => x.FileMask, newFileMask)
+                .Build();
+
+            JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
+            jobRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(new JobEntity[] { existingJobEntity });
+
+            // execute
+            JobValidator jobValidator = CreateJobValidator(jobRepo: jobRepo);
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), newJobEntity);
+
+            // assert
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("Upload job clashes with existing job", StringComparison.InvariantCultureIgnoreCase));
+        }
+
 
         #region Private Methods
 
         // creates a validator which passes everything
-        private JobValidator CreateJobValidator()
+        private JobValidator CreateJobValidator(HostRepository? hostRepo = null, JobRepository? jobRepo = null)
         {
-            HostRepository hostRepository = Substitute.For<HostRepository>();
-            hostRepository.GetByIdAsync(Arg.Any<IDbContext>(), Arg.Any<int>()).Returns(Task.FromResult(new HostEntity()));
+            hostRepo ??= Substitute.For<HostRepository>();
+            hostRepo.GetByIdAsync(Arg.Any<IDbContext>(), Arg.Any<int>()).Returns(Task.FromResult(new HostEntity()));
+
+            jobRepo ??= Substitute.For<JobRepository>();
 
             IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
             dirWrap.Exists(Arg.Any<string>()).Returns(true);
 
 
-            return CreateJobValidator(hostRepository, dirWrap);
+            return CreateJobValidator(hostRepo, jobRepo, dirWrap);
 
         }
 
-        private JobValidator CreateJobValidator(HostRepository hostRepository, IDirectoryUtility directoryWrap)
+        private JobValidator CreateJobValidator(HostRepository hostRepository, JobRepository jobRepo, IDirectoryUtility directoryWrap)
         {
-            return new JobValidator(hostRepository, directoryWrap);
+            return new JobValidator(hostRepository, jobRepo, directoryWrap);
 
         }
         private SubstituteBuilder<JobEntity> CreateValidJobEntityBuilder()

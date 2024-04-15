@@ -284,7 +284,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
                 using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
                 {
-                    ICreateJobCommand createJobCommand = new CreateJobCommand(new JobValidator(new HostRepository(), new DirectoryUtility()), Substitute.For<ISchedulerFactory>());
+                    ICreateJobCommand createJobCommand = new CreateJobCommand(new JobValidator(new HostRepository(), new JobRepository(), new DirectoryUtility()), Substitute.For<ISchedulerFactory>());
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
                     JobEntity jobEntity = CreateValidJobEntityBuilder()

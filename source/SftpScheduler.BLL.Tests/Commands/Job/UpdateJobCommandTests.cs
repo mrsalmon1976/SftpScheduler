@@ -343,7 +343,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                 {
                     JobRepository jobRepo = new JobRepository();
                     HostRepository hostRepo = new HostRepository();
-                    IJobValidator jobValidator = new JobValidator(hostRepo, new DirectoryUtility());
+                    IJobValidator jobValidator = new JobValidator(hostRepo, jobRepo, new DirectoryUtility());
                     IJobAuditService jobAuditService = new JobAuditService(hostRepo);
                         
                     UpdateJobCommand updateJobCommand = CreateCommand(jobValidator, Substitute.For<ISchedulerFactory>(), jobAuditService, jobRepo);

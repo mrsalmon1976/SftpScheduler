@@ -19,11 +19,13 @@ namespace SftpScheduler.BLL.Validators
     public class JobValidator : IJobValidator
     {
         private readonly HostRepository _hostRepository;
+        private readonly JobRepository _jobRepository;
         private readonly IDirectoryUtility _directoryWrap;
 
-        public JobValidator(HostRepository hostRepository, IDirectoryUtility directoryWrap) 
+        public JobValidator(HostRepository hostRepository, JobRepository jobRepository, IDirectoryUtility directoryWrap) 
         {
             _hostRepository = hostRepository;
+            _jobRepository = jobRepository;
             _directoryWrap = directoryWrap;
         }
 
@@ -36,6 +38,9 @@ namespace SftpScheduler.BLL.Validators
 
             ValidationResult validationResult = new ValidationResult();
             var dataAnnotationValidationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+
+            // load existing jobs into memory - we might as well just grab them all as this will never be a particularly large set and is better than lots of queries
+            IEnumerable<JobEntity> existingJobs = _jobRepository.GetAllAsync(dbContext).GetAwaiter().GetResult();
 
             bool isValid = Validator.TryValidateObject(jobEntity, new ValidationContext(jobEntity), dataAnnotationValidationResults, true);
             if (!isValid)
@@ -61,6 +66,32 @@ namespace SftpScheduler.BLL.Validators
             if (jobEntity.Type == JobType.Download && !jobEntity.DeleteAfterDownload && String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath)) 
             {
                 validationResult.ErrorMessages.Add("Remote archive path must be supplied if deletion after download is not selected");
+            }
+
+            // for downloads, we also need to make sure the remote folder is not watched by another job
+            if (jobEntity.Type == JobType.Download)
+            {
+                JobEntity? existingJob = existingJobs.FirstOrDefault(x => x.Id != jobEntity.Id && x.Type == JobType.Download && x.HostId == jobEntity.HostId && x.RemotePath == jobEntity.RemotePath);
+                if (existingJob != null)
+                {
+                    if (String.IsNullOrEmpty(existingJob.FileMask) || String.IsNullOrEmpty(jobEntity.FileMask) || jobEntity.FileMask == existingJob.FileMask)
+                    {
+                        validationResult.ErrorMessages.Add($"Download job clashes with existing job {existingJob.Name} - host, remote path and file mask will conflict.");
+                    }
+                } 
+            }
+
+            // for uploads, we also need to make sure the local folder is not watched by another job
+            if (jobEntity.Type == JobType.Upload)
+            {
+                JobEntity? existingJob = existingJobs.FirstOrDefault(x => x.Id != jobEntity.Id && x.Type == JobType.Upload && x.LocalPath == jobEntity.LocalPath);
+                if (existingJob != null)
+                {
+                    if (String.IsNullOrEmpty(existingJob.FileMask) || String.IsNullOrEmpty(jobEntity.FileMask) || jobEntity.FileMask == existingJob.FileMask)
+                    {
+                        validationResult.ErrorMessages.Add($"Upload job clashes with existing job {existingJob.Name} - local path and file mask will conflict.");
+                    }
+                }
             }
 
             // check local paths exist
