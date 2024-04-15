@@ -112,5 +112,11 @@
     "inputFiles": [
       "wwwroot/js/pages/settings/index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/reports/notransfers.min.js",
+    "inputFiles": [
+      "wwwroot/js/pages/reports/notransfers.js"
+    ]
   }
 ]
