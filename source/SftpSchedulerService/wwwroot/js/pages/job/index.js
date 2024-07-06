@@ -102,7 +102,7 @@
             }
             else {
                 var that = this;
-                this.filteredJobs = this.jobs.filter((el) => el.name.toLowerCase().includes(that.filter));
+                this.filteredJobs = this.jobs.filter((el) => el.name.toLowerCase().includes(that.filter.toLowerCase()));
             }
         }
     },
