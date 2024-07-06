@@ -29,7 +29,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 await _deleteJobCommand.ExecuteAsync(dbContext, jobId);
-                _logger.LogInformation($"Deleted job {jobId}");
+                _logger.LogInformation("Deleted job {jobId}", jobId);
                 return new OkResult();
             }
         }
