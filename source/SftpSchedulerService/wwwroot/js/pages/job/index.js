@@ -21,17 +21,15 @@
             this.isLoading = true;
 
             if (this.selectedJob != null && jobIdHash.length > 0) {
+                $('#modal-delete-job').modal('toggle');
                 let result = await axios.delete('/api/jobs/' + jobIdHash)
                     .then(response => {
                         that.loadJobs();
                         UiHelpers.showSuccessToast('Delete Job', '', 'Job successfully deleted');
                     })
                     .catch(err => {
-                        UiHelpers.showErrorToast('Error', '', err.message);
+                        UiHelpers.showErrorToast('Error', '', 'Failed to delete job - please check error logs for details.');
                         that.isLoading = false;
-                    })
-                    .then(response => {
-                        $('#modal-delete-job').modal('toggle');
                     });
             }
 
