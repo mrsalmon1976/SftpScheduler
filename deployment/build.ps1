@@ -129,7 +129,9 @@ $version = Read-Host -Prompt "What version are we building? [e.g. 2.3.0]"
 
 # ensure the build folder exists and is empty
 Write-Host "Removing previous build files"
-Remove-Item -Force -Recurse -Path $buildPath 
+if (Test-Path -Path $buildPath) {
+	Remove-Item -Force -Recurse -Path $buildPath 
+}
 New-Item -ItemType Directory -Force -Path $buildPath
 
 Write-Host "Updating project files for version $version"
