@@ -20,12 +20,18 @@ namespace SftpSchedulerService.Models.Settings
 
         public static void MapValues(StartupSettings from, GlobalSettingsViewModel to)
         {
+            to.CertificatePath = from.CertificatePath;
+            to.CertificatePassword = from.CertificatePassword;
             to.MaxConcurrentJobs = from.MaxConcurrentJobs;
+            to.Port = from.Port;
         }
 
         public static void MapValues(GlobalSettingsViewModel from, StartupSettings to)
         {
+            to.CertificatePath = from.CertificatePath;
+            to.CertificatePassword = from.CertificatePassword;
             to.MaxConcurrentJobs = from.MaxConcurrentJobs;
+            to.Port = from.Port;
         }
     }
 }

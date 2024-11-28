@@ -38,11 +38,24 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 		{
 			// setup
 			int maxConcurrentJobs = Faker.RandomNumber.Next(1, 10);
-			StartupSettings startupSettings = new SubstituteBuilder<StartupSettings>().WithProperty(x => x.MaxConcurrentJobs, maxConcurrentJobs).Build();
+			int port = Faker.RandomNumber.Next(1, 65000);
+			string certificatePath = $"C:\\Temp\\{Faker.Lorem.GetFirstWord()}.json";
+			string certificatePassword = Faker.Name.FullName();
+
+			StartupSettings startupSettings = new SubstituteBuilder<StartupSettings>()
+				.WithProperty(x => x.CertificatePath, certificatePath)
+                .WithProperty(x => x.CertificatePassword, certificatePassword)
+				.WithProperty(x => x.MaxConcurrentJobs, maxConcurrentJobs)
+				.WithProperty(x => x.Port, port)
+				.Build();
             IStartupSettingProvider startupSettingProvider = new SubstituteBuilder<IStartupSettingProvider>().Build();
             startupSettingProvider.Load().Returns(startupSettings);
             GlobalSettingsViewModel globalSettingsViewModel = new SubstituteBuilder<GlobalSettingsViewModel>()
-                .WithProperty(x => x.MaxConcurrentJobs, maxConcurrentJobs).Build();
+                .WithProperty(x => x.CertificatePath, certificatePath)
+                .WithProperty(x => x.CertificatePassword, certificatePassword)
+                .WithProperty(x => x.MaxConcurrentJobs, maxConcurrentJobs)
+                .WithProperty(x => x.Port, port)
+                .Build();
 
             // execute
             var orchestrator = CreateOrchestrator(startupSettingProvider: startupSettingProvider);

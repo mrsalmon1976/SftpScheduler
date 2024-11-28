@@ -45,13 +45,46 @@
                 @* General settings tab *@
                 <div class="tab-pane fade show active" id="tab-settings-general-content" role="tabpanel" aria-labelledby="tab-settings-general">
                     <form class="form-horizontal">
+                        <div class="alert alert-info alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h5><i class="icon fas fa-info"></i> Alert!</h5>
+                            Changing any of these values will require a restart of the SftpScheduler service.  If the service fails to
+                            start after changing these values, check the error logs for the reason and manually change the values in the
+                            startup.settings.json file in the Data folder.
+                        </div>
                         <div class="form-group row">
                             <label for="settings-max-concurrent-jobs" class="col-sm-2 col-form-label">Concurrent Jobs</label>
                             <div class="col-sm-4">
                                 <input type="number" v-model="settings.maxConcurrentJobs" size="2" min="1" max="20" class="form-control" id="settings-max-concurrent-jobs" autocomplete="false">
                                 <span class="feedback">
-                                    Be careful with this setting.  Too many concurrent jobs may overload the server or your network.  Changing this value will only take 
-                                    effect once the SftpSchedulerService is restarted.
+                                    Be careful with this setting.  Too many concurrent jobs may overload the server or your network.  
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-port" class="col-sm-2 col-form-label">Port</label>
+                            <div class="col-sm-4">
+                                <input type="number" v-model="settings.port" size="5" min="1" max="49151" class="form-control" id="settings-port" autocomplete="false">
+                                <span class="feedback">
+                                    This is the port number used by the application.  Default port number is 8642.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-certificate-path" class="col-sm-2 col-form-label">Certificate Path</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="settings.certificatePath" size="5" maxlength="256" class="form-control" id="settings-certificate-path" autocomplete="false">
+                                <span class="feedback">
+                                    The absolute path to a valid certificate .pfx file.  Leave this blank to continue using HTTP.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="settings-certificate-password" class="col-sm-2 col-form-label">Certificate Password</label>
+                            <div class="col-sm-4">
+                                <input type="password" v-model="settings.certificatePassword" size="5" maxlength="256" class="form-control" id="settings-certificate-password" autocomplete="false">
+                                <span class="feedback">
+                                    The password accompanying the certificate path.
                                 </span>
                             </div>
                         </div>

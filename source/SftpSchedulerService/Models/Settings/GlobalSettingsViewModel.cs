@@ -8,6 +8,12 @@
 
         public int MaxConcurrentJobs { get; set; }
 
+        public string CertificatePath { get; set; } = String.Empty;
+
+        public string CertificatePassword { get; set; } = String.Empty;
+
+        public int Port { get; set; }
+
         public string SmtpHost { get; set; } = String.Empty;
 
         public int SmtpPort { get; set; }

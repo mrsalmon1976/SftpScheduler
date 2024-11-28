@@ -6,13 +6,15 @@ namespace SftpSchedulerService.Config
 
         public const int DefaultMaxConcurrentJobs = 2;
 
-        public int MaxConcurrentJobs { get; set; } = DefaultMaxConcurrentJobs;
+		public const int DefaultPort = 8642;
+
+		public int MaxConcurrentJobs { get; set; } = DefaultMaxConcurrentJobs;
 
 		public string CertificatePath { get; set; } = String.Empty;
 
 		public string CertificatePassword { get; set; } = String.Empty;
 
-		public int Port { get; set; } = 8642;
+		public int Port { get; set; } = DefaultPort;
 
 		public override bool Equals(object? obj)
 		{

@@ -19,7 +19,12 @@
 
             this.settings.digestDays = result.data.digestDays;
             this.settings.digestTime = result.data.digestTime;
+
+            this.settings.certificatePath = result.data.certificatePath;
+            this.settings.certificatePassword = result.data.certificatePassword;
             this.settings.maxConcurrentJobs = result.data.maxConcurrentJobs;
+            this.settings.port = result.data.port;
+
             this.settings.smtpHost = result.data.smtpHost;
             this.settings.smtpPort = result.data.smtpPort;
             this.settings.smtpUserName = result.data.smtpUserName;

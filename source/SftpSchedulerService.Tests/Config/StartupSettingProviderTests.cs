@@ -55,6 +55,27 @@ namespace SftpSchedulerService.Tests.Config
             Assert.That(result.MaxConcurrentJobs, Is.EqualTo(defaultValue));
         }
 
+		[Test]
+		public void LoadAll_PortNotSet_ReturnsDefaultValue()
+		{
+			// setup 
+			int defaultValue = StartupSettings.DefaultPort;
+			StartupSettings settings = new StartupSettings();
+			settings.Port = Faker.RandomNumber.Next(defaultValue * 2, defaultValue * 4);
+
+			IFileUtility fileUtility = new SubstituteBuilder<IFileUtility>().Build();
+			fileUtility.Exists(Arg.Any<string>()).Returns(false);
+
+			// execute
+			IStartupSettingProvider provider = new StartupSettingProvider(Substitute.For<AppSettings>(), Substitute.For<IDirectoryUtility>(), fileUtility);
+			StartupSettings result = provider.Load();
+
+			// assert
+			fileUtility.Received(1).Exists(provider.FilePath);
+			fileUtility.DidNotReceive().ReadAllText(provider.FilePath);
+			Assert.That(result.Port, Is.EqualTo(defaultValue));
+		}
+
 		#endregion
 
 	}
