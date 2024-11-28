@@ -1,0 +1,6 @@
+{
+  "CertificatePath": "",
+  "CertificatePassword": "",
+  "MaxConcurrentJobs": 1,
+  "Port": 8642
+}

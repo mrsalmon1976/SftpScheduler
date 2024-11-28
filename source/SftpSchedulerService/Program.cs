@@ -1,5 +1,4 @@
 using SftpScheduler.BLL.Data;
-using SftpSchedulerService;
 using SftpScheduler.BLL.Utility;
 using SftpSchedulerService.BootStrapping;
 using SftpSchedulerService.Config;
@@ -15,9 +14,9 @@ using SftpScheduler.Common.Services;
 using SftpScheduler.Common.Diagnostics;
 using SftpSchedulerService.Utilities;
 using SftpScheduler.BLL.Net;
-using SftpScheduler.BLL.Commands.Notification;
 using SftpScheduler.BLL.Config;
 using SftpSchedulerService.Workers;
+using System.Security.Cryptography.X509Certificates;
 
 Logger? logger = null;
 
@@ -39,19 +38,23 @@ try
     builder.Host.UseNLog();
     logger = LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
 
-    logger.Info("SftpScheduler starting up");
+	logger.Info("SftpScheduler starting up");
     logger.Debug("Context: " + (isUnitTestContext ? "Automated tests" : "Application"));
 
     // initialise app settings
     logger.Debug("Application base directory: {baseDirectory}", AppContext.BaseDirectory);
     AppSettings appSettings = new AppSettings(builder.Configuration, AppContext.BaseDirectory);
-    builder.Services.AddSingleton<AppSettings>(appSettings);
-	builder.Services.AddScoped<IGlobalUserSettingProvider, GlobalUserSettingProvider>();
-
 	IStartupSettingProvider startupSettingsProvider = new StartupSettingProvider(appSettings, new DirectoryUtility(), new FileUtility());
-	builder.Services.AddSingleton<IStartupSettingProvider>(startupSettingsProvider);
 	StartupSettings startupSettings = startupSettingsProvider.Load();
+	logger.Debug("Application port: {port}", startupSettings.Port);
 
+	// if there is a certificate, try and load it
+	builder.WebHost.InitialiseProtocols(startupSettings);
+
+	// add settings to services
+	builder.Services.AddSingleton<AppSettings>(appSettings);
+	builder.Services.AddScoped<IGlobalUserSettingProvider, GlobalUserSettingProvider>();
+	builder.Services.AddSingleton<IStartupSettingProvider>(startupSettingsProvider);
 
 	// add services
 	builder.Services.AddControllers();
@@ -108,10 +111,10 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
-    if (!isUnitTestContext && !Debugger.IsAttached)
-    {
-        app.Urls.Add($"http://0.0.0.0:{appSettings.Port}");
-    }
+	//if (!isUnitTestContext && !Debugger.IsAttached)
+ //   {
+ //       app.Urls.Add($"http://0.0.0.0:{appSettings.Port}");
+ //   }
     app.UseStaticFiles();
 
     app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
@@ -143,4 +146,5 @@ finally
 }
 public partial class Program 
 {
+
 }

@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="Data\config.json" />
     <Content Remove="wwwroot\js\models\host - Copy.min.js" />
     <Content Remove="wwwroot\js\models\settings - Copy.min.js" />
     <Content Remove="wwwroot\js\models\settings.js" />

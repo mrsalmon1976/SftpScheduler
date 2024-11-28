@@ -111,14 +111,6 @@ namespace SftpSchedulerService.Config
             }
         }
 
-        public virtual int Port
-        {
-            get
-            {
-                return Convert.ToInt32(_configuration["AppSettings:Port"]);
-            }
-        }
-
         public virtual string TempDataDirectory
         {
             get

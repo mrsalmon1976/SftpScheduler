@@ -21,6 +21,7 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 - Notifications for repeated failures, and configurable daily digest emails containing details of failing jobs from the past 24 hours (requires SMTP server)
 - Configurable user list
 - Audit logs of host and job changes
+- HTTP or HTTPS support - see Configuration section below for details on how to configure for HTTPS
 
 # Installation
 
@@ -36,6 +37,17 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 - SftpScheduler will automatically update when new versions are released.
 - If this update fails, check that your anti-virus is not quarantining the update files, and add the folder as an exclusion if necessary.
 - To manually update, follow the steps in "First Time and/or Manual Installation" section.  Make sure you do not delete the "Data" folder - this contains all pevious settings, hosts and jobs.
+
+## Configuration
+
+After installation, there are some configurable settings that can be adjusted in the file `Data\startup.settings.json`.  Note that these settings can also be adjusted within the application, but the service will need to be restarted before they take effect.
+
+| **Setting Name**        | **Setting Value** |
+| -                       | -                 |
+| *CertificatePath*       | The path to a certificate for SSL support.  This must be the absolute location of the .pfx file, e.g. `C:\\MyFolder\\MyCertificate.pfx`.  Note that this is a JSON document, so path separators must be `\\`.  Permissions on the file must allow the service user access to load the .pfx file, otherwise the application will default back to HTTP.  If this is set, HTTP will not be available. |
+| *CertificatePassword*  | Accompanies the `CertificatePath` - this is the password for the .pfx file.
+| *MaxConcurrentJobs*    | The maximum number of jobs that can be run concurrently - defaults to 2.  Be careful not to set this too high! More is not always better. |
+| *Port*                 | The port that the application uses - defaults to 8642.  Note that the application will only ever occupy a single port (either over HTTP, or HTTPS if a certificate is configured) |
 
 # Screenshots
 
