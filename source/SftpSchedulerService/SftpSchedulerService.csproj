@@ -48,11 +48,16 @@
     <PackageReference Include="Quartz.Serialization.Json" Version="3.6.3" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Pages\" />
     <Folder Include="wwwroot\plugins\moment\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\**" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Pages\**" />
+    <Content Remove="Pages\**" />
+    <EmbeddedResource Remove="Pages\**" />
+    <None Remove="Pages\**" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="SftpSchedulerService.Tests" />

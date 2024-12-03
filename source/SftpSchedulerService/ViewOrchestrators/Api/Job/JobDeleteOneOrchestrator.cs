@@ -28,8 +28,8 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             int jobId = UrlUtils.Decode(hash);
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
-                var jobEntity = await _deleteJobCommand.ExecuteAsync(dbContext, jobId);
-                _logger.LogInformation($"Deleted job {jobId}");
+                await _deleteJobCommand.ExecuteAsync(dbContext, jobId);
+                _logger.LogInformation("Deleted job {jobId}", jobId);
                 return new OkResult();
             }
         }
