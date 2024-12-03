@@ -33,7 +33,9 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
             {
                 try
                 {
+                    dbContext.BeginTransaction();
                     hostEntity = await _createHostCommand.ExecuteAsync(dbContext, hostEntity);
+                    dbContext.Commit();
                 }
                 catch (DataValidationException dve)
                 {

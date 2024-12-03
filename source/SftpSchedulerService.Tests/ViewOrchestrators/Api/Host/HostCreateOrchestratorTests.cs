@@ -60,6 +60,31 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         }
 
         [Test]
+        public void Execute_OnSave_RunsInTransaction()
+        {
+            IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            dbContextFactory.GetDbContext().Returns(dbContext);
+
+            IMapper mapper = Substitute.For<IMapper>();
+            ICreateHostCommand createHostCommand = Substitute.For<ICreateHostCommand>();
+            HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
+            var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
+
+            mapper.Map<HostEntity>(hostViewModel).Returns(hostEntity);
+            mapper.Map<HostViewModel>(Arg.Any<HostEntity>()).Returns(hostViewModel);
+
+
+            createHostCommand.ExecuteAsync(dbContext, Arg.Any<HostEntity>()).Returns(hostEntity);
+
+            HostCreateOrchestrator hostCreateOrchestrator = new HostCreateOrchestrator(dbContextFactory, mapper, createHostCommand);
+            hostCreateOrchestrator.Execute(hostViewModel).GetAwaiter().GetResult();
+
+            dbContext.Received(1).BeginTransaction();
+            dbContext.Received(1).Commit();
+        }
+
+        [Test]
         public void Execute_OnSave_ReturnsResultWithId()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();

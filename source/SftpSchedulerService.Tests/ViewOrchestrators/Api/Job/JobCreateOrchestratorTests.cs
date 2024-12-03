@@ -60,6 +60,32 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         }
 
         [Test]
+        public void Execute_OnSave_RunsInTransaction()
+        {
+            IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
+            IDbContext dbContext = Substitute.For<IDbContext>();
+            dbContextFactory.GetDbContext().Returns(dbContext);
+
+            IMapper mapper = Substitute.For<IMapper>();
+            ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
+            JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
+            JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
+
+            mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
+            mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
+
+
+            createJobCommand.ExecuteAsync(dbContext, Arg.Any<JobEntity>()).Returns(jobEntity);
+
+            JobCreateOrchestrator JobCreateOrchestrator = new JobCreateOrchestrator(dbContextFactory, mapper, createJobCommand);
+            JobCreateOrchestrator.Execute(jobViewModel).GetAwaiter().GetResult();
+
+            dbContext.Received(1).BeginTransaction();
+            dbContext.Received(1).Commit();
+        }
+
+
+        [Test]
         public void Execute_OnSave_ReturnsResultWithId()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
