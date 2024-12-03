@@ -70,6 +70,9 @@ function RemoveRedundantFiles
 	Remove-Item-IfExists -Path "$buildPath\zh-Hans" 
 	Remove-Item-IfExists -Path "$buildPath\zh-CN" 
 	Remove-Item-IfExists -Path "$buildPath\zh-Hant" 
+
+	Remove-Item-IfExists -Path "$buildPath\Data\startup.settings.json" 
+
 }
 
 function UpdateProjectVersion

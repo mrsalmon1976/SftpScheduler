@@ -4,8 +4,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-SftpSchedulerService-5BD1E8D5-9AAF-44D2-BD4B-C45E755BBECE</UserSecretsId>
-    <AssemblyVersion>1.0.3</AssemblyVersion>
-    <FileVersion>1.0.3</FileVersion>
+    <AssemblyVersion>1.2.0</AssemblyVersion>
+    <FileVersion>1.2.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
@@ -64,6 +64,11 @@
   <ItemGroup>
     <ProjectReference Include="..\SftpScheduler.BLL\SftpScheduler.BLL.csproj" />
     <ProjectReference Include="..\SftpScheduler.Common\SftpScheduler.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Data\startup.settings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Update="install.bat">
