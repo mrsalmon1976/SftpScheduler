@@ -5,6 +5,8 @@
             host: '',
             isEdit: false,
             isLoading: true,
+            localPrefix: '',
+            localPrefixInWords: 'No local prefix entered.',
             schedule: '',
             scheduleInWords: 'No schedule entered',
             job: new JobModel(),
@@ -15,6 +17,9 @@
         }
     },
     watch: {
+        localPrefix: UiHelpers.debounce(function (text) {
+            this.updateLocalPrefixText();
+        }, 500),
         schedule: UiHelpers.debounce(function (text) {
             var that = this;
             this.job.schedule = this.schedule;
@@ -80,6 +85,9 @@
             this.job.hostId = jobData.hostId;
             this.job.type = jobData.type;
             this.job.localPath = jobData.localPath;
+            this.job.localPrefix = jobData.localPrefix;
+            this.localPrefix = jobData.localPrefix;
+            this.job.localArchivePath = jobData.localArchivePath;
             this.job.remotePath = jobData.remotePath;
             this.job.deleteAfterDownload = jobData.deleteAfterDownload;
             this.job.remoteArchivePath = jobData.remoteArchivePath;
@@ -156,6 +164,27 @@
                     }
                     this.isLoading = false;
                 });
+        },
+        async updateLocalPrefixText() {
+            this.job.localPrefix = this.localPrefix;
+            if (this.localPrefix.trim() == '') {
+                this.localPrefixInWords = 'No local prefix entered';
+                return;
+            }
+            let prefixWords = this.localPrefix;
+            const currentYear = moment().format('YYYY');
+            const currentMonth = moment().format('MM');
+            const currentDay = moment().format('DD');
+            const currentHour = moment().format('HH');
+            const currentMinute = moment().format('mm');
+            const currentSecond = moment().format('ss');
+            prefixWords = prefixWords.replace(/\{year\}/gi, currentYear);
+            prefixWords = prefixWords.replace(/\{month\}/gi, currentMonth);
+            prefixWords = prefixWords.replace(/\{day\}/gi, currentDay);
+            prefixWords = prefixWords.replace(/\{hour\}/gi, currentHour);
+            prefixWords = prefixWords.replace(/\{minute\}/gi, currentMinute);
+            prefixWords = prefixWords.replace(/\{second\}/gi, currentSecond);
+            this.localPrefixInWords = 'Files will be prefixed with the value \'' + prefixWords + '\'';
         }
     },
     mounted: function () {
@@ -178,6 +207,7 @@
             this.loadAuditLogs();
             this.setLogReloadInterval();
         }
+        this.updateLocalPrefixText();
         this.isLoading = false;
 
     }

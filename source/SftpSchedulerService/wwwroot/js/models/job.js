@@ -6,8 +6,10 @@
         this.schedule = '';
         this.type = 0;
         this.localPath = '';
+        this.localPrefix = '';
         this.remotePath = '';
         this.deleteAfterDownload = false;
+        this.localArchivePath = '';
         this.remoteArchivePath = '';
         this.localCopyPaths = '';
         this.isEnabled = true;
