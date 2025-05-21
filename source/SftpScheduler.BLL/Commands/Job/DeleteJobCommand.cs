@@ -25,11 +25,17 @@ namespace SftpScheduler.BLL.Commands.Job
 
         public virtual async Task<bool> ExecuteAsync(IDbContext dbContext, int jobId)
         {
-            const string sqlJobLog = @"DELETE FROM JobLog WHERE JobId = @JobId";
-            await dbContext.ExecuteNonQueryAsync(sqlJobLog, new { JobId = jobId });
+            string sql = @"DELETE FROM JobAuditLog WHERE JobId = @JobId";
+            await dbContext.ExecuteNonQueryAsync(sql, new { JobId = jobId });
 
-            const string sqlJob = @"DELETE FROM Job WHERE Id = @Id";
-            await dbContext.ExecuteNonQueryAsync(sqlJob, new { Id = jobId });
+            sql = @"DELETE FROM JobFileLog WHERE JobId = @JobId";
+            await dbContext.ExecuteNonQueryAsync(sql, new { JobId = jobId });
+
+            sql = @"DELETE FROM JobLog WHERE JobId = @JobId";
+            await dbContext.ExecuteNonQueryAsync(sql, new { JobId = jobId });
+
+            sql = @"DELETE FROM Job WHERE Id = @Id";
+            await dbContext.ExecuteNonQueryAsync(sql, new { Id = jobId });
 
             IScheduler scheduler = await _schedulerFactory.GetScheduler();
 

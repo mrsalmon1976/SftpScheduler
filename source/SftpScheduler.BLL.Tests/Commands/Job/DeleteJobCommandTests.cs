@@ -27,11 +27,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             DeleteJobCommand deleteJobCommand = new DeleteJobCommand(Substitute.For<ISchedulerFactory>());
             deleteJobCommand.ExecuteAsync(dbContext, jobId).GetAwaiter().GetResult();
 
-            dbContext.Received(2).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<object>());
+            dbContext.Received(4).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Any<object>());
         }
 
         [TestCase("Job")]
         [TestCase("JobLog")]
+        [TestCase("JobAuditLog")]
+        [TestCase("JobFileLog")]
         public void Execute_OnDelete_RunsDeleteOnTable(string tableName)
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
@@ -51,6 +53,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             deleteJobCommand.ExecuteAsync(dbContext, jobId).GetAwaiter().GetResult();
 
             Assert.That(deleteFound, $"No delete on table {tableName} occurred");
+
         }
 
         [Test]
