@@ -112,7 +112,9 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 FileMask = jobEntity.FileMask,
                 PreserveTimestamp = jobEntity.PreserveTimestamp,
                 TransferMode = jobEntity.TransferMode,
-                CompressionMode = jobEntity.CompressionMode
+                CompressionMode = jobEntity.CompressionMode,
+                LocalArchivePath = jobEntity.LocalArchivePath,
+                LocalPrefix = jobEntity.LocalPrefix
             };
             options.LocalFilePaths.AddRange(filesToTransfer);
             return options;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
+using SftpScheduler.Common;
 using SftpScheduler.Common.IO;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
         private readonly IUploadCompressionService _uploadCompressionService;
         private readonly IDirectoryUtility _dirUtility;
         private readonly IFileUtility _fileUtility;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public const string UploadNamePattern = "^*.uploaded_?\\d?\\d?\\d?$";
 
@@ -35,13 +37,15 @@ namespace SftpScheduler.BLL.Commands.Transfer
             , ICreateJobFileLogCommand createJobFileLogCommand
             , IUploadCompressionService uploadCompressionService
             , IDirectoryUtility dirUtility
-            , IFileUtility fileUtility)
+            , IFileUtility fileUtility
+            , IDateTimeProvider dateTimeProvider)
         {
             _logger = logger;
 			_createJobFileLogCommand = createJobFileLogCommand;
             _uploadCompressionService = uploadCompressionService;
             _dirUtility = dirUtility;
             _fileUtility = fileUtility;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public void DownloadFiles(ISessionWrapper sessionWrapper, IDbContext dbContext, DownloadOptions options)
@@ -59,7 +63,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
             {
                 string fileName = remoteFile.Name;
                 string localFilePath = Path.Combine(options.LocalPath, fileName);
-                DateTime startDate = DateTime.Now;
+                DateTime startDate = _dateTimeProvider.Now;
 
 				// get the files - note that if options.DeleteAfterDownload is set to true, the file will automatically be deleted by the client
 				int downloadedCount = sessionWrapper.GetFiles(remoteFile.FullName, localFilePath, options);
@@ -91,7 +95,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
 				JobFileLogEntity fileLog = new JobFileLogEntity();
 				fileLog.JobId = options.JobId;
 				fileLog.StartDate = startDate;
-				fileLog.EndDate = DateTime.Now;
+				fileLog.EndDate = _dateTimeProvider.Now;
                 fileLog.FileLength = _fileUtility.GetFileSize(localFilePath);
                 fileLog.FileName = fileName;
                 _createJobFileLogCommand.ExecuteAsync(dbContext, fileLog);
@@ -129,7 +133,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
 				string fileName = Path.GetFileName(filePath);
 				string extension = Path.GetExtension(filePath);
                 string? folder = Path.GetDirectoryName(filePath);
-                DateTime startDate = DateTime.Now;
+                long fileSize = _fileUtility.GetFileSize(filePath);
+                DateTime startDate = _dateTimeProvider.Now;
 
                 CompressedFileInfo compressedFileInfo = _uploadCompressionService.PrepareUploadFile(filePath, options.CompressionMode);
                 string fileToUpload = (compressedFileInfo.CompressedFilePath ?? filePath);
@@ -142,16 +147,39 @@ namespace SftpScheduler.BLL.Commands.Transfer
                     continue;
                 }
 
-                string destFilePath = GetUniqueFileName(folder, fileNameWithoutExt, ".uploaded", extension);
+                // if a prefix has been set, update the file name with the prefix
+                if (!String.IsNullOrEmpty(options.LocalPrefix))
+                {
+                    string prefix = options.LocalPrefix ?? String.Empty;
+                    const string format = "0#";
+                    prefix = prefix.Replace("{YEAR}", _dateTimeProvider.Now.Year.ToString(), StringComparison.OrdinalIgnoreCase);
+                    prefix = prefix.Replace("{MONTH}", _dateTimeProvider.Now.Month.ToString(format), StringComparison.OrdinalIgnoreCase);
+                    prefix = prefix.Replace("{DAY}", _dateTimeProvider.Now.Day.ToString(format), StringComparison.OrdinalIgnoreCase);
+                    prefix = prefix.Replace("{HOUR}", _dateTimeProvider.Now.Hour.ToString(format), StringComparison.OrdinalIgnoreCase);
+                    prefix = prefix.Replace("{MINUTE}", _dateTimeProvider.Now.Minute.ToString(format), StringComparison.OrdinalIgnoreCase);
+                    prefix = prefix.Replace("{SECOND}", _dateTimeProvider.Now.Second.ToString(format), StringComparison.OrdinalIgnoreCase);
+                    fileNameWithoutExt = $"{prefix}{fileNameWithoutExt}";
+                }
+
+                // if we are not moving the file out, then rename with a ".uploaded" so we don't try and upload again
+                string destFilePath = String.Empty;
+                if (!String.IsNullOrEmpty(options.LocalArchivePath) && _dirUtility.Exists(options.LocalArchivePath))
+                {
+                    destFilePath = GetUniqueFileName(options.LocalArchivePath, fileNameWithoutExt, "", extension);
+                }
+                else
+                {
+                    destFilePath = GetUniqueFileName(folder, fileNameWithoutExt, ".uploaded", extension);
+                }
                 _fileUtility.Move(filePath, destFilePath, false);
                 _logger.LogInformation("File {file} uploaded and renamed to {destFilePath}", filePath, destFilePath);
 
-				// log the transfer
-				JobFileLogEntity fileLog = new JobFileLogEntity();
+                // log the transfer
+                JobFileLogEntity fileLog = new JobFileLogEntity();
 				fileLog.JobId = options.JobId;
 				fileLog.StartDate = startDate;
-				fileLog.EndDate = DateTime.Now;
-				fileLog.FileLength = _fileUtility.GetFileSize(destFilePath);
+				fileLog.EndDate = _dateTimeProvider.Now;
+				fileLog.FileLength = fileSize;
 				fileLog.FileName = fileName;
 				_createJobFileLogCommand.ExecuteAsync(dbContext, fileLog);
 

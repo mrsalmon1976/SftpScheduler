@@ -62,6 +62,12 @@ namespace SftpScheduler.BLL.Validators
                 validationResult.ErrorMessages.Add("Local path does not exist");
             }
 
+            // check the local path
+            if (!String.IsNullOrEmpty(jobEntity.LocalArchivePath) && !_directoryWrap.Exists(jobEntity.LocalArchivePath))
+            {
+                validationResult.ErrorMessages.Add("Local archive path does not exist");
+            }
+
             // for downloads, if we are not deleting remote, then a remote archive path needs to be supplied
             if (jobEntity.Type == JobType.Download && !jobEntity.DeleteAfterDownload && String.IsNullOrWhiteSpace(jobEntity.RemoteArchivePath)) 
             {

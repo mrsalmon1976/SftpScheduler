@@ -386,7 +386,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                 .WithProperty(x => x.HostId, 1)
                 .WithProperty(x => x.Type, JobType.Upload)
                 .WithProperty(x => x.Schedule, "0 * 0 ? * * *")
-                .WithProperty(x => x.ScheduleInWords, "Every minute");
+                .WithProperty(x => x.ScheduleInWords, "Every minute")
+                .WithProperty(x => x.LocalArchivePath, ""); 
 
         }
 

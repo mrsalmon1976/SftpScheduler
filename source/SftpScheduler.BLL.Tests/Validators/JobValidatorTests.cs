@@ -54,7 +54,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
-        public void Validate_InValidNoHost_ExceptionThrown()
+        public void Validate_InvalidNoHost_ExceptionThrown()
         {
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.HostId, 0).Build();
             JobValidator jobValidator = CreateJobValidator();
@@ -64,7 +64,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
-        public void Validate_InValidHostDoesNotExist_ExceptionThrown()
+        public void Validate_InvalidHostDoesNotExist_ExceptionThrown()
         {
             int hostId = Faker.RandomNumber.Next(1, 100);
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.HostId, hostId).Build();
@@ -90,7 +90,7 @@ namespace SftpScheduler.BLL.Tests.Validators
 
         [TestCase(0)]
         [TestCase(3)]
-        public void Validate_InValidType_ExceptionThrown(int jobType)
+        public void Validate_InvalidType_ExceptionThrown(int jobType)
         {
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.Type, (JobType)jobType).Build();
             JobValidator jobValidator = CreateJobValidator();
@@ -102,7 +102,7 @@ namespace SftpScheduler.BLL.Tests.Validators
 
 
         [Test]
-        public void Validate_InValidSchedule_ExceptionThrown()
+        public void Validate_InvalidSchedule_ExceptionThrown()
         {
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.Schedule, "invalid").Build();
             JobValidator jobValidator = CreateJobValidator();
@@ -112,7 +112,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         }
 
         [Test]
-        public void Validate_InValidLocalPath_ExceptionThrown()
+        public void Validate_InvalidLocalPath_ExceptionThrown()
         {
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.LocalPath, "").Build();
             JobValidator jobValidator = CreateJobValidator();
@@ -120,6 +120,30 @@ namespace SftpScheduler.BLL.Tests.Validators
             Assert.That(validationResult.IsValid, Is.False);
             Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
             Assert.That(validationResult.ErrorMessages[0].Contains("local path is required", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        [Test]
+        public void Validate_InvalidLocalArchivePath_ExceptionThrown()
+        {
+            // setup
+            string localArchivePath = $"C:\\{RandomData.String}";
+            JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.LocalArchivePath, localArchivePath).Build();
+
+            IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();
+            dirUtility.Exists(localArchivePath).Returns(false);
+            dirUtility.Exists(jobEntity.LocalPath).Returns(true);
+
+            JobValidator jobValidator = CreateJobValidator(dirUtility: dirUtility);
+
+            // act
+            var validationResult = jobValidator.Validate(Substitute.For<IDbContext>(), jobEntity);
+
+            // assert
+            Assert.That(validationResult.IsValid, Is.False);
+            Assert.That(validationResult.ErrorMessages.Count, Is.EqualTo(1));
+            Assert.That(validationResult.ErrorMessages[0].Contains("local archive path does not exist", StringComparison.InvariantCultureIgnoreCase));
+
+            dirUtility.Received(1).Exists(localArchivePath);
         }
 
         [Test]
@@ -308,26 +332,27 @@ namespace SftpScheduler.BLL.Tests.Validators
         #region Private Methods
 
         // creates a validator which passes everything
-        private JobValidator CreateJobValidator(HostRepository? hostRepo = null, JobRepository? jobRepo = null)
+        private JobValidator CreateJobValidator(HostRepository? hostRepo = null, JobRepository? jobRepo = null, IDirectoryUtility? dirUtility = null)
         {
-            hostRepo ??= Substitute.For<HostRepository>();
-            hostRepo.GetByIdAsync(Arg.Any<IDbContext>(), Arg.Any<int>()).Returns(Task.FromResult(new HostEntity()));
+            if (hostRepo == null)
+            {
+                hostRepo = Substitute.For<HostRepository>();
+                hostRepo.GetByIdAsync(Arg.Any<IDbContext>(), Arg.Any<int>()).Returns(Task.FromResult(new HostEntity()));
+            }
 
             jobRepo ??= Substitute.For<JobRepository>();
 
-            IDirectoryUtility dirWrap = Substitute.For<IDirectoryUtility>();
-            dirWrap.Exists(Arg.Any<string>()).Returns(true);
+            if (dirUtility == null) 
+            { 
+                dirUtility = Substitute.For<IDirectoryUtility>();
+                dirUtility.Exists(Arg.Any<string>()).Returns(true);
+            }
 
 
-            return CreateJobValidator(hostRepo, jobRepo, dirWrap);
-
-        }
-
-        private JobValidator CreateJobValidator(HostRepository hostRepository, JobRepository jobRepo, IDirectoryUtility directoryWrap)
-        {
-            return new JobValidator(hostRepository, jobRepo, directoryWrap);
+            return new JobValidator(hostRepo, jobRepo, dirUtility);
 
         }
+
         private SubstituteBuilder<JobEntity> CreateValidJobEntityBuilder()
         {
             return new SubstituteBuilder<JobEntity>()
@@ -335,7 +360,8 @@ namespace SftpScheduler.BLL.Tests.Validators
                 .WithProperty(x => x.HostId, 1)
                 .WithProperty(x => x.Type, JobType.Upload)
                 .WithProperty(x => x.Schedule, "0 * 0 ? * * *")
-                .WithProperty(x => x.ScheduleInWords, "Every minute");
+                .WithProperty(x => x.ScheduleInWords, "Every minute")
+                .WithProperty(x => x.LocalArchivePath, "");
 
         }
 

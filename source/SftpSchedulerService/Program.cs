@@ -17,6 +17,7 @@ using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Config;
 using SftpSchedulerService.Workers;
 using System.Security.Cryptography.X509Certificates;
+using SftpScheduler.Common;
 
 Logger? logger = null;
 
@@ -71,6 +72,7 @@ try
 
     builder.Services.AddScoped<IDirectoryUtility, DirectoryUtility>();
     builder.Services.AddScoped<IFileUtility, FileUtility>();
+    builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
     builder.Services.AddScoped<IFileTransferService, FileTransferService>();
     builder.Services.AddScoped<IUploadCompressionService>((sp) => new UploadCompressionService(appSettings.TempDataDirectory, sp.GetService<IDirectoryUtility>()!, sp.GetService<IFileUtility>()!));
     builder.Services.AddScoped<IPasswordProvider, PasswordProvider>();

@@ -23,6 +23,10 @@ namespace SftpScheduler.BLL.Models
 
 		public string RemotePath { get; set; }
 
+        public string? LocalArchivePath {  get; set; }
+
+        public string? LocalPrefix { get; set; }
+
         public bool RestartOnFailure { get; set; }
 
         public string? FileMask { get; set; }

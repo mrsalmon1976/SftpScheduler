@@ -173,6 +173,8 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             Assert.That(optionsReceived.PreserveTimestamp, Is.EqualTo(jobEntity.PreserveTimestamp));
             Assert.That(optionsReceived.TransferMode, Is.EqualTo(jobEntity.TransferMode));
             Assert.That(optionsReceived.CompressionMode, Is.EqualTo(jobEntity.CompressionMode));
+            Assert.That(optionsReceived.LocalArchivePath, Is.EqualTo(jobEntity.LocalArchivePath));
+            Assert.That(optionsReceived.LocalPrefix, Is.EqualTo(jobEntity.LocalPrefix));
         }
 
         [Test]
