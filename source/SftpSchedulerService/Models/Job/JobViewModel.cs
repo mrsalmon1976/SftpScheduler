@@ -58,6 +58,10 @@ namespace SftpSchedulerService.Models.Job
 
         public TransferMode TransferMode { get; set; }
 
+        public string? LocalArchivePath { get; set; }
+
+        public string? LocalPrefix { get; set; }
+
 
     }
 }

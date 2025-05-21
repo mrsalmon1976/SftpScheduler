@@ -59,6 +59,16 @@ namespace SftpScheduler.BLL.Models
 
         public virtual string? RemoteArchivePath { get; set; }
 
+        /// <summary>
+        /// An optional place to move uploaded files (after successful upload).
+        /// </summary>
+        public virtual string? LocalArchivePath { get; set; }
+
+        /// <summary>
+        /// When files are uploaded, this prefix is added to the file name.
+        /// </summary>
+        public virtual string? LocalPrefix { get; set; }
+
         public virtual string? LocalCopyPaths { get; set; }
 
         public bool IsEnabled { get; set; }

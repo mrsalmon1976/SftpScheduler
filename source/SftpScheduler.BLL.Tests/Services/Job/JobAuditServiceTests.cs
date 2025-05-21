@@ -338,6 +338,44 @@ namespace SftpScheduler.BLL.Tests.Services.Job
         }
 
         [Test]
+        public void CompareJobs_LocalArchivePathChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.LocalArchivePath = Guid.NewGuid().ToString();
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "LocalArchivePath", jobEntityOld.LocalArchivePath!, jobEntityNew.LocalArchivePath);
+        }
+
+        [Test]
+        public void CompareJobs_LocalPrefixChanged_AuditRecordCreated()
+        {
+            // setup
+            IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
+            JobEntity jobEntityOld = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
+            JobEntity jobEntityNew = ObjectUtils.Clone<JobEntity>(jobEntityOld)!;
+            jobEntityNew.LocalPrefix = Guid.NewGuid().ToString();
+            string userName = Guid.NewGuid().ToString();
+
+            // execute 
+            IJobAuditService jobAuditService = new JobAuditService(new HostRepository());
+            var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
+
+            // assert
+            Assert.That(result.Count(), Is.EqualTo(1));
+            AssertAuditLogProperties(result.Single(), jobEntityOld.Id, "LocalPrefix", jobEntityOld.LocalPrefix!, jobEntityNew.LocalPrefix);
+        }
+
+        [Test]
         public void CompareJobs_AllPropertiesChanged_AuditRecordsCreated()
         {
             // setup
@@ -368,6 +406,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
                 .WithProperty(x => x.FileMask, "*.OLD")
                 .WithProperty(x => x.PreserveTimestamp, false)
                 .WithProperty(x => x.TransferMode, TransferMode.Ascii)
+                .WithProperty(x => x.LocalArchivePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalPrefix, Guid.NewGuid().ToString())
                 .Build();
             JobEntity jobEntityNew = new SubstituteBuilder<JobEntity>()
                 .WithProperty(x => x.Name, Guid.NewGuid().ToString())
@@ -385,6 +425,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
                 .WithProperty(x => x.FileMask, "*.NEW")
                 .WithProperty(x => x.PreserveTimestamp, true)
                 .WithProperty(x => x.TransferMode, TransferMode.Automatic)
+                .WithProperty(x => x.LocalArchivePath, Guid.NewGuid().ToString())
+                .WithProperty(x => x.LocalPrefix, Guid.NewGuid().ToString())
                 .Build();
 
             // execute 
@@ -392,7 +434,7 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             var result = jobAuditService.CompareJobs(dbContext, jobEntityOld, jobEntityNew, userName).Result;
 
             // assert
-            Assert.That(result.Count(), Is.EqualTo(15));
+            Assert.That(result.Count(), Is.EqualTo(17));
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "Name"), jobEntityOld.Id, "Name", jobEntityOld.Name, jobEntityNew.Name);
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "Host"), jobEntityOld.Id, "Host", $"{hostEntityOld.Name}", $"{hostEntityNew.Name}");
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "JobType"), jobEntityOld.Id, "JobType", jobEntityOld.Type.ToString(), jobEntityNew.Type.ToString());
@@ -408,6 +450,8 @@ namespace SftpScheduler.BLL.Tests.Services.Job
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "FileMask"), jobEntityOld.Id, "FileMask", jobEntityOld.FileMask!, jobEntityNew.FileMask!);
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "PreserveTimestamp"), jobEntityOld.Id, "PreserveTimestamp", "False", "True");
             AssertAuditLogProperties(result.Single(x => x.PropertyName == "TransferMode"), jobEntityOld.Id, "TransferMode", jobEntityOld.TransferMode.ToString(), jobEntityNew.TransferMode.ToString());
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "LocalArchivePath"), jobEntityOld.Id, "LocalArchivePath", jobEntityOld.LocalArchivePath ?? String.Empty, jobEntityNew.LocalArchivePath ?? String.Empty);
+            AssertAuditLogProperties(result.Single(x => x.PropertyName == "LocalPrefix"), jobEntityOld.Id, "LocalPrefix", jobEntityOld.LocalPrefix ?? String.Empty, jobEntityNew.LocalPrefix ?? String.Empty);
         }
 
 

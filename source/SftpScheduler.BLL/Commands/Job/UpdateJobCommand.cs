@@ -58,6 +58,8 @@ namespace SftpScheduler.BLL.Commands.Job
                 , FileMask = @FileMask
                 , PreserveTimestamp = @PreserveTimestamp
                 , TransferMode = @TransferMode
+                , LocalArchivePath = @LocalArchivePath
+                , LocalPrefix = @LocalPrefix
                 WHERE Id = @Id";
             await dbContext.ExecuteNonQueryAsync(sql, jobEntity);
 

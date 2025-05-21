@@ -90,6 +90,14 @@ namespace SftpScheduler.BLL.Services.Job
             {
                 changes.Add(new JobAuditLogEntity(hostId, "TransferMode", currentJobEntity.TransferMode.ToString(), updatedJobEntity.TransferMode.ToString(), userName));
             }
+            if (currentJobEntity.LocalArchivePath != updatedJobEntity.LocalArchivePath)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "LocalArchivePath", currentJobEntity.LocalArchivePath, updatedJobEntity.LocalArchivePath, userName));
+            }
+            if (currentJobEntity.LocalPrefix != updatedJobEntity.LocalPrefix)
+            {
+                changes.Add(new JobAuditLogEntity(hostId, "LocalPrefix", currentJobEntity.LocalPrefix, updatedJobEntity.LocalPrefix, userName));
+            }
 
             return changes;
         }
