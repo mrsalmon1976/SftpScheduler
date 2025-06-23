@@ -31,6 +31,7 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 - Extract the contents of the zip folder, and move them to the installation directory.
 - Run "install.bat" as administrator - this will install SftpScheduler as a service on the machine.
 - You may want to edit the installed service properties through the Windows services console and adjust the service user.  By default, running as SYSTEM may not have the permissions required to access folders on your machine or network, so you may want to set the Logon user as a local administrator or a domain user.
+- Once the service is installed and running, you will be able to access the application at `http://YOURMACHINE:8642` by default.  The user name / password is _admin_ / _admin_, and the password can be reset once logged in.
 
 ## Updates
 
