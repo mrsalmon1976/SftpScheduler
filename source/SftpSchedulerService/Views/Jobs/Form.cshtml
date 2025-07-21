@@ -34,7 +34,7 @@
                 @* TAB: Job Form *@
                 <div class="tab-pane fade show active" id="tab-job-detail-content" role="tabpanel" aria-labelledby="tab-job-detail">
                     <form class="form-horizontal">
-                        <div class="form-group row">
+                        <div class="form-group row col-12">
                             <label for="job-type" class="col-sm-2 col-form-label">Type</label>
                             <div class="col-sm-2">
                                 <select v-model.number="job.type" class="form-control" id="job-type" @@blur="job.validateType()" @@change="onTypeChange">
@@ -43,6 +43,9 @@
                                     <option value="2">@JobType.Upload</option>
                                 </select>
                                 <span v-if="!job.isTypeValid" class="invalid-feedback">Please select a job type</span>
+                            </div>
+                            <div style="position:absolute;float-right;right:0;">
+                                <button type="button" @@click="executeJob" class="btn btn-primary" :disabled="isLoading"><i class="fa fa-play" style="margin-right:7px;"></i>Run Job</button>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -215,7 +218,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">{{ submitButtonText }}</button>
+                            <button type="button" @@click="submit" class="btn btn-primary" :disabled="isLoading">{{ submitButtonText }}</button>
                         </div>
                     </form>
                 </div>

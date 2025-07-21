@@ -35,6 +35,22 @@
         }, 500)
     },
     methods: {
+        async executeJob() {
+
+            await axios.post('/api/jobs/' + this.job.hashId + '/run', this.job)
+                .then(response => {
+                    UiHelpers.showSuccessToast('Run Job', '', 'Job ' + this.job.name + ' has been scheduled for execution');
+                })
+                .catch(err => {
+                    if (err.response && err.response.status == 400) {
+                        UiHelpers.showWarningToast('Error', '', err.response.data)
+                    }
+                    else {
+                        UiHelpers.showErrorToast('Error', '', err.message);
+                    }
+                });
+
+        },
         formatDateTime(dt) {
             return UiHelpers.formatDateTime(dt);
         },
