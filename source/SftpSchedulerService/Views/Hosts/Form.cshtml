@@ -87,11 +87,11 @@
                                 <span v-if="host.isKeyFingerprintEmpty" class="error invalid-feedback"><i class="fa fa-skull-crossbones"></i> No security check will be done against the remote host</span>
                             </div>
                             <div class="col-sm-2">
-                                <button type="button" class="btn btn-primary" v-on:click="showScanDialog()" :disabled="host.host == ''">Scan</button>
+                                <button type="button" class="btn btn-info" v-on:click="showScanDialog()" :disabled="host.host == ''">Scan</button>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button type="button" @@click="submit" class="btn btn-info" :disabled="isLoading">{{ submitButtonText }}</button>
+                            <button type="button" @@click="submit" class="btn btn-primary" :disabled="isLoading">{{ submitButtonText }}</button>
                         </div>
                         <!-- /.card-footer -->
                     </form>

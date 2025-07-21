@@ -44,8 +44,8 @@
                                 </select>
                                 <span v-if="!job.isTypeValid" class="invalid-feedback">Please select a job type</span>
                             </div>
-                            <div style="position:absolute;float-right;right:0;">
-                                <button type="button" @@click="executeJob" class="btn btn-primary" :disabled="isLoading"><i class="fa fa-play" style="margin-right:7px;"></i>Run Job</button>
+                            <div v-if="isEdit" style="position:absolute;right:0;">
+                                <button type="button" @@click="executeJob" class="btn btn-info" :disabled="isLoading"><i class="fa fa-play" style="margin-right:7px;"></i>Run Job</button>
                             </div>
                         </div>
                         <div class="form-group row">
