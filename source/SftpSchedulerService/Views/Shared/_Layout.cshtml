@@ -69,14 +69,23 @@
                         <i class="fa fa-bell"></i>
                         <span class="badge navbar-badge" :class="[ jobNotificationBadgeClass ]">{{ jobNotifications.length }}</span>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" v-if="jobNotifications.length > 0">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" v-if="showNotifications">
                         <div v-for="notification in jobNotifications">
                             <span class="dropdown-item text-sm whitespace-normal">
                                 <a v-bind:href="'/jobs/' + notification.hashId" :class="[notification.textClass]"><i class="fa fa-triangle-exclamation"></i>&nbsp; {{ notification.text }}</a> 
                             </span>
                             <div class="dropdown-divider"></div>
                         </div>
-                        <a href="#" v-on:click="loadJobNotifications(true)" class="dropdown-item dropdown-footer">Refresh</a>
+                        <div v-if="versionInfo.isNewVersionAvailable">
+                            <span class="dropdown-item text-sm whitespace-normal">
+                                <span class="text-warning">
+                                <i class="fa fa-triangle-exclamation"></i>&nbsp;New version available: {{ versionInfo?.latestReleaseVersionNumber }}</span>
+                                <a class="btn btn-warning" href="/update/install" style="margin-left:15px;padding: 1px 5px 1px 5px;">Install</a>
+                            </span>
+                            
+                            <div class="dropdown-divider"></div>
+                        </div>
+                        <a href="#" v-on:click="reloadNotifications(true)" class="dropdown-item dropdown-footer">Refresh</a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">

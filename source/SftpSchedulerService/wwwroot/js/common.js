@@ -132,6 +132,8 @@ createApp({
         return {
             jobNotificationBadgeClass: 'badge-success',
             jobNotifications: [],
+            showNotifications: false,
+            versionInfo: null
         }
     },
     methods: {
@@ -148,6 +150,20 @@ createApp({
                 });
 
             this.jobNotifications = this.resetJobNotificationStyles(result.data);
+        },
+        async loadUpdateCheck() {
+            var url = '/api/update/check';
+            let result = await axios.get(url)
+                .catch(err => {
+                    UiHelpers.showErrorToast('Error', '', err.message);
+                    return;
+                });
+            this.versionInfo = result.data;
+        },
+        async reloadNotifications(forceReload) {
+            await this.loadJobNotifications(forceReload);
+            await this.loadUpdateCheck();
+            this.showNotifications = (this.jobNotifications.length > 0 || this.versionInfo.isNewVersionAvailable);
         },
         resetJobNotificationStyles(notifications) {
             var badgeClass = '';
@@ -171,8 +187,8 @@ createApp({
             return notifications;
         }
     },
-    mounted: function () {
-        this.loadJobNotifications(false);
+    async mounted() {
+        await this.reloadNotifications(false);
     }
 }).mount('#app-menu')
 

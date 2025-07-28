@@ -2,8 +2,6 @@
     data() {
         return {
             isLoading: true,
-            isNewVersionAvailable: false,
-            latestVersion: '0.0',
             jobTotalCount: 'Loading...',
             jobFailingCount: 'Loading...',
             jobFailingPercentage: 0,
@@ -11,15 +9,6 @@
         }
     },
     methods: {
-        async checkVersion() {
-            let result = await axios.get('/api/update/check')
-                .catch(err => {
-                    console.log(err.message);
-                });
-
-            this.isNewVersionAvailable = result.data.isNewVersionAvailable;
-            this.latestVersion = result.data.latestReleaseVersionNumber;
-        },
         calculatePercentage(divident, divisor) {
             var dividentNum = parseInt(divident);
             var divisorNum = parseInt(divisor);
@@ -47,6 +36,5 @@
         UiHelpers.setPageHeader('Dashboard')
         this.isLoading = false;
         this.loadStats();
-        this.checkVersion();
     }
 }).mount('#app-dashboard')
