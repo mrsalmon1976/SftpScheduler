@@ -78,9 +78,9 @@
                         </div>
                         <div v-if="versionInfo.isNewVersionAvailable">
                             <span class="dropdown-item text-sm whitespace-normal">
-                                <span class="text-warning">
-                                <i class="fa fa-triangle-exclamation"></i>&nbsp;New version available: {{ versionInfo?.latestReleaseVersionNumber }}</span>
-                                <a class="btn btn-warning" href="/update/install" style="margin-left:15px;padding: 1px 5px 1px 5px;">Install</a>
+                                <a href="/update/install" class="text-info">
+                                    <i class="fa fa-triangle-exclamation"></i>&nbsp;New version available: {{ versionInfo?.latestReleaseVersionNumber }}
+                                </a>
                             </span>
                             
                             <div class="dropdown-divider"></div>

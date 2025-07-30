@@ -10,22 +10,35 @@
 
 <div id="app-update" class="row">
 
+
     <div class="alert alert-warning col-11">
-        <h5><i class="icon fas fa-exclamation-triangle"></i> Update in Progress</h5>
-        <p>
-            An update to SftpScheduler is being installed. The update process will:
-        </p>
-        <ul>
-            <li>Download the latest version of SftpScheduler</li>
-            <li>Back up the current version into a "Backup" folder</li>
-            <li>Install the new version, keeping existing database and log files</li>
-            <li>Start the new service and apply any data upgrades</li>
-        </ul>
-        <p>
-            If this page does not show success within a few minutes, you may need to complete the installation manually on the server.  This is 
-            <a href="https://github.com/mrsalmon1976/SftpScheduler">documented here</a> - please register an issue and include any relevant lines
-            from the application log file.
-        </p>
+        <h5><i class="icon fas fa-exclamation-triangle"></i> {{ pageHeader }}</h5>
+        <div v-if="isUpdating">
+            <p>
+                An update to SftpScheduler is being installed. 
+            </p>
+            <p>
+                If this page does not show success within a few minutes, please try the following:
+                <ol>
+                    <li>On the server, go to the installation folder, and run the "Update.ps1" Powershell script.</li>
+                    <li>If this fails, follow the manual installation instructions on <a href="https://github.com/mrsalmon1976/SftpScheduler">https://github.com/mrsalmon1976/SftpScheduler</a> .</li>
+                </ol>
+            </p>
+        </div>
+        <div v-else>
+            <p>
+                To update the software you can:
+                <ol>
+                    <li>Click the button below to try and install a new version.  This will stop the service and attempt to run a PowerShell script to update the application - this depend on permissions on your server, as well as your anti-virus software.  If this does not work within a few minutes, you can try option 2.</li>
+                    <li>On the server, go to the installation folder, and run the "Update.ps1" Powershell script.</li>
+                    <li>If this fails, follow the manual installation instructions on <a href="https://github.com/mrsalmon1976/SftpScheduler">https://github.com/mrsalmon1976/SftpScheduler</a> .</li>
+                </ol>
+            </p>
+            <p>
+                You can leave this page open while running updates, and it will redirect to the dashboard once the update is complete.
+            </p>
+            <button class="btn btn-danger" @@click="update()">Install New Version</button>
+        </div>
     </div>
     @*
     <div class="progress-group col-11">

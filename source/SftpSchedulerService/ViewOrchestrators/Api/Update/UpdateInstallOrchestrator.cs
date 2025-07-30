@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SftpScheduler.Common.Diagnostics;
 using SftpScheduler.Common;
+using SftpScheduler.Common.Diagnostics;
 using SftpSchedulerService.Config;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Update
@@ -25,17 +25,21 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Update
 
         public async Task<IActionResult> Execute()
         {
-            string autoUpdaterFolder = Path.Combine(_appSettings.BaseDirectory, UpdateConstants.UpdaterFolderName);
-            _logger.LogInformation("Autoupdater folder: {autoUpdaterFolder}", autoUpdaterFolder);
+            string scriptPath = Path.Combine(_appSettings.BaseDirectory, UpdateConstants.UpdaterFileName);
+            _logger.LogInformation("Attempting to run update: {scriptPath}", scriptPath);
 
             using (IProcessWrapper process = _processWrapperFactory.CreateProcess())
             {
-                process.StartInfo.UseShellExecute = true;
-                process.StartInfo.WorkingDirectory = autoUpdaterFolder;
-                process.StartInfo.FileName = UpdateConstants.UpdaterExeFileName;
+                process.StartInfo.FileName = "powershell.exe";
+                process.StartInfo.Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\"";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.WorkingDirectory = _appSettings.BaseDirectory;
                 process.StartInfo.Verb = UpdateConstants.StartInfoVerb;
                 bool isStarted = process.Start();
-                _logger.LogInformation("Process start result {isStarted}", isStarted);
+                _logger.LogInformation("Process start result: {isStarted}", isStarted);
             }
             return await Task.FromResult(new OkResult());
         }

@@ -15,6 +15,8 @@ namespace SftpScheduler.Common
         public const string UpdateTempFolderName = "__UpdateTemp";
 
         public const string UpdaterFolderName = "Updater";
+        
+        public const string UpdaterFileName = "Update.ps1";
 
         public const string UpdaterNewFileExtension = ".new";
 

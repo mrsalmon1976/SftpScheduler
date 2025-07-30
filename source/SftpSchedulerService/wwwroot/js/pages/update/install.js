@@ -1,6 +1,8 @@
 ﻿createApp({
     data() {
         return {
+            isUpdating: false,
+            pageHeader: 'A new version of SftpScheduler is available for download.'
         }
     },
     methods: {
@@ -31,12 +33,15 @@
                 .catch(err => {
                     UiHelpers.showErrorToast('Error', '', err.message);
                 });
+        },
+        update() {
+            this.isUpdating = true;
+            this.pageHeader = 'Update in Progress';
+            this.initiateInstall();
+            this.checkVersion();
         }
     },
     mounted: function () {
         UiHelpers.setPageHeader('Updating SftpScheduler')
-        this.initiateInstall();
-        this.checkVersion();
-
     }
 }).mount('#app-update')

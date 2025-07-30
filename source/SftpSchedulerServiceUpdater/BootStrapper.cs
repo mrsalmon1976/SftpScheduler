@@ -2,17 +2,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
-using SftpScheduler.Common.IO;
-using SftpSchedulerServiceUpdater.Config;
-using SftpSchedulerServiceUpdater.Services;
 using SftpScheduler.Common.Diagnostics;
+using SftpScheduler.Common.IO;
 using SftpScheduler.Common.Services;
 using SftpScheduler.Common.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SftpSchedulerServiceUpdater.Config;
+using SftpSchedulerServiceUpdater.Services;
 
 namespace SftpSchedulerServiceUpdater
 {
