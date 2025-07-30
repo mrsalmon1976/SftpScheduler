@@ -236,6 +236,16 @@ function RemoveTempFolder {
     }
 }
 
+function RemoveLegacyFolder {
+    param ([System.String]$folder) 
+
+    $path = "$global:scriptRoot\$folder"
+    if (Test-Path -Path $path) {
+        Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+        LogMessage -msg "Legacy folder '$path' deleted."
+    }
+}
+
 function StartService {
 
     $service = Get-Service -Name $global:serviceName -ErrorAction SilentlyContinue
@@ -291,7 +301,7 @@ function Run {
 
         # if versions match - print and exit
         if (IsLatestVersionInstalled -installedVersion $versionInstalled -latestVersion $versionLatest) {
-            #Exit
+            Exit
         }
 
         # create temp folder for update
@@ -320,6 +330,9 @@ function Run {
 
         # clean up temporary folder - delete everything in it and remove the folder
         RemoveTempFolder
+
+        # remove legacy folders if they are still hanging around
+        RemoveLegacyFolder -folder "Updater"
     }
     catch {
         $ex = $_.Exception
