@@ -15,7 +15,6 @@ function RemoveRedundantFiles
 	param([string]$buildPath)
 
 	Remove-Item-IfExists -Path "$buildPath\appsettings.Development.json" 
-	Remove-Item-IfExists -Path "$buildPath\Updater\appsettings.Development.json" 
 	Remove-Item-IfExists -Path "$buildPath\af" 
 	Remove-Item-IfExists -Path "$buildPath\ar" 
 	Remove-Item-IfExists -Path "$buildPath\az" 
@@ -139,11 +138,9 @@ New-Item -ItemType Directory -Force -Path $buildPath
 
 Write-Host "Updating project files for version $version"
 UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerService\SftpSchedulerService.csproj" -version $version
-UpdateProjectVersion -filePath "$sourcePath\SftpSchedulerServiceUpdater\SftpSchedulerServiceUpdater.csproj" -version $version
 
 Write-Host "Building version $version"
 & dotnet publish $sourcePath\SftpSchedulerService\SftpSchedulerService.csproj /p:EnvironmentName=Production /p:Configuration=Release --output $buildPath
-& dotnet publish $sourcePath\SftpSchedulerServiceUpdater\SftpSchedulerServiceUpdater.csproj /p:EnvironmentName=Production /p:Configuration=Release --output "$buildPath\Updater"
 
 Write-Host "Removing redundant files"
 RemoveRedundantFiles -buildPath $buildPath

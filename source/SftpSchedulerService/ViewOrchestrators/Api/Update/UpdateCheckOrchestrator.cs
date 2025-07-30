@@ -37,7 +37,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Update
                 viewModel.LatestReleaseVersionNumber = result.LatestReleaseVersionInfo!.VersionNumber;
                 _cacheProvider.Set(CacheKeys.VersionUpdateCheck, viewModel, TimeSpan.FromMinutes(_appSettings.UpdateCheckIntervalInMinutes));
             }
-
+            //viewModel.IsNewVersionAvailable = true;
             return new OkObjectResult(viewModel);
         }
     }

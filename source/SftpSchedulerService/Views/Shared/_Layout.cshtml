@@ -67,7 +67,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fa fa-bell"></i>
-                        <span class="badge navbar-badge" :class="[ jobNotificationBadgeClass ]">{{ jobNotifications.length }}</span>
+                        <span class="badge navbar-badge" :class="[ jobNotificationBadgeClass ]">{{ notificationCount }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" v-if="showNotifications">
                         <div v-for="notification in jobNotifications">

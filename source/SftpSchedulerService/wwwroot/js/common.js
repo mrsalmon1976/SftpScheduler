@@ -133,7 +133,8 @@ createApp({
             jobNotificationBadgeClass: 'badge-success',
             jobNotifications: [],
             showNotifications: false,
-            versionInfo: null
+            versionInfo: null,
+            notificationCount: 0
         }
     },
     methods: {
@@ -164,6 +165,7 @@ createApp({
             await this.loadJobNotifications(forceReload);
             await this.loadUpdateCheck();
             this.showNotifications = (this.jobNotifications.length > 0 || this.versionInfo.isNewVersionAvailable);
+            this.notificationCount = this.jobNotifications.length + (this.versionInfo.isNewVersionAvailable ? 1 : 0);
         },
         resetJobNotificationStyles(notifications) {
             var badgeClass = '';
