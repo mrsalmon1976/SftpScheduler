@@ -35,8 +35,8 @@ This is useful if your company creates a large number of scheduled SFTP up/downl
 
 ## Updates
 
-- SftpScheduler will notify you when new versions are released.
-  ![Update notifications screenshot](/img/screenshots/notifications_update.png?raw=true "Update notifications screenshot")
+- SftpScheduler will notify you when new versions are released:
+  <br />![Update notifications screenshot](/img/screenshots/notifications_update.png?raw=true "Update notifications screenshot")
 - Clicking this will send you to a page that will confirm if you want to update - proceeding from this point will attempt to run update process - be warned that this does not always work due to permissions or anti-virus blocking the process
 - The preferred method to update is done running the `Update.ps1` powershell script on the server as administrator.  If this fails, you may need to complete a manual installation.
 - To manually update, follow the steps in "First Time and/or Manual Installation" section.  Make sure you do not delete the "Data" folder - this contains all pevious settings, hosts and jobs.
