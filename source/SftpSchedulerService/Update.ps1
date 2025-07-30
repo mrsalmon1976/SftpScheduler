@@ -5,8 +5,129 @@ $global:scriptRoot = $PSScriptRoot
 # variables
 $global:latestVersionUrl = "https://api.github.com/repos/mrsalmon1976/SftpScheduler/releases/latest"
 $global:serviceExecutableName = "SftpSchedulerService.exe"
+$global:serviceName = "SftpScheduler"
 $global:tempFolder = "$global:scriptRoot\TempUpdate"
-$global:tempExtractionFolder = "$global:scriptRoot\TempUpdate\Content"
+$global:backupFolder = "$global:scriptRoot\Backup"
+$global:tempExtractionFolder = "$global:tempFolder\TempUpdate\Content"
+
+function BackupCurrent {
+    param ([System.String]$currentVersion) 
+
+    $source = $global:scriptRoot
+    $destination = "$global:backupFolder\$currentVersion"
+
+    # Patterns to exclude
+    $excludeFiles = @()
+    $excludeFolders = @("Backup", "TempUpdate")
+
+    # Create destination folder if it doesn't exist
+    if (-not (Test-Path $destination)) {
+        New-Item -ItemType Directory -Path $destination | Out-Null
+    }
+
+    # Copy items recursively, excluding certain files and folders
+    Get-ChildItem -Path $source -Recurse -Force | Where-Object {
+        # Exclude files by extension
+        foreach ($pattern in $excludeFiles) {
+            if ($_.PSIsContainer -eq $false -and $_.Name -like $pattern) {
+                return $false
+            }
+        }
+
+        # Exclude folders by name
+        foreach ($folder in $excludeFolders) {
+            if ($_.PSIsContainer -and $_.Name -eq $folder) {
+                return $false
+            }
+
+            if ($_.FullName -like "*\$folder\*") {
+                return $false
+            }
+        }
+
+        return $true
+    } | ForEach-Object {
+        $targetPath = $_.FullName.Replace($source, $destination)
+        
+        if ($_.PSIsContainer) {
+            if (-not (Test-Path $targetPath)) {
+                New-Item -ItemType Directory -Path $targetPath | Out-Null
+            }
+        } else {
+            Copy-Item -Path $_.FullName -Destination $targetPath
+        }
+    }
+
+    LogMessage -msg "Current version backed up to '$destination'"
+    return $destination
+}
+
+function CopyNewVersion {
+
+    $source = $global:tempExtractionFolder
+    $destination = "$global:scriptRoot"
+
+    # Copy items recursively, excluding certain files and folders
+    Get-ChildItem -Path $source -Recurse -Force | ForEach-Object {
+        $targetPath = $_.FullName.Replace($source, $destination)
+        
+        if ($_.PSIsContainer) {
+            if (-not (Test-Path $targetPath)) {
+                New-Item -ItemType Directory -Path $targetPath | Out-Null
+            }
+        } else {
+            Copy-Item -Path $_.FullName -Destination $targetPath
+        }
+    }
+
+    LogMessage -msg "Latest version copied into service folder '$destination'"
+}
+
+function DeleteCurrent {
+    param ([System.String]$currentVersion) 
+
+    $source = $global:scriptRoot
+
+    # Patterns to exclude
+    $excludeFiles = @("updates.log", "Update.ps1")
+    $excludeFolders = @("Backup", "Data", "TempUpdate")
+
+    # delete items recursively, excluding certain files and folders
+    Get-ChildItem -Path $source -Recurse -Force | Where-Object {
+        # Exclude files by extension
+        foreach ($pattern in $excludeFiles) {
+            if ($_.PSIsContainer -eq $false -and $_.Name -like $pattern) {
+                return $false
+            }
+        }
+
+        # Exclude folders by name
+        foreach ($folder in $excludeFolders) {
+            if ($_.PSIsContainer -and $_.Name -eq $folder) {
+                return $false
+            }
+
+            if ($_.FullName -like "*\$folder\*") {
+                return $false
+            }
+        }
+
+        return $true
+    } | ForEach-Object {
+        $targetPath = $_.FullName.Replace($source, $destination)
+        
+        if ($_.PSIsContainer) {
+            if (-not (Test-Path $targetPath)) {
+                New-Item -ItemType Directory -Path $targetPath | Out-Null
+            }
+        } 
+        else {
+            Remove-Item -Path $_.FullName -Force
+        }
+    }
+
+    LogMessage -msg "Deleted current version"
+}
 
 function ExitWithError {
     param ([System.String]$msg) 
@@ -16,23 +137,37 @@ function ExitWithError {
 function GetCurrentVersion {
     $pathToExe = "$global:scriptRoot\$global:serviceExecutableName"
     if (!(Test-Path -Path $pathToExe)) {
-        ExitWithError -msg "File '$pathToExe' does not exist"
+        LogMessage -msg "File '$pathToExe' does not exist" -level "WARN"
+        return "0.0.0"
     }
 
     $versionInfo = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($pathToExe)
-    return [System.Version]::Parse($versionInfo.FileVersion).ToString(3);
+    
+    LogMessage -msg "Version installed: $versionInstalled"
+    return [System.Version]::Parse($versionInfo.FileVersion).ToString(3)
 }
 
 function CreateTempFolder {
     $path = $global:tempFolder
-    if (!(Test-Path -Path $path)) {
+    if (-Not (Test-Path -Path $path)) {
         New-Item -Path $path -ItemType Directory | Out-Null
+        LogMessage -msg "Created temporary folder '$global:tempFolder'"
     }
 }
 
 function DownloadRelease {
-    param ([System.String]$url, [System.String]$outputPath) 
-    Invoke-WebRequest -Uri $url -OutFile $outputPath    
+    param ([System.String]$url, [System.String]$fileName) 
+
+    $zipPath = "$global:tempFolder\$fileName"
+
+    if (Test-Path -Path $zipPath) {
+        LogMessage -msg "Latest release already downloaded to '$zipPath'"
+    }
+    else {
+        Invoke-WebRequest -Uri $url -OutFile $zipPath    
+        LogMessage -msg "Downloaded latest release to '$zipPath'"
+    }
+    return $zipPath
 }
 
 function ExtractRelease {
@@ -46,17 +181,20 @@ function ExtractRelease {
     }
 
     Expand-Archive -Path $zipPath -DestinationPath $path
+    LogMessage -msg "Release unzipped to '$global:tempExtractionFolder'"
 }
 
 function GetLatestVersion {
     
     $data = Invoke-RestMethod -Uri $global:latestVersionUrl
 
-    return [PSCustomObject]@{
+    $result = [PSCustomObject]@{
         version = $data.tag_name.Trim().TrimStart('v')
         fileName = $data.assets[0].name
         downloadUrl = $data.assets[0].browser_download_url
     }    
+    LogMessage -msg "Latest version available: $($result.version)"
+    return $result
 }
 
 function IsLatestVersionInstalled {
@@ -64,8 +202,12 @@ function IsLatestVersionInstalled {
 
     $vInstalled = [System.Version]::Parse($installedVersion);
     $vLatest = [System.Version]::Parse($latestVersion);
-    return ($vInstalled -eq $vLatest)
+    $result = ($vInstalled -eq $vLatest)
 
+    if ($result) {
+        LogMessage -msg "The latest version is already installed" -level "WARN"
+    }
+    return $result
 }
 
 function LogMessage {
@@ -89,7 +231,49 @@ function RemoveTempFolder {
     $path = $global:tempFolder
     if (Test-Path -Path $path) {
         Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+        LogMessage -msg "Temp folder '$path' deleted."
+
     }
+}
+
+function StartService {
+
+    $service = Get-Service -Name $global:serviceName -ErrorAction SilentlyContinue
+    $exePath = "$global:scriptRoot\$global:serviceExecutableName"
+
+    if (!$service) {
+        sc.exe create $global:serviceName binPath= "`"$exePath`"" DisplayName= "`"$global:serviceName`"" start= auto
+        LogMessage -msg "Service '$global:serviceName' installed."
+    } 
+
+    Start-Service -Name $serviceName
+    LogMessage -msg "Service '$global:serviceName' started."
+}
+
+function StopService {
+    $service = Get-Service -Name $global:serviceName -ErrorAction SilentlyContinue
+
+    if ($service) {
+        if ($service.Status -ne 'Stopped') {
+            LogMessage -msg "Stopping service '$global:serviceName'"
+            try {
+                Stop-Service -Name $global:serviceName -Force
+                LogMessage -msg "Stopped service '$global:serviceName'"
+            }
+            catch 
+            {
+                $ex = $_.Exception
+                throw "Failed to stop service: $($ex.Message) - make sure you are running in Administrator mode"
+            }
+        } 
+        else 
+        {
+            LogMessage -msg "Service '$global:serviceName' is already stopped."
+        }
+    } 
+    else {
+        LogMessage -msg "Service '$global:serviceName' is not installed."
+    }    
 }
 
 function Run {
@@ -100,44 +284,42 @@ function Run {
 
         # get installed version
         $versionInstalled = GetCurrentVersion
-        LogMessage -msg "Version installed: $versionInstalled"
 
         # get latest version - includes "version,fileName,downloadUrl"
         $latestVersionInfo = GetLatestVersion
         $versionLatest = $latestVersionInfo.version
-        LogMessage -msg "Latest version available: $versionLatest"
 
         # if versions match - print and exit
         if (IsLatestVersionInstalled -installedVersion $versionInstalled -latestVersion $versionLatest) {
-            LogMessage -msg "The latest version is already installed" -level "WARN"
             #Exit
         }
 
         # create temp folder for update
         CreateTempFolder
-        LogMessage -msg "Created temporary folder '$global:tempFolder'"
 
         # download latest version if it has not been downloaded already
-        $zipPath = "$global:tempFolder\$($latestVersionInfo.fileName)"
-        if (Test-Path -Path $zipPath) {
-            LogMessage -msg "Latest release already downloaded to '$zipPath'"
-        }
-        else {
-            DownloadRelease -url $latestVersionInfo.downloadUrl -outputPath $zipPath
-            LogMessage -msg "Downloaded latest release to '$zipPath'"
-        }
+        $zipPath = DownloadRelease -url $latestVersionInfo.downloadUrl -fileName $latestVersionInfo.fileName
 
-        # todo: unzip latest version
+        # unzip latest version
         ExtractRelease -zipPath $zipPath
-        LogMessage -msg "Release unzipped to '$global:tempExtractionFolder'"
 
-        # todo: back up current service files into zip
-        # todo: if service is installed, stop it
-        # todo: delete current service files
-        # todo: copy new service files into folder
-        # todo: install the service if it is not installed
-        # todo: start the service
-        # todo: clean up temporary folder - delete everything in it and remove the folder
+        # back up current service files into zip
+        BackupCurrent -currentVersion $versionInstalled
+        
+        # top the service - don't uninstall it as we don't want to lose credentials
+        StopService
+
+        # delete current service files
+        DeleteCurrent
+
+        # copy new service files into folder
+        CopyNewVersion
+
+        # install the service if it is not installed
+        StartService
+
+        # clean up temporary folder - delete everything in it and remove the folder
+        RemoveTempFolder
     }
     catch {
         $ex = $_.Exception
