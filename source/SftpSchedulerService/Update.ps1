@@ -10,11 +10,15 @@ $global:tempFolder = "$global:scriptRoot\TempUpdate"
 $global:backupFolder = "$global:scriptRoot\Backup"
 $global:tempExtractionFolder = "$global:tempFolder\TempUpdate\Content"
 
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls13
+
 function BackupCurrent {
     param ([System.String]$currentVersion) 
 
     $source = $global:scriptRoot
     $destination = "$global:backupFolder\$currentVersion"
+
+    LogMessage -msg "Backing up current version to '$destination' (this may take a while)"
 
     # Patterns to exclude
     $excludeFiles = @()
@@ -142,9 +146,9 @@ function GetCurrentVersion {
     }
 
     $versionInfo = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($pathToExe)
-    
+    $versionInstalled = $versionInfo.FileVersion
     LogMessage -msg "Version installed: $versionInstalled"
-    return [System.Version]::Parse($versionInfo.FileVersion).ToString(3)
+    return [System.Version]::Parse($versionInstalled).ToString(3)
 }
 
 function CreateTempFolder {
