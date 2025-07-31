@@ -13,8 +13,6 @@ namespace SftpScheduler.Test.Common
 
         public static InternetRandomizer Internet { get; private set; } = new InternetRandomizer();
 
-        public static NumberRandomizer Number{ get; private set; } = new NumberRandomizer();
-
         public static StringRandomizer String { get; private set; } = new StringRandomizer();
 
         public static bool Bool()
@@ -56,10 +54,10 @@ namespace SftpScheduler.Test.Common
             return System.Guid.NewGuid();
         }
 
-        //public static int Number(int min = 0, int max = 100)
-        //{
-        //    return _faker.Random.Number(min, max);
-        //}
+        public static int Number(int min = 0, int max = 100)
+        {
+            return _faker.Random.Number(min, max);
+        }
 
         //public static string String()
         //{

@@ -23,7 +23,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             var hostEntity = new SubstituteBuilder<HostEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.Password, encryptedPassword)
-                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Port, RandomData.Number(1, 65535))
                 .WithProperty(x => x.KeyFingerprint, String.Empty)
                 .Build();
 
@@ -50,7 +50,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             var hostEntity = new SubstituteBuilder<HostEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.Password, encryptedPassword)
-                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Port, RandomData.Number(1, 65535))
                 .Build();
 
             // set up
@@ -82,7 +82,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .WithRandomProperties()
                 .WithProperty(x => x.Protocol, TransferProtocol.Sftp)
                 .WithProperty(x => x.KeyFingerprint, hostKeyFingerprint)
-                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Port, RandomData.Number(1, 65535))
                 .Build();
 
             // execute
@@ -103,7 +103,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .WithRandomProperties()
                 .WithProperty(x => x.Protocol, TransferProtocol.Sftp)
                 .WithProperty(x => x.KeyFingerprint, hostKeyFingerprint)
-                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Port, RandomData.Number(1, 65535))
                 .Build();
 
             // execute
@@ -124,7 +124,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
                 .WithRandomProperties()
                 .WithProperty(x => x.Protocol, protocol)
                 .WithProperty(x => x.KeyFingerprint, hostKeyFingerprint)
-                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Port, RandomData.Number(1, 65535))
                 .Build();
 
             // execute
@@ -178,7 +178,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             return new SubstituteBuilder<HostEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.KeyFingerprint, String.Empty)
-                .WithProperty(x => x.Port, RandomData.Number.Next(1, 65535))
+                .WithProperty(x => x.Port, RandomData.Number(1, 65535))
                 .WithProperty(x => x.Host, RandomData.Internet.IPAddress().ToString());
         }
 
