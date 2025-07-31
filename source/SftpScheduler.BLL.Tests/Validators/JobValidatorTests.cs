@@ -126,7 +126,7 @@ namespace SftpScheduler.BLL.Tests.Validators
         public void Validate_InvalidLocalArchivePath_ExceptionThrown()
         {
             // setup
-            string localArchivePath = $"C:\\{RandomData.String}";
+            string localArchivePath = $"C:\\{RandomData.StringWord()}";
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.LocalArchivePath, localArchivePath).Build();
 
             IDirectoryUtility dirUtility = Substitute.For<IDirectoryUtility>();

@@ -1,19 +1,11 @@
 ﻿using Bogus;
-using SftpScheduler.Test.Common.Randomizers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace SftpScheduler.Test.Common
 {
     public static class RandomData
     {
         private static Faker _faker = new Faker();
-
-        public static InternetRandomizer Internet { get; private set; } = new InternetRandomizer();
-
-        public static StringRandomizer String { get; private set; } = new StringRandomizer();
 
         public static bool Bool()
         {
@@ -52,6 +44,41 @@ namespace SftpScheduler.Test.Common
         public static Guid Guid()
         {
             return System.Guid.NewGuid();
+        }
+
+        public static HttpMethod HttpMethod()
+        {
+            int i = Number(1, 5);
+            switch (i)
+            {
+                case 1:
+                    return System.Net.Http.HttpMethod.Get;
+                case 2:
+                    return System.Net.Http.HttpMethod.Post;
+                case 3:
+                    return System.Net.Http.HttpMethod.Put;
+                case 4:
+                    return System.Net.Http.HttpMethod.Delete;
+                case 5:
+                    return System.Net.Http.HttpMethod.Patch;
+            }
+
+            throw new Exception("Unexpected number for switch method");
+        }
+
+        public static HttpStatusCode HttpStatusCode()
+        {
+            var codes = Enum.GetValues(typeof(HttpStatusCode));
+            int i = Number(0, codes.Length - 1);
+            return (HttpStatusCode)codes.GetValue(i)!;
+        }
+
+
+        public static IPAddress IPAddress()
+        {
+            byte[] data = Bytes(4);
+            data[0] |= 1;
+            return new IPAddress(data);
         }
 
         public static int Number(int min = 0, int max = 100)

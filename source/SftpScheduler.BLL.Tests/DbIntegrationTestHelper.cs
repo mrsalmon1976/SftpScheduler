@@ -60,7 +60,7 @@ namespace SftpScheduler.BLL.Tests
             HostEntity hostEntity = new SubstituteBuilder<HostEntity>()
                 .WithRandomProperties()
                 .WithProperty(x => x.Id, 0)
-                .WithProperty(x => x.Host, RandomData.Internet.IPAddress().ToString())
+                .WithProperty(x => x.Host, RandomData.IPAddress().ToString())
                 .WithProperty(x => x.Port, RandomData.Number(1, 65000))
                 .WithProperty(x => x.KeyFingerprint, String.Empty)
                 .WithProperty(x => x.Created, DateTime.UtcNow)

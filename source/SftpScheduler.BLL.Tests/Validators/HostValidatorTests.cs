@@ -76,7 +76,7 @@ namespace SftpScheduler.BLL.Tests.Validators
                 .WithRandomProperties()
                 .WithProperty(x => x.KeyFingerprint, String.Empty)
                 .WithProperty(x => x.Port, RandomData.Number(1, 65535))
-                .WithProperty(x => x.Host, RandomData.Internet.IPAddress().ToString());
+                .WithProperty(x => x.Host, RandomData.IPAddress().ToString());
         }
 
     }
