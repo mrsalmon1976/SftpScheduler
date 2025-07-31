@@ -126,7 +126,7 @@ function ZipFile
 
 $rootPath = $PSScriptRoot
 $sourcePath = $rootPath.Replace("deployment", "") + "source"
-$buildPath = "$rootPath\build"
+$buildPath = "$rootPath\output"
 $version = Read-Host -Prompt "What version are we building? [e.g. 2.3.0]"
 
 # ensure the build folder exists and is empty
