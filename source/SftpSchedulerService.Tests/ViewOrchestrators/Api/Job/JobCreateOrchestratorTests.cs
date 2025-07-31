@@ -26,11 +26,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IMapper mapper = Substitute.For<IMapper>();
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
+            string userName = RandomData.StringWord();
 
-            createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
+            createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>(), userName).Throws(new DataValidationException("exception", new ValidationResult(new string[] { "error" })));
 
             JobCreateOrchestrator jobCreateOrchestrator = new JobCreateOrchestrator(dbContextFactory, mapper, createJobCommand);
-            var result = jobCreateOrchestrator.Execute(jobViewModel).Result as BadRequestObjectResult;
+            var result = jobCreateOrchestrator.Execute(jobViewModel, userName).Result as BadRequestObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<ValidationResult>());
@@ -45,15 +46,16 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
+            string userName = RandomData.StringWord();
 
             mapper.Map<JobEntity>(jobViewModel).Returns(jobEntity);
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
 
 
-            createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Returns(jobEntity);
+            createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>(), userName).Returns(jobEntity);
 
             JobCreateOrchestrator JobCreateOrchestrator = new JobCreateOrchestrator(dbContextFactory, mapper, createJobCommand);
-            var result = JobCreateOrchestrator.Execute(jobViewModel).Result as OkObjectResult;
+            var result = JobCreateOrchestrator.Execute(jobViewModel, userName).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Value, Is.InstanceOf<JobViewModel>());
@@ -65,6 +67,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IDbContext dbContext = Substitute.For<IDbContext>();
             dbContextFactory.GetDbContext().Returns(dbContext);
+            string userName = RandomData.StringWord();
 
             IMapper mapper = Substitute.For<IMapper>();
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
@@ -75,10 +78,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModel);
 
 
-            createJobCommand.ExecuteAsync(dbContext, Arg.Any<JobEntity>()).Returns(jobEntity);
+            createJobCommand.ExecuteAsync(dbContext, Arg.Any<JobEntity>(), userName).Returns(jobEntity);
 
             JobCreateOrchestrator JobCreateOrchestrator = new JobCreateOrchestrator(dbContextFactory, mapper, createJobCommand);
-            JobCreateOrchestrator.Execute(jobViewModel).GetAwaiter().GetResult();
+            JobCreateOrchestrator.Execute(jobViewModel, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).BeginTransaction();
             dbContext.Received(1).Commit();
@@ -93,6 +96,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();
             JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
             JobViewModel jobViewModelExpected = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = new SubstituteBuilder<JobEntity>().WithRandomProperties().Build();
 
@@ -100,10 +104,10 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
             mapper.Map<JobViewModel>(Arg.Any<JobEntity>()).Returns(jobViewModelExpected);
 
 
-            createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>()).Returns(jobEntity);
+            createJobCommand.ExecuteAsync(Arg.Any<IDbContext>(), Arg.Any<JobEntity>(), userName).Returns(jobEntity);
 
             JobCreateOrchestrator JobCreateOrchestrator = new JobCreateOrchestrator(dbContextFactory, mapper, createJobCommand);
-            var result = (OkObjectResult)JobCreateOrchestrator.Execute(jobViewModel).Result;
+            var result = (OkObjectResult)JobCreateOrchestrator.Execute(jobViewModel, userName).Result;
             JobViewModel resultModel = (JobViewModel)result.Value;
 
             Assert.That(resultModel.Id, Is.EqualTo(jobViewModelExpected.Id));

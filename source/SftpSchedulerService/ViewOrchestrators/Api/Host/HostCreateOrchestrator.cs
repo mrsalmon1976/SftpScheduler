@@ -10,7 +10,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 {
     public interface IHostCreateOrchestrator : IViewOrchestrator
     {
-        Task<IActionResult> Execute(HostViewModel hostViewModel);
+        Task<IActionResult> Execute(HostViewModel hostViewModel, string userName);
     }
 
     public class HostCreateOrchestrator : IHostCreateOrchestrator
@@ -26,7 +26,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
             _createHostCommand = createHostCommand;
         }
 
-        public async Task<IActionResult> Execute(HostViewModel hostViewModel)
+        public async Task<IActionResult> Execute(HostViewModel hostViewModel, string userName)
         {
             HostEntity hostEntity = _mapper.Map<HostEntity>(hostViewModel);
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
@@ -34,7 +34,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
                 try
                 {
                     dbContext.BeginTransaction();
-                    hostEntity = await _createHostCommand.ExecuteAsync(dbContext, hostEntity);
+                    hostEntity = await _createHostCommand.ExecuteAsync(dbContext, hostEntity, userName);
                     dbContext.Commit();
                 }
                 catch (DataValidationException dve)

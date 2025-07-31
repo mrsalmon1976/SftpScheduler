@@ -57,7 +57,7 @@ namespace SftpSchedulerService.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] JobViewModel model)
         {
-            return await _jobCreateOrchestrator.Execute(model);
+            return await _jobCreateOrchestrator.Execute(model, User.Identity!.Name!);
         }
 
 

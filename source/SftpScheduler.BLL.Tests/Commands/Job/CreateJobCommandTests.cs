@@ -4,17 +4,11 @@ using Quartz;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
-using SftpScheduler.Common.IO;
 using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.BLL.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
+using SftpScheduler.Common.IO;
 using SftpScheduler.Test.Common;
 
 namespace SftpScheduler.BLL.Tests.Commands.Job
@@ -29,14 +23,21 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             JobEntity jobEntity = CreateValidJobEntityBuilder().Build();
-
+            string userName = RandomData.StringWord();
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), jobEntity);
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
+            dbContext.Received(1).ExecuteNonQueryAsync(Arg.Any<string>(), Arg.Is<JobAuditLogEntity>(e =>
+                e.JobId == jobEntity.Id
+                && e.PropertyName == "Job Created"
+                && e.FromValue == "-"
+                && e.ToValue == "-"
+                && e.UserName == userName
+                ));
 
         }
 
@@ -48,10 +49,11 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             JobEntity jobEntity = CreateValidJobEntityBuilder().Build();
             jobValidator.Validate(dbContext, Arg.Any<JobEntity>()).Returns(new ValidationResult(new string[] { "error" }));
+            string userName = RandomData.StringWord();
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
 
-            Assert.Throws<DataValidationException>(() => createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult());
+            Assert.Throws<DataValidationException>(() => createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult());
             jobValidator.Received(1).Validate(dbContext, jobEntity);
         }
 
@@ -63,12 +65,13 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().Build();
             int newEntityId = Faker.RandomNumber.Next();
+            string userName = RandomData.StringWord();
 
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
             dbContext.ExecuteScalarAsync<int>(Arg.Any<string>()).Returns(newEntityId);
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
             Assert.That(result.Id, Is.EqualTo(newEntityId));
@@ -79,6 +82,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
+            string userName = RandomData.StringWord();
 
             var jobEntity = new JobEntity();
             jobEntity.Schedule = "0 * 0 ? * * *";
@@ -86,7 +90,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
@@ -102,6 +106,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder()
                 .WithProperty(x => x.RemotePath, remotePath).Build();
@@ -109,7 +114,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
@@ -121,6 +126,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder()
                 .WithProperty(x => x.RemotePath, "/").Build();
@@ -128,7 +134,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
@@ -144,13 +150,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.RemoteArchivePath, remoteArchivePath).Build();
 
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
@@ -163,13 +170,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
         {
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.RemoteArchivePath, "/").Build();
 
             jobValidator.Validate(dbContext, jobEntity).Returns(new ValidationResult());
 
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, Substitute.For<ISchedulerFactory>());
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             dbContext.Received(1).ExecuteScalarAsync<int>(Arg.Any<string>());
 
@@ -183,6 +191,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.IsEnabled, true).Build();
 
@@ -193,7 +202,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             // execute
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, schedulerFactory);
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             // assert
             schedulerFactory.Received(1).GetScheduler();
@@ -208,6 +217,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
             IScheduler scheduler = Substitute.For<IScheduler>();
             schedulerFactory.GetScheduler().Returns(scheduler);
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().WithProperty(x => x.IsEnabled, false).Build();
 
@@ -215,7 +225,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             // execute
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, schedulerFactory);
-            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
             // assert
             schedulerFactory.Received(1).GetScheduler();
@@ -229,6 +239,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().Build();
 
@@ -245,7 +256,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             // execute
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, schedulerFactory);
-            createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
         }
 
         [Test]
@@ -254,6 +265,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             IDbContext dbContext = Substitute.For<IDbContext>();
             IJobValidator jobValidator = Substitute.For<IJobValidator>();
             ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
+            string userName = RandomData.StringWord();
 
             JobEntity jobEntity = CreateValidJobEntityBuilder().Build();
 
@@ -271,7 +283,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
 
             // execute
             ICreateJobCommand createJobCommand = new CreateJobCommand(jobValidator, schedulerFactory);
-            createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+            createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
         }
 
 
@@ -286,13 +298,14 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                 {
                     ICreateJobCommand createJobCommand = new CreateJobCommand(new JobValidator(new HostRepository(), new JobRepository(), new DirectoryUtility()), Substitute.For<ISchedulerFactory>());
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);
+                    string userName = RandomData.StringWord();
 
                     JobEntity jobEntity = CreateValidJobEntityBuilder()
                         .WithProperty(x => x.LocalPath, AppDomain.CurrentDomain.BaseDirectory)
                         .WithProperty(x => x.HostId, host.Id)
                         .Build();
 
-                    JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity).GetAwaiter().GetResult();
+                    JobEntity result = createJobCommand.ExecuteAsync(dbContext, jobEntity, userName).GetAwaiter().GetResult();
 
                     Assert.IsNotNull(result);
                     Assert.That(result.Name, Is.EqualTo(jobEntity.Name));

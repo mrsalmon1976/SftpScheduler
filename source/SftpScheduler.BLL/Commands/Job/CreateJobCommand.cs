@@ -7,7 +7,7 @@ namespace SftpScheduler.BLL.Commands.Job
 {
     public interface ICreateJobCommand
     {
-        Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity);
+        Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity, string userName);
     }
 
     public class CreateJobCommand : SaveJobAbstractCommand, ICreateJobCommand
@@ -21,7 +21,7 @@ namespace SftpScheduler.BLL.Commands.Job
             _schedulerFactory = schedulerFactory;
         }
         
-        public virtual async Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity)
+        public virtual async Task<JobEntity> ExecuteAsync(IDbContext dbContext, JobEntity jobEntity, string userName)
         {
             base.ValidateAndPrepareJobEntity(dbContext, _jobValidator, jobEntity);
 
@@ -33,6 +33,18 @@ namespace SftpScheduler.BLL.Commands.Job
 
             sql = @"select last_insert_rowid()";
             jobEntity.Id = await dbContext.ExecuteScalarAsync<int>(sql);
+
+            // write audit logs
+            sql = @"INSERT INTO JobAuditLog (JobId, PropertyName, FromValue, ToValue, UserName, Created) VALUES (@JobId, @PropertyName, @FromValue, @ToValue, @UserName, @Created)";
+            await dbContext.ExecuteNonQueryAsync(sql, new JobAuditLogEntity()
+            {
+                JobId = jobEntity.Id,
+                PropertyName = "Job Created",
+                FromValue = "-",
+                ToValue = "-",
+                UserName = userName
+
+            });
 
             await base.UpdateJobSchedule(_schedulerFactory, jobEntity); 
 

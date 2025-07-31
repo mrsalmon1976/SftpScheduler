@@ -8,7 +8,7 @@ namespace SftpScheduler.BLL.Commands.Host
 {
     public interface ICreateHostCommand
     {
-        Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity);
+        Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity, string userName);
     }
 
     public class CreateHostCommand : ICreateHostCommand
@@ -22,7 +22,7 @@ namespace SftpScheduler.BLL.Commands.Host
             _encryptionProvider = encryptionProvider;
         }
 
-        public virtual async Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity)
+        public virtual async Task<HostEntity> ExecuteAsync(IDbContext dbContext, HostEntity hostEntity, string userName)
         {
             ValidationResult validationResult = _hostValidator.Validate(hostEntity);
             if (!validationResult.IsValid)
@@ -38,6 +38,17 @@ namespace SftpScheduler.BLL.Commands.Host
             sql = @"select last_insert_rowid()";
             hostEntity.Id = await dbContext.ExecuteScalarAsync<int>(sql);
             hostEntity.Password = String.Empty;
+
+            // write audit log
+            sql = @"INSERT INTO HostAuditLog (HostId, PropertyName, FromValue, ToValue, UserName, Created) VALUES (@HostId, @PropertyName, @FromValue, @ToValue, @UserName, @Created)";
+            await dbContext.ExecuteNonQueryAsync(sql, new HostAuditLogEntity()
+            {
+                HostId = hostEntity.Id,
+                PropertyName = "Host Created",
+                FromValue = "-",
+                ToValue = "-",
+                UserName = userName
+            });
 
             return hostEntity;
         }

@@ -127,7 +127,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.ExecuteSuccess(UrlPost, HttpMethod.Post, hostViewModel, roles, configureServices);
 
             // assert
-            orchestrator.Received(1).Execute(Arg.Any<HostViewModel>());
+            orchestrator.Received(1).Execute(Arg.Any<HostViewModel>(), Arg.Any<string>());
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace SftpSchedulerService.Tests.Controllers.Api
             ControllerTestHelper.ExecuteUnauthorised(UrlPost, HttpMethod.Post, hostViewModel, configureServices);
 
             // assert
-            orchestrator.DidNotReceive().Execute(Arg.Any<HostViewModel>());
+            orchestrator.DidNotReceive().Execute(Arg.Any<HostViewModel>(), Arg.Any<string>());
         }
 
         [TestCase(UserRoles.Admin)]

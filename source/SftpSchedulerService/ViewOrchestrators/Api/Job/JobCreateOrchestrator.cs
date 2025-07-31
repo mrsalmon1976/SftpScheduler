@@ -10,7 +10,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 {
     public interface IJobCreateOrchestrator : IViewOrchestrator
     {
-        Task<IActionResult> Execute(JobViewModel jobViewModel);
+        Task<IActionResult> Execute(JobViewModel jobViewModel, string userName);
     }
 
     public class JobCreateOrchestrator : IJobCreateOrchestrator
@@ -26,7 +26,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             _createJobCommand = createJobCommand;
         }
 
-        public async Task<IActionResult> Execute(JobViewModel jobViewModel)
+        public async Task<IActionResult> Execute(JobViewModel jobViewModel, string userName)
         {
             JobEntity jobEntity = _mapper.Map<JobEntity>(jobViewModel);
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
@@ -34,7 +34,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
                 try
                 {
                     dbContext.BeginTransaction();
-                    jobEntity = await _createJobCommand.ExecuteAsync(dbContext, jobEntity);
+                    jobEntity = await _createJobCommand.ExecuteAsync(dbContext, jobEntity, userName);
                     dbContext.Commit();
                 }
                 catch (DataValidationException dve)

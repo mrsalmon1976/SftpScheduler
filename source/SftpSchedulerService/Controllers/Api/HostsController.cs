@@ -56,7 +56,7 @@ namespace SftpSchedulerService.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] HostViewModel model)
         {
-            return await _hostCreateOrchestrator.Execute(model);
+            return await _hostCreateOrchestrator.Execute(model, User.Identity!.Name!);
         }
 
         [Authorize(Roles = UserRoles.Admin)]
