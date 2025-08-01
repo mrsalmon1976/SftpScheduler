@@ -103,8 +103,8 @@ try
     // background jobs
     if (!isUnitTestContext)
     {
-		builder.Services.AddScoped<IUpdateCleanupWorkerService, UpdateCleanupWorkerService>();
-		builder.Services.AddHostedService<UpdateCleanupWorker>();
+		builder.Services.AddScoped<ITempDataCleanupWorkerService, TempDataCleanupWorkerService>();
+		builder.Services.AddHostedService<TempDataCleanupWorker>();
     }
 
 	// set up 

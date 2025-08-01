@@ -1,16 +1,10 @@
 ﻿using NSubstitute;
-using NSubstitute.Routing.AutoValues;
 using NUnit.Framework;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.Common.IO;
 using SftpScheduler.Test.Common;
-using System;
-using System.Collections.Generic;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SftpScheduler.BLL.Tests.Commands.Transfer
 {
