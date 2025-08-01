@@ -20,6 +20,8 @@ namespace SftpScheduler.BLL.Commands.Transfer
 
         int GetFiles(string remotePath, string localPath, DownloadOptions downloadOptions);
 
+        string GetUniquePath(string remoteFolder, string remoteFileName);
+
         IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath);
 
         void MoveFile(string sourcePath, string targetPath);
@@ -68,6 +70,31 @@ namespace SftpScheduler.BLL.Commands.Transfer
             TransferOperationResult result = _session.GetFiles(remotePath, localPath, downloadOptions.DeleteAfterDownload, transferOptions);
             result.Check();
             return result.Transfers.Count;
+        }
+
+        public string GetUniquePath(string remoteFolder, string remoteFileName) 
+        {
+            string folder = remoteFolder.TrimEnd('/');
+            string resultPath = String.Concat(folder, '/', remoteFileName);
+
+            string fileName = Path.GetFileNameWithoutExtension(remoteFileName);
+            string fileExtension = Path.GetExtension(remoteFileName);
+
+            // try and build a path with a number, but not too many times
+            const int attempts = 10;
+            for (int i = 1; i <= attempts; i++)
+            {
+                if (!_session.FileExists(resultPath))
+                {
+                    return resultPath;
+                }
+
+                resultPath = String.Concat(folder, '/', fileName, '_', i, fileExtension);
+            }
+
+            // unable to find a unique path with a number - just use a guid
+            return String.Concat(folder, '/', fileName, '_', Guid.NewGuid().ToString(), fileExtension);
+
         }
 
         public IEnumerable<SftpScheduler.BLL.Models.RemoteFileInfo> ListDirectory(string remotePath)

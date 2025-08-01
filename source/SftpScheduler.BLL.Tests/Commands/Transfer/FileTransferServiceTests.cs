@@ -19,7 +19,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
         [Test]
         public void DownloadFiles_NoFiles_Exits()
         {
-            // setup``
+            // setup
             DownloadOptions options = CreateDownloadOptions();
             ISessionWrapper sessionWrapper = Substitute.For<ISessionWrapper>();
             sessionWrapper.ListDirectory(options.RemotePath).Returns(Enumerable.Empty<RemoteFileInfo>());
@@ -145,17 +145,25 @@ namespace SftpScheduler.BLL.Tests.Commands.Transfer
             sessionWrapper.ListDirectory(options.RemotePath).Returns(remoteFiles);
             sessionWrapper.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DownloadOptions>()).Returns(1);
 
+            foreach (RemoteFileInfo remoteFileInfo in remoteFiles) 
+            {
+                string result = $"{options.RemoteArchivePath}{remoteFileInfo.Name}";
+                sessionWrapper.GetUniquePath(options.RemoteArchivePath!, remoteFileInfo.Name).Returns(result);
+            }
+
             // execute
             IFileTransferService fileTransferService = CreateFileTransferService();
             fileTransferService.DownloadFiles(sessionWrapper, dbContext, options);
 
             // assert
             sessionWrapper.Received(fileCount).GetFiles(Arg.Any<string>(), Arg.Any<string>(), options);
+            sessionWrapper.Received(fileCount).GetUniquePath(Arg.Any<string>(), Arg.Any<string>());
             sessionWrapper.Received(fileCount).MoveFile(Arg.Any<string>(), Arg.Any<string>());
 
             foreach (RemoteFileInfo downloadFile in remoteFiles)
             {
                 string targetPath = $"{options.RemoteArchivePath}{downloadFile.Name}";
+                sessionWrapper.Received(1).GetUniquePath(options.RemoteArchivePath!, downloadFile.Name);
                 sessionWrapper.Received(1).MoveFile(downloadFile.FullName, targetPath);
             }
         }

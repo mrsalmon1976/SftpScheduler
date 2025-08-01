@@ -77,7 +77,7 @@ namespace SftpScheduler.BLL.Commands.Transfer
                 // archive file remotely
                 if (!options.DeleteAfterDownload)
                 {
-                    string archivePath = $"{options.RemoteArchivePath}{fileName}";
+                    string archivePath = sessionWrapper.GetUniquePath(options.RemoteArchivePath ?? "/", fileName);
                     sessionWrapper.MoveFile(remoteFile.FullName, archivePath);
                     _logger.LogInformation("Remote file moved to {archivePath}", archivePath);
                 }
