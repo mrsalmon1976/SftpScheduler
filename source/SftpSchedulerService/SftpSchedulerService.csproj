@@ -28,7 +28,7 @@
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="CronExpressionDescriptor" Version="2.20.0" />
     <PackageReference Include="Hashids.net" Version="1.7.0" />
