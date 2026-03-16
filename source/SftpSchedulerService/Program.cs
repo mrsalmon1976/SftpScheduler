@@ -60,8 +60,6 @@ try
 	// add services
 	builder.Services.AddControllers();
     builder.Services.AddRazorPages();
-    builder.Services.AddAutoMapper(AutoMapperBootstrapper.Configure);
-
     // custom
     builder.Services.AddIdentity(appSettings);
 

@@ -1,9 +1,9 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Commands.Host;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.Host;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
@@ -16,19 +16,17 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
     public class HostUpdateOrchestrator : IHostUpdateOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly IMapper _mapper;
         private readonly IUpdateHostCommand _updateHostCommand;
 
-        public HostUpdateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, IUpdateHostCommand updateHostCommand)
+        public HostUpdateOrchestrator(IDbContextFactory dbContextFactory, IUpdateHostCommand updateHostCommand)
         {
             _dbContextFactory = dbContextFactory;
-            _mapper = mapper;
             _updateHostCommand = updateHostCommand;
         }
 
         public async Task<IActionResult> Execute(HostViewModel hostViewModel, string userName)
         {
-            HostEntity hostEntity = _mapper.Map<HostEntity>(hostViewModel);
+            HostEntity hostEntity = hostViewModel.ToEntity();
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 try
@@ -42,7 +40,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
                     return new BadRequestObjectResult(dve.ValidationResult);
                 }
             }
-            var result = _mapper.Map<HostViewModel>(hostEntity);
+            var result = hostEntity.ToViewModel();
             return new OkObjectResult(result);
         }
     }

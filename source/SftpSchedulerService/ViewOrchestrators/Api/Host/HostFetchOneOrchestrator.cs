@@ -1,9 +1,7 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models.Host;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
@@ -16,13 +14,11 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
     public class HostFetchOneOrchestrator : IHostFetchOneOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly IMapper _mapper;
         private readonly HostRepository _hostRepository;
 
-        public HostFetchOneOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, HostRepository hostRepository)
+        public HostFetchOneOrchestrator(IDbContextFactory dbContextFactory, HostRepository hostRepository)
         {
             _dbContextFactory = dbContextFactory;
-            _mapper = mapper;
             _hostRepository = hostRepository;
         }
 
@@ -32,7 +28,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 var hostEntity = await _hostRepository.GetByIdAsync(dbContext, hostId);
-                var result = _mapper.Map<HostEntity, HostViewModel>(hostEntity);
+                var result = hostEntity.ToViewModel();
                 return new OkObjectResult(result);
             }
         }

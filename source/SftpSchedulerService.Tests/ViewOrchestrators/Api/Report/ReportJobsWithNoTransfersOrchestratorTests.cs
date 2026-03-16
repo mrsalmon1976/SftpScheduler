@@ -1,13 +1,10 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using Quartz;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
 using SftpScheduler.Test.Common;
 using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.ViewOrchestrators.Api.Job;
 using SftpSchedulerService.ViewOrchestrators.Api.Report;
 
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -23,17 +20,15 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Report
         public void Execute_OnFetch_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
-            JobViewModel[] jobViewModels = { new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build()        };
             JobEntity[] jobEntities = { new SubstituteBuilder<JobEntity>().WithRandomProperties().Build() };
 
             DateTime startDate = DateTime.Now.AddDays(-1);
             DateTime endDate = DateTime.Now;
             jobRepo.GetAllWithoutTransfersBetweenAsync(Arg.Any<IDbContext>(), startDate.ToUniversalTime(), endDate.ToUniversalTime()).Returns(jobEntities);
 
-            IReportJobsWithNoTransfersOrchestrator orchestrator = new ReportJobsWithNoTransfersOrchestrator(dbContextFactory, mapper, jobRepo);
+            IReportJobsWithNoTransfersOrchestrator orchestrator = new ReportJobsWithNoTransfersOrchestrator(dbContextFactory, jobRepo);
             var result = orchestrator.Execute(startDate, endDate).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);

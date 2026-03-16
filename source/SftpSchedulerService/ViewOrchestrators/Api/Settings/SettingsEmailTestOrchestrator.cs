@@ -3,6 +3,7 @@ using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Net;
 using SftpScheduler.BLL.Validators;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.Settings;
 using System.Net.Mail;
 
@@ -30,7 +31,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
 
         public IActionResult Execute(EmailTestViewModel testEmailViewModel)
         {
-            SmtpHost smtpHost = EmailTestMapper.MapToSmtpHost(testEmailViewModel);
+            SmtpHost smtpHost = testEmailViewModel.ToSmtpHost();
             var result = _smtpHostValidator.Validate(smtpHost);
             if (!result.IsValid)
             {
@@ -45,7 +46,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
                 return new BadRequestObjectResult(new ValidationResult("To address is not a valid email address"));
             }
 
-            MailMessage mailMessage = EmailTestMapper.MapToMailMessage(testEmailViewModel);
+            MailMessage mailMessage = testEmailViewModel.ToMailMessage();
             try
             {
                 _smtpClientWrapper.Send(smtpHost, mailMessage);

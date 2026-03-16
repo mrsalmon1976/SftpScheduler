@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models.Job;
-using SftpSchedulerService.Models.JobFileLog;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.JobFileLog
@@ -34,7 +32,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.JobFileLog
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 var jobEntities = await _jobFileLogRepo.GetAllByJobAsync(dbContext, jobId, maxLogId ?? Int32.MaxValue, DefaultRowCount);
-                var result = JobFileLogMapper.MapToViewModelCollection(jobEntities);
+                var result = jobEntities.Select(x => x.ToViewModel()).ToArray();
                 return new OkObjectResult(result);
             }
         }

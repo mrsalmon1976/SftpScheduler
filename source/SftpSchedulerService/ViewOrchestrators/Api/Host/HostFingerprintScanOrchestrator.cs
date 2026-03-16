@@ -1,8 +1,8 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Commands.Transfer;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Validators;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.Host;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Host
@@ -16,22 +16,20 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
     {
         private readonly ILogger<HostFingerprintScanOrchestrator> _logger;
         private readonly ISessionWrapperFactory _sessionWrapperFactory;
-        private readonly IMapper _mapper;
         private readonly IHostValidator _hostValidator;
 
-        public HostFingerprintScanOrchestrator(ILogger<HostFingerprintScanOrchestrator> logger, ISessionWrapperFactory sessionWrapperFactory, IMapper mapper, IHostValidator hostValidator)
+        public HostFingerprintScanOrchestrator(ILogger<HostFingerprintScanOrchestrator> logger, ISessionWrapperFactory sessionWrapperFactory, IHostValidator hostValidator)
         {
             _logger = logger;
             _sessionWrapperFactory = sessionWrapperFactory;
-            _mapper = mapper;
             _hostValidator = hostValidator;
         }
 
         public async Task<IActionResult> Execute(HostViewModel hostViewModel)
         {
-            HostEntity hostEntity = _mapper.Map<HostEntity>(hostViewModel);
+            HostEntity hostEntity = hostViewModel.ToEntity();
             ValidationResult validationResult = _hostValidator.Validate(hostEntity);
-            if (!validationResult.IsValid) 
+            if (!validationResult.IsValid)
             {
                 _logger.LogInformation("Scanning host '{hostName}' aborted - invalid host information", hostEntity.Host);
                 return new BadRequestObjectResult(validationResult);

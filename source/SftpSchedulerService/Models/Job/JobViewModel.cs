@@ -1,6 +1,6 @@
 ﻿using SftpScheduler.BLL.Data;
+using SftpScheduler.BLL.Models;
 using SftpSchedulerService.Utilities;
-using System.IO.Compression;
 
 namespace SftpSchedulerService.Models.Job
 {

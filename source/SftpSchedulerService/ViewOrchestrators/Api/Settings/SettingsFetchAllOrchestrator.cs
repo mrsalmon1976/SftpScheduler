@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Config;
 using SftpSchedulerService.Config;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.Settings;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
@@ -12,20 +13,20 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
 
     public class SettingsFetchAllOrchestrator : ISettingsFetchAllOrchestrator
     {
-		private readonly IGlobalUserSettingProvider _globalUserSettingProvider;
-		private readonly IStartupSettingProvider _startupSettingProvider;
+        private readonly IGlobalUserSettingProvider _globalUserSettingProvider;
+        private readonly IStartupSettingProvider _startupSettingProvider;
 
-		public SettingsFetchAllOrchestrator(IGlobalUserSettingProvider globalUserSettingProvider, IStartupSettingProvider startupSettingProvider)
+        public SettingsFetchAllOrchestrator(IGlobalUserSettingProvider globalUserSettingProvider, IStartupSettingProvider startupSettingProvider)
         {
-			_globalUserSettingProvider = globalUserSettingProvider;
-			_startupSettingProvider = startupSettingProvider;
-		}
+            _globalUserSettingProvider = globalUserSettingProvider;
+            _startupSettingProvider = startupSettingProvider;
+        }
 
         public IActionResult Execute()
         {
             GlobalSettingsViewModel viewModel = new GlobalSettingsViewModel();
-			SettingsModelMapper.MapValues(_globalUserSettingProvider, viewModel);
-			SettingsModelMapper.MapValues(_startupSettingProvider.Load(), viewModel);
+            viewModel.PopulateFrom(_globalUserSettingProvider);
+            viewModel.PopulateFrom(_startupSettingProvider.Load());
             return new OkObjectResult(viewModel);
         }
     }

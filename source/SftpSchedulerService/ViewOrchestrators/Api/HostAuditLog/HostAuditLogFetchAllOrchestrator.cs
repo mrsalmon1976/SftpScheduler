@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models.HostAuditLog;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog
@@ -31,7 +31,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 var auditLogs = await _hostAuditLogRepo.GetByAllHostAsync(dbContext, hostId);
-                var result = HostAuditLogMapper.MapToViewModelCollection(auditLogs);
+                var result = auditLogs.Select(x => x.ToViewModel()).ToArray();
                 return new OkObjectResult(result);
             }
         }

@@ -1,9 +1,9 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Commands.Job;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Exceptions;
 using SftpScheduler.BLL.Models;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.Job;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
@@ -16,19 +16,17 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
     public class JobCreateOrchestrator : IJobCreateOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly IMapper _mapper;
         private readonly ICreateJobCommand _createJobCommand;
 
-        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, ICreateJobCommand createJobCommand)
+        public JobCreateOrchestrator(IDbContextFactory dbContextFactory, ICreateJobCommand createJobCommand)
         {
             _dbContextFactory = dbContextFactory;
-            _mapper = mapper;
             _createJobCommand = createJobCommand;
         }
 
         public async Task<IActionResult> Execute(JobViewModel jobViewModel, string userName)
         {
-            JobEntity jobEntity = _mapper.Map<JobEntity>(jobViewModel);
+            JobEntity jobEntity = jobViewModel.ToEntity();
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 try
@@ -43,7 +41,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
                 }
                 jobViewModel.Id = jobEntity.Id;
             }
-            var result = _mapper.Map<JobViewModel>(jobEntity);
+            var result = jobEntity.ToViewModel();
             return new OkObjectResult(result);
         }
     }

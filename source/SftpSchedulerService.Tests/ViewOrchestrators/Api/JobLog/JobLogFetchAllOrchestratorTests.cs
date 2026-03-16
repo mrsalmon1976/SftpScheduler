@@ -1,4 +1,3 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpScheduler.BLL.Data;
@@ -22,7 +21,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.JobLog
         public void Execute_OnFetch_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             JobLogRepository jobLogRepo = Substitute.For<JobLogRepository>();
             int jobId = Faker.RandomNumber.Next(1, 100);
             string jobHash = UrlUtils.Encode(jobId);
@@ -32,13 +30,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.JobLog
                 .WithProperty(x => x.JobId, jobId)
                 .Build();
 
-            JobLogViewModel[] jobLogViewModels = { new SubstituteBuilder<JobLogViewModel>().WithRandomProperties().Build() };
             JobLogEntity[] jobLogEntities = { jobLogEntity };
 
             jobLogRepo.GetAllByJobAsync(Arg.Any<IDbContext>(), jobId, maxLogId, JobLogFetchAllOrchestrator.DefaultRowCount).Returns(jobLogEntities);
 
 
-            JobLogFetchAllOrchestrator jobLogFetchAllOrchestrator = new JobLogFetchAllOrchestrator(dbContextFactory, mapper, jobLogRepo);
+            JobLogFetchAllOrchestrator jobLogFetchAllOrchestrator = new JobLogFetchAllOrchestrator(dbContextFactory, jobLogRepo);
             var result = jobLogFetchAllOrchestrator.Execute(jobHash, maxLogId).Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);

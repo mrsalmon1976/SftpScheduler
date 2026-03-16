@@ -1,9 +1,7 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Data;
-using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
-using SftpSchedulerService.Models.Job;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Utilities;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
@@ -16,13 +14,11 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
     public class JobFetchOneOrchestrator : IJobFetchOneOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly IMapper _mapper;
         private readonly JobRepository _jobRepository;
 
-        public JobFetchOneOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, JobRepository jobRepository)
+        public JobFetchOneOrchestrator(IDbContextFactory dbContextFactory, JobRepository jobRepository)
         {
             _dbContextFactory = dbContextFactory;
-            _mapper = mapper;
             _jobRepository = jobRepository;
         }
 
@@ -32,7 +28,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             using (IDbContext dbContext = _dbContextFactory.GetDbContext())
             {
                 var jobEntity = await _jobRepository.GetByIdAsync(dbContext, jobId);
-                var result = _mapper.Map<JobEntity, JobViewModel>(jobEntity);
+                var result = jobEntity.ToViewModel();
                 return new OkObjectResult(result);
             }
         }

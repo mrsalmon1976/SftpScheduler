@@ -1,4 +1,3 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using SftpScheduler.BLL.Data;
@@ -19,16 +18,14 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         public void Execute_ReturnsOk()
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-            IMapper mapper = AutoMapperTestHelper.CreateMapper();
             HostRepository hostRepo = Substitute.For<HostRepository>();
 
-            HostViewModel[] hostViewModels = { new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build() };
             HostEntity[] hostEntities = { new SubstituteBuilder<HostEntity>().Build() };
 
             hostRepo.GetAllAsync(Arg.Any<IDbContext>()).Returns(hostEntities);
 
 
-            HostFetchAllOrchestrator hostFetchAllProvider = new HostFetchAllOrchestrator(dbContextFactory, mapper, hostRepo);
+            HostFetchAllOrchestrator hostFetchAllProvider = new HostFetchAllOrchestrator(dbContextFactory, hostRepo);
             var result = hostFetchAllProvider.Execute().Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
@@ -45,7 +42,6 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             HostRepository hostRepo = Substitute.For<HostRepository>();
-            IMapper mapper = AutoMapperTestHelper.CreateMapper();
 
             var hostEntity1 = new SubstituteBuilder<HostEntity>().WithProperty(x => x.Id, 111).Build();
             var hostEntity2 = new SubstituteBuilder<HostEntity>().WithProperty(x => x.Id, 222).Build();
@@ -59,7 +55,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             hostRepo.GetAllJobCountsAsync(Arg.Any<IDbContext>()).Returns(hostJobCountEntities);
 
 
-            HostFetchAllOrchestrator hostFetchAllProvider = new HostFetchAllOrchestrator(dbContextFactory, mapper, hostRepo);
+            HostFetchAllOrchestrator hostFetchAllProvider = new HostFetchAllOrchestrator(dbContextFactory, hostRepo);
             var result = hostFetchAllProvider.Execute().Result as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SftpScheduler.BLL.Identity;
 using SftpScheduler.BLL.Models;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.User;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.User
@@ -29,7 +30,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.User
             }
             IList<string> roles = await _userManager.GetRolesAsync(user);
 
-            UserViewModel result = UserMapper.MapToViewModel(user, roles.Contains(UserRoles.Admin));
+            UserViewModel result = user.ToViewModel(roles.Contains(UserRoles.Admin));
             return new OkObjectResult(result);
         }
     }

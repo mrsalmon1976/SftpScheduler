@@ -1,10 +1,9 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 using SftpScheduler.BLL.Data;
 using SftpScheduler.BLL.Jobs;
-using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Repositories;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models.Job;
 
 namespace SftpSchedulerService.ViewOrchestrators.Api.Job
@@ -17,14 +16,12 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
     public class JobFetchAllOrchestrator : IJobFetchAllOrchestrator
     {
         private readonly IDbContextFactory _dbContextFactory;
-        private readonly IMapper _mapper;
         private readonly JobRepository _jobRepository;
         private readonly ISchedulerFactory _schedulerFactory;
 
-        public JobFetchAllOrchestrator(IDbContextFactory dbContextFactory, IMapper mapper, JobRepository jobRepository, ISchedulerFactory schedulerFactory)
+        public JobFetchAllOrchestrator(IDbContextFactory dbContextFactory, JobRepository jobRepository, ISchedulerFactory schedulerFactory)
         {
             _dbContextFactory = dbContextFactory;
-            _mapper = mapper;
             _jobRepository = jobRepository;
             _schedulerFactory = schedulerFactory;
         }
@@ -35,10 +32,10 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
             {
                 var jobEntities = await _jobRepository.GetAllAsync(dbContext);
                 var failingJobEntities = await _jobRepository.GetAllFailingAsync(dbContext);
-                var result = _mapper.Map<JobEntity[], JobViewModel[]>(jobEntities.ToArray());
+                var result = jobEntities.Select(x => x.ToViewModel()).ToArray();
                 var scheduler = await _schedulerFactory.GetScheduler();
 
-                foreach (JobViewModel jobViewModel in result) 
+                foreach (JobViewModel jobViewModel in result)
                 {
                     if (jobViewModel.IsEnabled)
                     {

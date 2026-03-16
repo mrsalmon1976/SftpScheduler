@@ -1,4 +1,3 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -101,13 +100,12 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
 
         }
 
-        private HostFingerprintScanOrchestrator CreateOrchestrator(IHostValidator hostValidator, ISessionWrapperFactory? sessionWrapperFactory = null, IMapper? mapper = null)
+        private HostFingerprintScanOrchestrator CreateOrchestrator(IHostValidator hostValidator, ISessionWrapperFactory? sessionWrapperFactory = null)
         {
             sessionWrapperFactory ??= Substitute.For<ISessionWrapperFactory>();
-            mapper ??= AutoMapperTestHelper.CreateMapper();
-            
+
             ILogger<HostFingerprintScanOrchestrator> logger = Substitute.For<ILogger<HostFingerprintScanOrchestrator>>();
-            return new HostFingerprintScanOrchestrator(logger, sessionWrapperFactory, mapper, hostValidator);
+            return new HostFingerprintScanOrchestrator(logger, sessionWrapperFactory, hostValidator);
         }
 
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SftpScheduler.BLL.Commands.Notification;
@@ -9,6 +9,7 @@ using SftpScheduler.BLL.Jobs;
 using SftpScheduler.BLL.Models;
 using SftpScheduler.BLL.Utility;
 using SftpSchedulerService.Config;
+using SftpSchedulerService.Mapping;
 using SftpSchedulerService.Models;
 using SftpSchedulerService.Models.Settings;
 
@@ -21,61 +22,58 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
 
     public class SettingsUpdateOrchestrator : ISettingsUpdateOrchestrator
     {
-		private readonly IDbContextFactory _dbContextFactory;
-		private readonly IGlobalUserSettingProvider _globalUserSettingProvider;
-		private readonly IStartupSettingProvider _startupSettingProvider;
-		private readonly IUpsertDigestCommand _upsertDigestCommand;
-		private readonly IUpsertGlobalUserSettingCommand _upsertGlobalUserSettingCommand;
+        private readonly IDbContextFactory _dbContextFactory;
+        private readonly IGlobalUserSettingProvider _globalUserSettingProvider;
+        private readonly IStartupSettingProvider _startupSettingProvider;
+        private readonly IUpsertDigestCommand _upsertDigestCommand;
+        private readonly IUpsertGlobalUserSettingCommand _upsertGlobalUserSettingCommand;
 
-		public SettingsUpdateOrchestrator(IDbContextFactory dbContextFactory, IGlobalUserSettingProvider globalUserSettingProvider, IStartupSettingProvider startupSettingProvider, IUpsertDigestCommand upsertDigestCommand, IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand)
+        public SettingsUpdateOrchestrator(IDbContextFactory dbContextFactory, IGlobalUserSettingProvider globalUserSettingProvider, IStartupSettingProvider startupSettingProvider, IUpsertDigestCommand upsertDigestCommand, IUpsertGlobalUserSettingCommand upsertGlobalUserSettingCommand)
         {
-			_dbContextFactory = dbContextFactory;
-			_globalUserSettingProvider = globalUserSettingProvider;
-			_startupSettingProvider = startupSettingProvider;
-			_upsertDigestCommand = upsertDigestCommand;
-			_upsertGlobalUserSettingCommand = upsertGlobalUserSettingCommand;
-		}
+            _dbContextFactory = dbContextFactory;
+            _globalUserSettingProvider = globalUserSettingProvider;
+            _startupSettingProvider = startupSettingProvider;
+            _upsertDigestCommand = upsertDigestCommand;
+            _upsertGlobalUserSettingCommand = upsertGlobalUserSettingCommand;
+        }
 
         public async Task<IActionResult> Execute(GlobalSettingsViewModel globalSettingsViewModel)
         {
-			// startup settings first - only save if they have changed
-			var currentStartupSettings = _startupSettingProvider.Load();
-			StartupSettings newStartupSettings = new StartupSettings();
-			SettingsModelMapper.MapValues(globalSettingsViewModel, newStartupSettings);
+            // startup settings first - only save if they have changed
+            var currentStartupSettings = _startupSettingProvider.Load();
+            StartupSettings newStartupSettings = new StartupSettings();
+            newStartupSettings.PopulateFrom(globalSettingsViewModel);
 
             if (!currentStartupSettings.Equals(newStartupSettings))
             {
-				await _startupSettingProvider.Save(newStartupSettings);
-			}
+                await _startupSettingProvider.Save(newStartupSettings);
+            }
 
-			using IDbContext dbContext = _dbContextFactory.GetDbContext();
+            using IDbContext dbContext = _dbContextFactory.GetDbContext();
 
-			GlobalSettingsViewModel currentStoredSettings = new GlobalSettingsViewModel();
-			SettingsModelMapper.MapValues(_globalUserSettingProvider, currentStoredSettings);
+            GlobalSettingsViewModel currentStoredSettings = new GlobalSettingsViewModel();
+            currentStoredSettings.PopulateFrom(_globalUserSettingProvider);
 
-			// check digest values - if either of these change we need to update the digest job
-			bool digestTimeChanged = await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestTime, currentStoredSettings.DigestTime, globalSettingsViewModel.DigestTime);
-			bool digestDaysChanged = await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestDays, currentStoredSettings.DigestDays, globalSettingsViewModel.DigestDays);
-			
-			if (digestDaysChanged || digestTimeChanged) 
-			{
-				IEnumerable<DayOfWeek> digestDays = globalSettingsViewModel.DigestDays.Select(x => Enum.Parse<DayOfWeek>(x));
-				await _upsertDigestCommand.Execute(digestDays, globalSettingsViewModel.DigestTime);
-			}
+            // check digest values - if either of these change we need to update the digest job
+            bool digestTimeChanged = await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestTime, currentStoredSettings.DigestTime, globalSettingsViewModel.DigestTime);
+            bool digestDaysChanged = await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.DigestDays, currentStoredSettings.DigestDays, globalSettingsViewModel.DigestDays);
 
-			// run in all the simple settings - these will only update if their value has changed
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpHost, currentStoredSettings.SmtpHost, globalSettingsViewModel.SmtpHost);
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpPort, currentStoredSettings.SmtpPort, globalSettingsViewModel.SmtpPort);
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpUserName, currentStoredSettings.SmtpUserName, globalSettingsViewModel.SmtpUserName);
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpPassword, currentStoredSettings.SmtpPassword, globalSettingsViewModel.SmtpPassword);
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpEnableSsl, currentStoredSettings.SmtpEnableSsl, globalSettingsViewModel.SmtpEnableSsl);
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpFromName, currentStoredSettings.SmtpFromName, globalSettingsViewModel.SmtpFromName);
-			await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpFromEmail, currentStoredSettings.SmtpFromEmail, globalSettingsViewModel.SmtpFromEmail);
+            if (digestDaysChanged || digestTimeChanged)
+            {
+                IEnumerable<DayOfWeek> digestDays = globalSettingsViewModel.DigestDays.Select(x => Enum.Parse<DayOfWeek>(x));
+                await _upsertDigestCommand.Execute(digestDays, globalSettingsViewModel.DigestTime);
+            }
 
-			return new OkResult();
+            // run in all the simple settings - these will only update if their value has changed
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpHost, currentStoredSettings.SmtpHost, globalSettingsViewModel.SmtpHost);
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpPort, currentStoredSettings.SmtpPort, globalSettingsViewModel.SmtpPort);
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpUserName, currentStoredSettings.SmtpUserName, globalSettingsViewModel.SmtpUserName);
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpPassword, currentStoredSettings.SmtpPassword, globalSettingsViewModel.SmtpPassword);
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpEnableSsl, currentStoredSettings.SmtpEnableSsl, globalSettingsViewModel.SmtpEnableSsl);
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpFromName, currentStoredSettings.SmtpFromName, globalSettingsViewModel.SmtpFromName);
+            await _globalUserSettingProvider.UpdateChangedValue(dbContext, GlobalUserSettingKey.SmtpFromEmail, currentStoredSettings.SmtpFromEmail, globalSettingsViewModel.SmtpFromEmail);
+
+            return new OkResult();
         }
-
-		
-
-	}
+    }
 }
