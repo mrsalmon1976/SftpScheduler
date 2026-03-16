@@ -22,7 +22,7 @@ function BackupCurrent {
 
     # Patterns to exclude
     $excludeFiles = @()
-    $excludeFolders = @("Backup", "TempUpdate")
+    $excludeFolders = @("Backup", "logs", "TempUpdate")
 
     # Create destination folder if it doesn't exist
     if (-not (Test-Path $destination)) {
@@ -94,7 +94,7 @@ function DeleteCurrent {
 
     # Patterns to exclude
     $excludeFiles = @("updates.log", "Update.ps1")
-    $excludeFolders = @("Backup", "Data", "TempUpdate")
+    $excludeFolders = @("Backup", "Data", "logs", "TempUpdate")
 
     # delete items recursively, excluding certain files and folders
     Get-ChildItem -Path $source -Recurse -Force | Where-Object {
