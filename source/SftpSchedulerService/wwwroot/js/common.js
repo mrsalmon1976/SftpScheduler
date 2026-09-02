@@ -156,7 +156,7 @@ createApp({
             var url = '/api/update/check';
             let result = await axios.get(url)
                 .catch(err => {
-                    UiHelpers.showErrorToast('Error', '', err.message);
+                    UiHelpers.showErrorToast('Error', '', 'Unable to load version information: ' + err.message);
                     return;
                 });
             this.versionInfo = result.data;

@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.Core;
+using System.Linq;
 using SftpSchedulerService.Caching;
 using SftpScheduler.Common.Models;
 using SftpScheduler.Common.Services;
@@ -96,13 +99,87 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Update
         }
 
 
-        private UpdateCheckOrchestrator CreateOrchestrator(IVersionComparisonService? versionComparisonService = null, ICacheProvider? cacheProvider = null, AppSettings? appSettings = null)
+        [Test]
+        public void Execute_VersionCheckThrowsException_LogsErrorAndReturns500()
+        {
+            // setup
+            ICacheProvider cacheProvider = Substitute.For<ICacheProvider>();
+            cacheProvider.Get<VersionCheckViewModel>(CacheKeys.VersionUpdateCheck).Returns((VersionCheckViewModel)null);
+
+            IVersionComparisonService versionComparisonService = Substitute.For<IVersionComparisonService>();
+            versionComparisonService.CheckIfNewVersionAvailable(Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromException<VersionComparisonResult>(new InvalidOperationException("boom")));
+
+            ILogger<UpdateCheckOrchestrator> logger = Substitute.For<ILogger<UpdateCheckOrchestrator>>();
+
+            // execute
+            IUpdateCheckOrchestrator orchestrator = CreateOrchestrator(versionComparisonService, cacheProvider, logger: logger);
+            var result = orchestrator.Execute().Result as ObjectResult;
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.StatusCode, Is.EqualTo(500));
+
+            bool errorWasLogged = logger.ReceivedCalls().Any(call =>
+                call.GetMethodInfo().Name == nameof(ILogger.Log)
+                && (LogLevel)call.GetArguments()[0]! == LogLevel.Error
+                && call.GetArguments()[3] is InvalidOperationException);
+            Assert.That(errorWasLogged, Is.True);
+        }
+
+        [Test]
+        public void Execute_VersionCheckThrowsException_CachesFallbackViewModel()
+        {
+            // setup
+            ICacheProvider cacheProvider = Substitute.For<ICacheProvider>();
+            cacheProvider.Get<VersionCheckViewModel>(CacheKeys.VersionUpdateCheck).Returns((VersionCheckViewModel)null);
+
+            IVersionComparisonService versionComparisonService = Substitute.For<IVersionComparisonService>();
+            versionComparisonService.CheckIfNewVersionAvailable(Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromException<VersionComparisonResult>(new InvalidOperationException("boom")));
+
+            // execute
+            IUpdateCheckOrchestrator orchestrator = CreateOrchestrator(versionComparisonService, cacheProvider);
+            _ = orchestrator.Execute().Result;
+
+            // assert
+            cacheProvider.Received(1).Set(CacheKeys.VersionUpdateCheck, Arg.Is<VersionCheckViewModel>(
+                vm => vm.IsNewVersionAvailable == false && vm.LatestReleaseVersionNumber == null),
+                Arg.Any<TimeSpan>());
+        }
+
+        [Test]
+        public void Execute_VersionCheckNotCached_NoLatestReleaseVersionInfo_LatestReleaseVersionNumberIsNull()
+        {
+            // setup
+            ICacheProvider cacheProvider = Substitute.For<ICacheProvider>();
+            cacheProvider.Get<VersionCheckViewModel>(CacheKeys.VersionUpdateCheck).Returns((VersionCheckViewModel)null);
+
+            IVersionComparisonService versionComparisonService = Substitute.For<IVersionComparisonService>();
+            VersionComparisonResult versionComparisonResult = new VersionComparisonResult();
+            versionComparisonResult.LatestReleaseVersionInfo = null;
+            versionComparisonService.CheckIfNewVersionAvailable(Arg.Any<string>(), Arg.Any<string>()).Returns(versionComparisonResult);
+
+            // execute
+            IUpdateCheckOrchestrator orchestrator = CreateOrchestrator(versionComparisonService, cacheProvider);
+            var result = orchestrator.Execute().Result as OkObjectResult;
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+
+            VersionCheckViewModel resultViewModel = result.Value as VersionCheckViewModel;
+            Assert.That(resultViewModel, Is.Not.Null);
+            Assert.That(resultViewModel.LatestReleaseVersionNumber, Is.Null);
+        }
+
+        private UpdateCheckOrchestrator CreateOrchestrator(IVersionComparisonService? versionComparisonService = null, ICacheProvider? cacheProvider = null, AppSettings? appSettings = null, ILogger<UpdateCheckOrchestrator>? logger = null)
         {
             versionComparisonService = (versionComparisonService ?? Substitute.For<IVersionComparisonService>());
             cacheProvider = (cacheProvider ?? Substitute.For<ICacheProvider>());
             appSettings = (appSettings ?? Substitute.For<AppSettings>());
+            logger = (logger ?? Substitute.For<ILogger<UpdateCheckOrchestrator>>());
 
-            return new UpdateCheckOrchestrator(versionComparisonService, cacheProvider, appSettings);
+            return new UpdateCheckOrchestrator(logger, versionComparisonService, cacheProvider, appSettings);
         }
 
     }
