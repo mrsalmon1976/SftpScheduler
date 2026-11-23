@@ -189,8 +189,30 @@ function ExtractRelease {
 }
 
 function GetLatestVersion {
-    
-    $data = Invoke-RestMethod -Uri $global:latestVersionUrl
+
+    # GitHub requires a User-Agent; Accept and X-GitHub-Api-Version are recommended
+    $headers = @{
+        'User-Agent'           = 'SftpSchedulerServiceUpdater'
+        'Accept'               = 'application/vnd.github+json'
+        'X-GitHub-Api-Version' = '2022-11-28'
+    }
+
+    try {
+        $data = Invoke-RestMethod -Uri $global:latestVersionUrl -Headers $headers
+    }
+    catch {
+        $response = $_.Exception.Response
+        if ($response -and ($response.StatusCode -eq [System.Net.HttpStatusCode]::Forbidden -or $response.StatusCode -eq 429)) {
+            # GitHub rate limit responses include X-RateLimit-Reset (Unix time, seconds)
+            $reset = [string]($response.Headers['X-RateLimit-Reset'] | Select-Object -First 1)
+            $resetMsg = "unknown time"
+            if ($reset -match '^\d+$') {
+                $resetMsg = [System.DateTimeOffset]::FromUnixTimeSeconds([long]$reset).LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")
+            }
+            throw "GitHub API rate limit reached (unauthenticated limit is 60 requests per hour per IP). Try again after $resetMsg."
+        }
+        throw
+    }
 
     $result = [PSCustomObject]@{
         version = $data.tag_name.Trim().TrimStart('v')
