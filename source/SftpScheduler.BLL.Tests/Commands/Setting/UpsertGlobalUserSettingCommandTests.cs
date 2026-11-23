@@ -17,7 +17,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Setting
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     string settingId = Guid.NewGuid().ToString();
 					string settingValue = Guid.NewGuid().ToString();
@@ -49,7 +49,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Setting
 			{
 				dbIntegrationTestHelper.CreateDatabase();
 
-				using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+				using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
 				{
 					string settingId = Guid.NewGuid().ToString();
 					string settingValue = Guid.NewGuid().ToString();

@@ -80,7 +80,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     DeleteJobCommand deleteJobCommand = new DeleteJobCommand(Substitute.For<ISchedulerFactory>());
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);

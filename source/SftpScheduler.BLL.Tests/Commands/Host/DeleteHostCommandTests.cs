@@ -78,7 +78,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
                 dbIntegrationTestHelper.CreateDatabase();
                 HostRepository hostRepo = new HostRepository();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     DeleteHostCommand deleteHostCommand = new DeleteHostCommand(hostRepo);
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);

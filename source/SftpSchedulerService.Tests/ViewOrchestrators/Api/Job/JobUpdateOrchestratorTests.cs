@@ -59,7 +59,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
         {
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             IUpdateJobCommand updateJobCommand = Substitute.For<IUpdateJobCommand>();
             JobViewModel jobViewModel = new SubstituteBuilder<JobViewModel>().WithRandomProperties().Build();

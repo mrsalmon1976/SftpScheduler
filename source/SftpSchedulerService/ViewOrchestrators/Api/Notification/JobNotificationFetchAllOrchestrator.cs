@@ -31,7 +31,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
 
             if (notifications == null || forceReload) {
 
-                using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+                using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
                 {
                     var failingJobsTask = _jobRepo.GetAllFailingActiveAsync(dbContext);
                     var warningJobsTask = _jobRepo.GetAllFailedSinceAsync(dbContext, DateTime.Now.AddDays(-1));

@@ -26,7 +26,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
         public async Task<IActionResult> Execute(string hash)
         {
             int jobId = UrlUtils.Decode(hash);
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 await _deleteJobCommand.ExecuteAsync(dbContext, jobId);
                 _logger.LogInformation("Deleted job {jobId}", jobId);

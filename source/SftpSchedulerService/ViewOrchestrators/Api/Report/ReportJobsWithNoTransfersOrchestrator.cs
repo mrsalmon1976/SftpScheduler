@@ -24,7 +24,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Report
 
         public async Task<IActionResult> Execute(DateTime startDate, DateTime endDate)
         {
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 var jobEntities = await _jobRepository.GetAllWithoutTransfersBetweenAsync(dbContext, startDate.ToUniversalTime(), endDate.ToUniversalTime());
                 var result = jobEntities.Select(x => x.ToViewModel()).ToArray();

@@ -129,7 +129,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
                 dbIntegrationTestHelper.CreateDatabase();
 
                 CreateHostCommand createHostCommand = new CreateHostCommand(new HostValidator(), new EncryptionProvider());
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     DateTime dtBefore = DateTime.UtcNow;
                     string userName = RandomData.StringWord();

@@ -25,7 +25,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
 
         public async Task<IActionResult> Execute()
         {
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 var hostEntities = await _hostRepository.GetAllAsync(dbContext);
                 var jobCounts = await _hostRepository.GetAllJobCountsAsync(dbContext);

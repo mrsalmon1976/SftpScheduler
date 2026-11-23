@@ -22,7 +22,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.HostAuditLog
         {
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             IHostAuditLogRepository hostAuditLogRepo = Substitute.For<IHostAuditLogRepository>();
             int hostId = Faker.RandomNumber.Next(1, 100);
             string hostHash = UrlUtils.Encode(hostId);

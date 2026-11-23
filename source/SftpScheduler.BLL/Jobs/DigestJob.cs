@@ -72,7 +72,7 @@ namespace SftpScheduler.BLL.Jobs
 			string emailBodyHtml = _resourceUtils.ReadResource(ResourceKey.DigestEmailTemplate);
 			string recentlyFailedJobsHtml = "<li>No jobs have failed recently</li>";
 
-			using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+			using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
 			{
 				var failingJobs = await _jobRepository.GetAllFailingActiveAsync(dbContext);
 				if (!failingJobs.Any())

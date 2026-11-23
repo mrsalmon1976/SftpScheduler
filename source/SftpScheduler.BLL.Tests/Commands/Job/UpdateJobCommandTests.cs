@@ -339,7 +339,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
                 string userName = Guid.NewGuid().ToString();
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     JobRepository jobRepo = new JobRepository();
                     HostRepository hostRepo = new HostRepository();

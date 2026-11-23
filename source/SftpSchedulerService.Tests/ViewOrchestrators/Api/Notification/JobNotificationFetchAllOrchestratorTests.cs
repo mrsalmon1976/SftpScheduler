@@ -24,7 +24,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
             
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Enumerable.Empty<JobEntity>());
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Enumerable.Empty<JobEntity>());
@@ -49,7 +49,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             List<JobEntity> failingJobs = new List<JobEntity>();
             int failingJobCount = Faker.RandomNumber.Next(2, 7);
@@ -82,7 +82,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             List<JobNotificationViewModel> notifications = new List<JobNotificationViewModel>();
             notifications.Add(new JobNotificationViewModel(1, Guid.NewGuid().ToString(), AppConstants.NotificationType.Error));
@@ -111,7 +111,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             List<JobNotificationViewModel> notifications = new List<JobNotificationViewModel>();
             notifications.Add(new JobNotificationViewModel(1, Guid.NewGuid().ToString(), AppConstants.NotificationType.Error));
@@ -137,7 +137,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             List<JobEntity> warningJobs = new List<JobEntity>();
             int warningJobCount = Faker.RandomNumber.Next(2, 7);
@@ -169,7 +169,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             List<JobEntity> warningJobs = new List<JobEntity>();
             int warningJobCount = Faker.RandomNumber.Next(2, 7);
@@ -210,7 +210,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Notification
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
             List<JobEntity> failingJobs = new List<JobEntity>();
             failingJobs.Add(new SubstituteBuilder<JobEntity>().WithRandomProperties().WithProperty(x => x.Id, 1).Build());

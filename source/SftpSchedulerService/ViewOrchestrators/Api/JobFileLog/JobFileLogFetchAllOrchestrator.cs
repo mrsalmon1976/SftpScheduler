@@ -29,7 +29,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.JobFileLog
         {
             int jobId = UrlUtils.Decode(jobHash);
 
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 var jobEntities = await _jobFileLogRepo.GetAllByJobAsync(dbContext, jobId, maxLogId ?? Int32.MaxValue, DefaultRowCount);
                 var result = jobEntities.Select(x => x.ToViewModel()).ToArray();

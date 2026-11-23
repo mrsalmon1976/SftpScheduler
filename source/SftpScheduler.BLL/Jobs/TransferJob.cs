@@ -45,7 +45,7 @@ namespace SftpScheduler.BLL.Jobs
             _logger.LogInformation("Starting job {JobId}", jobId);
 
             // create the result record
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
 
                 dbContext.BeginTransaction();
@@ -57,7 +57,7 @@ namespace SftpScheduler.BLL.Jobs
 
 
             // execute the transfer
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 try
                 {
@@ -72,7 +72,7 @@ namespace SftpScheduler.BLL.Jobs
             }
 
             // update the job log record
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 dbContext.BeginTransaction();
                 await _updateJobLogCompleteCommand.ExecuteAsync(dbContext, jobLogId, 100, jobStatus, errorMessage);

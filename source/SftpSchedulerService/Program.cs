@@ -63,7 +63,7 @@ try
     // custom
     builder.Services.AddIdentity(appSettings);
 
-    builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath));
+    builder.Services.AddSingleton<IDbContextFactory>(new DbContextFactory(appSettings.DbPath, appSettings.DbPathQuartz));
     builder.Services.AddScoped<IDbContext>((sp) => new SQLiteDbContext(appSettings.DbPath));
     builder.Services.AddSingleton<ResourceUtils>();
     builder.Services.AddScoped<CronBuilder>();

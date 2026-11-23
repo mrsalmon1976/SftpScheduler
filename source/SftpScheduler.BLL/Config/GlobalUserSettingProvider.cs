@@ -148,7 +148,7 @@ namespace SftpScheduler.BLL.Config
 
 		private void LoadAllGlobalUserSettings()
 		{
-			using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+			using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
 			{
 				IEnumerable<GlobalUserSettingEntity> allSettings = _globalUserSettingRepository.GetAllAsync(dbContext).GetAwaiter().GetResult();
 

@@ -11,7 +11,7 @@ namespace SftpScheduler.BLL.Tests
         public DbIntegrationTestHelper()
         {
             this.DbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DbIntegrationTest.db");
-            this.DbContextFactory = new DbContextFactory(this.DbPath);
+            this.DbContextFactory = new DbContextFactory(this.DbPath, this.DbPath);
             if (File.Exists(this.DbPath))
             {
                 File.Delete(this.DbPath);

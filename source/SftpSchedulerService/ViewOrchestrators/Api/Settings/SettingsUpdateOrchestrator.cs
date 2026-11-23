@@ -49,7 +49,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Settings
                 await _startupSettingProvider.Save(newStartupSettings);
             }
 
-            using IDbContext dbContext = _dbContextFactory.GetDbContext();
+            using IDbContext dbContext = _dbContextFactory.GetDefaultDbContext();
 
             GlobalSettingsViewModel currentStoredSettings = new GlobalSettingsViewModel();
             currentStoredSettings.PopulateFrom(_globalUserSettingProvider);

@@ -36,7 +36,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     HostEntity HostEntity1 = dbIntegrationTestHelper.CreateHostEntity(dbContext);
                     HostEntity HostEntity2 = dbIntegrationTestHelper.CreateHostEntity(dbContext);
@@ -78,7 +78,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
@@ -116,7 +116,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
@@ -136,7 +136,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     HostRepository hostRepo = new HostRepository();
                     HostEntity result = hostRepo.GetByIdOrDefaultAsync(dbContext, 100).Result;
@@ -172,7 +172,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 
@@ -203,7 +203,7 @@ namespace SftpScheduler.BLL.Tests.Repositories
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);
 

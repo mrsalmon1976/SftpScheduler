@@ -165,7 +165,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Host
                 hostValidator.Validate(Arg.Any<HostEntity>()).Returns(new ValidationResult());
 
                 UpdateHostCommand updateHostCommand = new UpdateHostCommand(new HostRepository(), new HostValidator(), new EncryptionProvider(), new HostAuditService());
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     DateTime dtBefore = DateTime.UtcNow;
                     HostEntity hostEntity = dbIntegrationTestHelper.CreateHostEntity(dbContext);

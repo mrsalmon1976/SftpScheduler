@@ -23,7 +23,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Dashboard
 
         public async Task<IActionResult> Execute()
         {
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 var totalJobCountTask = _jobRepository.GetAllCountAsync(dbContext);
                 var failingJobsTask = _jobRepository.GetAllFailingActiveAsync(dbContext);

@@ -59,7 +59,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
         {
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             IUpdateHostCommand updateHostCommand = Substitute.For<IUpdateHostCommand>();
             HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
@@ -80,7 +80,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Host
             // setup
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             HostViewModel hostViewModel = new SubstituteBuilder<HostViewModel>().WithRandomProperties().Build();
             var hostEntity = new SubstituteBuilder<HostEntity>().WithRandomProperties().Build();
             string userName = Guid.NewGuid().ToString();

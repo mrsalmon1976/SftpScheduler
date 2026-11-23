@@ -27,7 +27,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Host
         public async Task<IActionResult> Execute(HostViewModel hostViewModel, string userName)
         {
             HostEntity hostEntity = hostViewModel.ToEntity();
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 try
                 {

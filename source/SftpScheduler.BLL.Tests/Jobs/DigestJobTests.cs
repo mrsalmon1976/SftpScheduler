@@ -44,7 +44,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 
@@ -79,7 +79,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
 
@@ -123,7 +123,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
@@ -168,7 +168,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
             IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             ISmtpClientWrapper smtpClient = new SubstituteBuilder<ISmtpClientWrapper>().Build();
@@ -212,7 +212,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();
@@ -266,7 +266,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             jobRepo.GetAllFailedSinceAsync(dbContext, Arg.Any<DateTime>()).Returns(Task.FromResult((IEnumerable<JobEntity>)recentlyFailedJobs));
@@ -311,7 +311,7 @@ namespace SftpScheduler.BLL.Tests.Jobs
 
 			IDbContext dbContext = new SubstituteBuilder<IDbContext>().Build();
             IDbContextFactory dbContextFactory = new SubstituteBuilder<IDbContextFactory>().Build();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = new SubstituteBuilder<JobRepository>().Build();
             jobRepo.GetAllFailingActiveAsync(dbContext).Returns(Task.FromResult(failingJobs));
             IUserRepository userRepo = new SubstituteBuilder<IUserRepository>().Build();

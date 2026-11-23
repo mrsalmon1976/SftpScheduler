@@ -25,7 +25,7 @@ namespace SftpScheduler.BLL.Tests.Commands.Job
             {
                 dbIntegrationTestHelper.CreateDatabase();
 
-                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDbContext())
+                using (IDbContext dbContext = dbIntegrationTestHelper.DbContextFactory.GetDefaultDbContext())
                 {
                     CreateJobFileLogCommand createJobFileLogCmd = new CreateJobFileLogCommand();
                     HostEntity host = dbIntegrationTestHelper.CreateHostEntity(dbContext);

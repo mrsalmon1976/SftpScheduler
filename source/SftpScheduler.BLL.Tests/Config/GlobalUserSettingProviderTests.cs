@@ -328,7 +328,7 @@ namespace SftpScheduler.BLL.Tests.Config
 			encryptionProvider ??= Substitute.For<IEncryptionProvider>();
 			upsertGlobalUserSettingCommand ??= Substitute.For<IUpsertGlobalUserSettingCommand>();
 			dbContext ??= Substitute.For<IDbContext>();
-			dbContextFactory.GetDbContext().Returns(dbContext);
+			dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
 			globalUserSettingRepo ??= Substitute.For<GlobalUserSettingRepository>();
 			IGlobalUserSettingProvider provider = new GlobalUserSettingProvider(Substitute.For<ILogger<GlobalUserSettingProvider>>(), dbContextFactory, encryptionProvider, upsertGlobalUserSettingCommand, globalUserSettingRepo);

@@ -25,7 +25,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.Job
         public async Task<IActionResult> Execute(string hash)
         {
             int jobId = UrlUtils.Decode(hash);
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 var jobEntity = await _jobRepository.GetByIdAsync(dbContext, jobId);
                 var result = jobEntity.ToViewModel();

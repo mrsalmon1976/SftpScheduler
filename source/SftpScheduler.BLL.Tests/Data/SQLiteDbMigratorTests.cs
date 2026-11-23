@@ -47,7 +47,7 @@ namespace SftpScheduler.BLL.Tests.Data
         [Test]
         public void MigrateDbChanges_Integration_DbCreated()
         {
-            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath, _dbPath);
             IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
             dbMigrator.MigrateDbChanges();
             Assert.IsTrue(File.Exists(_dbPath));
@@ -68,11 +68,11 @@ namespace SftpScheduler.BLL.Tests.Data
 		[TestCase("GlobalUserSetting")]
 		public void MigrateDbChanges_Integration_TableCreated(string tableName)
         {
-            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath, _dbPath);
             IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
             dbMigrator.MigrateDbChanges();
 
-            using (IDbContext dbContext = dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = dbContextFactory.GetDefaultDbContext())
             {
                 string sql = String.Format("SELECT * from {0} LIMIT 5", tableName);
                 dbContext.ExecuteNonQueryAsync(sql).GetAwaiter().GetResult();
@@ -83,7 +83,7 @@ namespace SftpScheduler.BLL.Tests.Data
         [Test]
         public void InitialiseQuartzDb_Integration_DbCreated()
         {
-            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath, _dbPath);
             IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
             dbMigrator.InitialiseQuartzDb(_quartzPath);
             Assert.IsTrue(File.Exists(_quartzPath));
@@ -93,7 +93,7 @@ namespace SftpScheduler.BLL.Tests.Data
         [TestCase("QRTZ_TRIGGERS")]
         public void InitialiseQuartzDb_Integration_TableCreated(string tableName)
         {
-            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath);
+            IDbContextFactory dbContextFactory = new DbContextFactory(_dbPath, _dbPath);
             IDbMigrator dbMigrator = new SQLiteDbMigrator(dbContextFactory, new ResourceUtils());
             dbMigrator.InitialiseQuartzDb(_quartzPath);
 

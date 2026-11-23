@@ -191,6 +191,7 @@ namespace SftpSchedulerService.BootStrapping
 			services.AddScoped<HostRepository>();
             services.AddScoped<IHostAuditLogRepository, HostAuditLogRepository>();
             services.AddScoped<JobRepository>();
+            services.AddScoped<QuartzTriggerRepository>();
             services.AddScoped<JobFileLogRepository>();
             services.AddScoped<JobLogRepository>();
             services.AddScoped<IJobAuditLogRepository, JobAuditLogRepository>();
@@ -207,8 +208,8 @@ namespace SftpSchedulerService.BootStrapping
         {
             services.AddQuartz(q =>
             {
-                q.SchedulerId = "SftpScheduler";
-                q.SchedulerName = "SftpScheduler";
+                q.SchedulerId = QuartzConstants.SchedulerName;
+                q.SchedulerName = QuartzConstants.SchedulerName;
                 q.UseMicrosoftDependencyInjectionJobFactory();
                 q.UseDefaultThreadPool(x => x.MaxConcurrency = maxConcurrentJobs);
                 if (isUnitTestContext)

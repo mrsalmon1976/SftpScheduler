@@ -28,7 +28,7 @@ namespace SftpSchedulerService.ViewOrchestrators.Api.HostAuditLog
         {
             int hostId = UrlUtils.Decode(hostHash);
 
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 var auditLogs = await _hostAuditLogRepo.GetByAllHostAsync(dbContext, hostId);
                 var result = auditLogs.Select(x => x.ToViewModel()).ToArray();

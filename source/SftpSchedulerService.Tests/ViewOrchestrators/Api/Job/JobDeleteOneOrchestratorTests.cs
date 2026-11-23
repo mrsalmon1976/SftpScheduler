@@ -24,7 +24,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             IDeleteJobCommand deleteJobCommand = Substitute.For<IDeleteJobCommand>();
             int jobId = Faker.RandomNumber.Next(10, 1000);
             string hashId = UrlUtils.Encode(jobId);

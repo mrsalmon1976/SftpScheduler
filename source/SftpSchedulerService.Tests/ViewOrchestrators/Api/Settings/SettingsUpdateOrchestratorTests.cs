@@ -350,7 +350,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Settings
 			upsertGlobalUserSettingCommand ??= Substitute.For<IUpsertGlobalUserSettingCommand>();
 
 			IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
-			dbContextFactory.GetDbContext().Returns(dbContext);
+			dbContextFactory.GetDefaultDbContext().Returns(dbContext);
 
 			return new SettingsUpdateOrchestrator(dbContextFactory, globalUserSettingProvider, startupSettingProvider, upsertDigestCommand, upsertGlobalUserSettingCommand);
 		}

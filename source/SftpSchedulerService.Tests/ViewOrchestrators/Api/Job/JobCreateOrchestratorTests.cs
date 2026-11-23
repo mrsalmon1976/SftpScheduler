@@ -59,7 +59,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Job
         {
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             string userName = RandomData.StringWord();
 
             ICreateJobCommand createJobCommand = Substitute.For<ICreateJobCommand>();

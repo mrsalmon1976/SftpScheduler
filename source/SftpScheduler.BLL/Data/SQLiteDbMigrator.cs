@@ -32,7 +32,7 @@ namespace SftpScheduler.BLL.Data
                 SQLiteConnection.CreateFile(dbPath);
             }
 
-            using (IDbContext dbContext = _dbContextFactory.GetDbContext())
+            using (IDbContext dbContext = _dbContextFactory.GetDefaultDbContext())
             {
                 string sqlFileContents = _resourceUtils.ReadResource("SftpScheduler.BLL.Resources.DbMigrations.sql");
                 IEnumerable<string> sqlStatements = Regex.Split(sqlFileContents, "--\\*\\*").Select(x => x.Trim()).Where(x => x.Length > 0);

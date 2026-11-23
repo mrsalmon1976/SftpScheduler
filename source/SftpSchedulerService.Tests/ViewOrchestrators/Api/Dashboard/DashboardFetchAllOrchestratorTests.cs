@@ -21,7 +21,7 @@ namespace SftpSchedulerService.Tests.ViewOrchestrators.Api.Dashboard
             // setup
             IDbContextFactory dbContextFactory = Substitute.For<IDbContextFactory>();
             IDbContext dbContext = Substitute.For<IDbContext>();
-            dbContextFactory.GetDbContext().Returns(dbContext);
+            dbContextFactory.GetDefaultDbContext().Returns(dbContext);
             JobRepository jobRepo = Substitute.For<JobRepository>();
 
             int totalCount = Faker.RandomNumber.Next(10, 30);
