@@ -312,8 +312,18 @@ function StopService {
     }    
 }
 
+function IsRunningAsAdministrator {
+    $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
 function Run {
     try {
+        if (-not (IsRunningAsAdministrator)) {
+            throw "This script must be run in Administrator mode (right-click PowerShell and choose 'Run as administrator')."
+        }
+
         LogMessage -msg "----------------------------------------------------------------------"
         LogMessage -msg "Starting update initiated by user '$Env:UserName'"
         LogMessage -msg "----------------------------------------------------------------------"
